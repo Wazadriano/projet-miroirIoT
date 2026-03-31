@@ -1,0 +1,249 @@
+project_name: "smart-mirror"
+project_description: "Miroir connecte d'analyse capillaire par IA pour K Beauty Cosmetics"
+domain: "Beauty Tech / Soin capillaire / Retail premium"
+subdomain: "Analyse capillaire assistee par IA"
+client: "K Beauty Cosmetics"
+team: "DreamTech"
+maturity_level: "mvp"
+created_at: "2026-03-31"
+source_documents:
+  - "CDC_DreamTech.md"
+  - "smart_mirror_specs_techniques.md"
+
+stack_tech:
+  device:
+    - "Electron (latest LTS)"
+    - "React + TypeScript"
+    - "electron-vite"
+    - "electron-builder"
+    - "electron-store (safeStorage)"
+    - "tsParticles"
+  os:
+    - "Raspberry Pi OS Lite 64-bit (Debian 12 Bookworm)"
+    - "X11 + Openbox"
+    - "systemd"
+  hardware:
+    - "Raspberry Pi 5 8GB (dev/staging)"
+    - "Beelink SER5 MAX (prod recommande)"
+    - "Jiusion 4K microscope USB UVC"
+    - "Ecran tactile 32 pouces IPS 400+ nits"
+    - "Dongle WiFi USB"
+  backend:
+    - "Bun"
+    - "Hono"
+    - "Zod"
+    - "JWT"
+    - "WebSocket natif Bun"
+  databases:
+    - "Supabase (PostgreSQL)"
+    - "Drizzle ORM"
+    - "Supabase Auth"
+    - "Supabase Storage"
+  frontend:
+    - "React + TypeScript + Tailwind (Panel de controle)"
+    - "Vercel"
+  crm:
+    - "Budibase self-hosted sur Supabase"
+  ai:
+    - "OpenRouter API"
+    - "GPT-4o mini"
+    - "Gemini Flash"
+    - "Claude Haiku"
+  infrastructure:
+    - "Docker"
+    - "Railway ou Fly.io"
+    - "GitHub Actions"
+  constraints:
+    - "Compatible ARM64 + x86-64"
+    - "Zero dependances x86-only"
+    - "Datacenter EU (RGPD)"
+    - "8GB RAM budget (Pi 5)"
+
+pain_points:
+  - "Aucune solution existante sur le marche — tout from scratch"
+  - "Double WiFi (microscope + internet) — complexite reseau"
+  - "Contraintes hardware Pi (8GB RAM, Electron gourmand)"
+  - "Qualification HDS pas tranchee"
+  - "Protocole WiFi Jiusion non verifie"
+root_cause: "Produit nouveau sans precedent — zero reference, zero framework existant"
+
+goals:
+  - "Experience client premium et differenciante en boutique"
+  - "Centraliser les donnees capillaires (marketing + analytique)"
+  - "Suivi longitudinal de l'etat capillaire"
+  - "Exploiter l'IA comme avantage concurrentiel"
+  - "Alimenter le CRM Shopify avec les donnees miroir"
+  - "Construire un MVP en vue de commercialisation B2B"
+success_criteria:
+  - "MVP fonctionnel deploye dans 1 boutique K Beauty"
+  - "Workflow seance complet de bout en bout"
+  - "Diagnostic IA avec confiance > 70% sur les categories principales"
+  - "Rapport PDF genere et accessible par QR code"
+  - "Isolation multi-tenant fonctionnelle"
+
+glossaire:
+  seance:
+    definition: "Session de soin capillaire en boutique — comprend analyse avant/apres, soin, rapport"
+    synonyms: ["session"]
+  snapshot:
+    definition: "Photo prise par le praticien depuis le flux microscope, envoyee a l'IA pour analyse"
+    synonyms: ["capture", "photo"]
+  diagnostic_ia:
+    definition: "Resultat structure de l'analyse d'un snapshot : categorie + score confiance + commentaire + produits recommandes"
+    synonyms: ["analyse IA", "resultat IA"]
+  rapport_pdf:
+    definition: "Document genere en fin de seance : photos avant/apres, diagnostics IA, recommandations, produits avec liens d'achat"
+    synonyms: ["rapport", "compte-rendu"]
+  consentement_rgpd:
+    definition: "Validation explicite et horodatee par le client avant toute capture — obligatoire"
+    synonyms: ["consentement"]
+  tenant:
+    definition: "Boutique K Beauty (Nice, Lyon, Cannes) — unite d'isolation multi-tenant"
+    synonyms: ["boutique"]
+  praticien:
+    definition: "Utilisateur principal du miroir — effectue les soins, prend les photos, genere les rapports"
+    synonyms: ["praticienne"]
+  catalogue_produits:
+    definition: "Liste des produits Shopify injectee dans le contexte IA pour le matching semantique"
+    synonyms: ["catalogue", "produits"]
+  provisioning:
+    definition: "Premier demarrage du miroir : hotspot WiFi, config reseau, enregistrement device, mode normal"
+    synonyms: ["first boot", "setup initial"]
+  panel_de_controle:
+    definition: "Interface web tenant pour piloter le miroir a distance : medias, produits, affichage, commandes"
+    synonyms: ["panel", "dashboard tenant"]
+
+acteurs:
+  - name: "Praticien"
+    type: "external"
+    permissions: ["lancer seance", "prendre photos", "generer rapport", "rechercher client", "creer client"]
+    description: "Utilisateur principal du miroir en boutique"
+  - name: "Client final"
+    type: "external"
+    permissions: ["valider consentement", "scanner QR code"]
+    description: "Client recevant le soin capillaire"
+  - name: "Tenant admin"
+    type: "internal"
+    permissions: ["gerer contenus miroir", "gerer produits", "gerer fiches clients", "exporter vers Shopify", "commander le miroir"]
+    description: "Gerant de boutique via le Panel de controle"
+  - name: "Super admin"
+    type: "internal"
+    permissions: ["acces global multi-tenant", "CRM complet", "gestion devices", "statistiques reseau"]
+    description: "Administrateur siege DreamTech / K Beauty"
+  - name: "Miroir (device)"
+    type: "system"
+    permissions: ["s'authentifier par JWT", "envoyer snapshots", "recevoir commandes WebSocket", "sync medias"]
+    description: "Device physique authentifie"
+  - name: "API IA (OpenRouter)"
+    type: "system"
+    permissions: ["recevoir photos", "analyser images", "renvoyer diagnostic JSON"]
+    description: "Service d'analyse IA multimodale"
+  - name: "Shopify"
+    type: "system"
+    permissions: ["fournir catalogue produits", "recevoir fiches clients"]
+    description: "CRM et e-commerce existant du client"
+
+processus_metier:
+  - name: "Workflow seance"
+    description: "Parcours complet d'une seance de soin capillaire en boutique"
+    steps:
+      - "Recherche ou creation fiche client"
+      - "Validation consentement RGPD par le client"
+      - "Activation flux video microscope"
+      - "Analyse AVANT-SOIN : photos + diagnostic IA"
+      - "Realisation du soin capillaire"
+      - "Analyse APRES-SOIN : photos + diagnostic IA"
+      - "Comparaison avant/apres"
+      - "Generation rapport PDF + QR code"
+      - "Client scanne le QR code"
+    criticity: "critical"
+  - name: "Provisioning device"
+    description: "Premier demarrage et configuration d'un miroir neuf"
+    steps:
+      - "Boot Linux sans config reseau"
+      - "Creation hotspot WiFi SmartMirror-Setup-XXXX"
+      - "Formulaire config (SSID, password, Tenant ID)"
+      - "Connexion nmcli au reseau boutique"
+      - "Ping API + enregistrement device + reception JWT"
+      - "Redemarrage en mode kiosk normal"
+    criticity: "critical"
+  - name: "Sync medias"
+    description: "Synchronisation des contenus promotionnels vers le miroir"
+    steps:
+      - "Upload media depuis Panel"
+      - "Stockage Supabase Storage"
+      - "Event WebSocket media:update vers device"
+      - "Comparaison checksums vs cache local"
+      - "Telechargement nouveaux fichiers en background"
+      - "Lecture depuis cache local uniquement"
+    criticity: "medium"
+  - name: "Export Shopify"
+    description: "Export des donnees clients vers le CRM Shopify"
+    steps:
+      - "Selection fiches clients a exporter"
+      - "Correspondance par email"
+      - "Upsert client Shopify API"
+      - "Tag smart-mirror ajoute"
+    criticity: "medium"
+  - name: "Analyse IA"
+    description: "Analyse d'un snapshot par l'IA vision"
+    steps:
+      - "Reception snapshot JPEG"
+      - "Construction contexte (catalogue produits + historique client)"
+      - "Appel OpenRouter API (image + prompt systeme)"
+      - "Validation JSON reponse"
+      - "Verification score confiance"
+      - "Affichage resultat sur miroir"
+    criticity: "critical"
+
+regles_gestion:
+  - id: "RG-001"
+    description: "Aucune capture possible sans consentement RGPD valide et horodate"
+    priority: "critical"
+    regulatory: true
+  - id: "RG-002"
+    description: "Le flux video reste local — ne transite jamais par le cloud"
+    priority: "critical"
+    regulatory: true
+  - id: "RG-003"
+    description: "Isolation multi-tenant par RLS — un tenant ne voit jamais les donnees d'un autre"
+    priority: "critical"
+    regulatory: true
+  - id: "RG-004"
+    description: "Si score IA < 0.60 — afficher analyse non concluante"
+    priority: "high"
+    regulatory: false
+  - id: "RG-005"
+    description: "Medias joues depuis le cache local uniquement, jamais en direct CDN"
+    priority: "high"
+    regulatory: false
+  - id: "RG-006"
+    description: "Snapshots bufferes localement si reseau indisponible, uploades a reconnexion"
+    priority: "high"
+    regulatory: false
+  - id: "RG-007"
+    description: "Device authentifie par JWT, rotation de token"
+    priority: "high"
+    regulatory: false
+  - id: "RG-008"
+    description: "Donnees hebergees en datacenter EU (RGPD)"
+    priority: "critical"
+    regulatory: true
+  - id: "RG-009"
+    description: "Code compatible ARM64 et x86-64 — zero dependances x86-only"
+    priority: "medium"
+    regulatory: false
+  - id: "RG-010"
+    description: "L'analyse IA est un constat cosmetique observationnel, jamais un diagnostic medical"
+    priority: "critical"
+    regulatory: true
+
+edge_cases:
+  - "Microscope debranche en cours de seance"
+  - "Perte WiFi pendant upload snapshot"
+  - "Image floue envoyee a l'API IA"
+  - "Client sans email (champs optionnels marketing)"
+  - "Plusieurs conditions capillaires detectees sur un seul snapshot"
+  - "Provider IA down sur OpenRouter"
+  - "Device sans internet au first boot (pas de hotspot disponible)"
+  - "Deux miroirs dans la meme boutique (multi-device par tenant)"
