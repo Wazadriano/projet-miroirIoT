@@ -8,7 +8,7 @@ maturity_level: "mvp"
 created_at: "2026-03-31"
 source_documents:
   - "CDC_DreamTech.md"
-  - "smart_mirror_specs_techniques.md"
+  - "CDC_Technique_SmartMirror.md"
 
 stack_tech:
   device:
@@ -23,48 +23,55 @@ stack_tech:
     - "X11 + Openbox"
     - "systemd"
   hardware:
-    - "Raspberry Pi 5 8GB (dev/staging)"
-    - "Beelink SER5 MAX (prod recommande)"
-    - "Jiusion 4K microscope USB UVC"
-    - "Ecran tactile 32 pouces IPS 400+ nits"
-    - "Dongle WiFi USB"
+    - "Raspberry Pi 5 8GB (a valider vs Beelink SER5 — PO-01)"
+    - "Jiusion 4K WiFi microscope (Amazon B0CPVH11Z6)"
+    - "Dongle WiFi USB (internet boutique)"
+    - "Boitier Shineworld (sur mesure)"
   backend:
-    - "Bun"
-    - "Hono"
-    - "Zod"
-    - "JWT"
-    - "WebSocket natif Bun"
-  databases:
-    - "Supabase (PostgreSQL)"
-    - "Drizzle ORM"
-    - "Supabase Auth"
-    - "Supabase Storage"
-  frontend:
-    - "React + TypeScript + Tailwind (Panel de controle)"
-    - "Vercel"
-  crm:
-    - "Budibase self-hosted sur Supabase"
-  ai:
+    - "Laravel 11 (PHP 8.3)"
+    - "Sanctum (auth tokens miroir + SPA auth CRM)"
+    - "Eloquent ORM + Global Scopes (multi-tenant)"
+    - "Form Requests (validation)"
+    - "API Resources (JSON responses)"
+  database:
+    - "PostgreSQL 15 (self-hosted Docker)"
+    - "RLS sur tables sensibles"
+    - "Multi-tenant par boutique_id"
+  ai_server:
+    - "Express Node.js 20 LTS (service separe)"
     - "OpenRouter API"
-    - "GPT-4o mini"
-    - "Gemini Flash"
-    - "Claude Haiku"
+    - "Gemini Flash 1.5 (defaut)"
+    - "GPT-4o mini (fallback 1)"
+    - "Claude 3.5 Haiku (fallback 2)"
+  crm:
+    - "React 19 + TypeScript (custom-built)"
+  automation:
+    - "n8n (self-hosted Docker)"
+    - "PDF generation + QR code"
+    - "Email fallback (Brevo SMTP)"
+    - "RGPD cleanup cron"
+  db_interface:
+    - "WebDB (self-hosted Docker, port 127.0.0.1 uniquement)"
   infrastructure:
-    - "Docker"
-    - "Railway ou Fly.io"
-    - "GitHub Actions"
+    - "Docker Compose (tous services sur meme VPS)"
+    - "Scaleway VPS France (DEV1-XL ou GP1-XS)"
+    - "Nginx reverse proxy + Let's Encrypt TLS 1.3"
+    - "LUKS disk encryption"
+    - "GitHub Actions CI/CD"
   constraints:
     - "Compatible ARM64 + x86-64"
     - "Zero dependances x86-only"
-    - "Datacenter EU (RGPD)"
+    - "Datacenter EU France (RGPD art. 44)"
     - "8GB RAM budget (Pi 5)"
+    - "Mirror et CRM ne parlent JAMAIS directement a PostgreSQL"
+    - "Tout passe par l'API Laravel"
 
 pain_points:
   - "Aucune solution existante sur le marche — tout from scratch"
   - "Double WiFi (microscope + internet) — complexite reseau"
   - "Contraintes hardware Pi (8GB RAM, Electron gourmand)"
-  - "Qualification HDS pas tranchee"
-  - "Protocole WiFi Jiusion non verifie"
+  - "Protocole WiFi Jiusion a confirmer (PO-02), plan B USB documente"
+  - "Positionnement cosmetique vs medical — vocabulaire strictement controle"
 root_cause: "Produit nouveau sans precedent — zero reference, zero framework existant"
 
 goals:
@@ -77,29 +84,30 @@ goals:
 success_criteria:
   - "MVP fonctionnel deploye dans 1 boutique K Beauty"
   - "Workflow seance complet de bout en bout"
-  - "Diagnostic IA avec confiance > 70% sur les categories principales"
+  - "Analyse IA avec confiance >= 80% sur les categories principales"
   - "Rapport PDF genere et accessible par QR code"
-  - "Isolation multi-tenant fonctionnelle"
+  - "Isolation multi-tenant fonctionnelle (TC-01)"
+  - "6 tests critiques non-negociables passes (TC-01 a TC-06)"
 
 glossaire:
   seance:
     definition: "Session de soin capillaire en boutique — comprend analyse avant/apres, soin, rapport"
     synonyms: ["session"]
-  snapshot:
+  photo:
     definition: "Photo prise par le praticien depuis le flux microscope, envoyee a l'IA pour analyse"
-    synonyms: ["capture", "photo"]
+    synonyms: ["capture", "snapshot"]
   diagnostic_ia:
-    definition: "Resultat structure de l'analyse d'un snapshot : categorie + score confiance + commentaire + produits recommandes"
+    definition: "Resultat structure de l'analyse d'une photo : categories cosmetiques + score confiance + commentaire + produits recommandes"
     synonyms: ["analyse IA", "resultat IA"]
   rapport_pdf:
-    definition: "Document genere en fin de seance : photos avant/apres, diagnostics IA, recommandations, produits avec liens d'achat"
+    definition: "Document genere par n8n en fin de seance : photos avant/apres, observations, recommandations, produits"
     synonyms: ["rapport", "compte-rendu"]
   consentement_rgpd:
-    definition: "Validation explicite et horodatee par le client avant toute capture — obligatoire"
+    definition: "Validation explicite et horodatee par la cliente avant toute capture — obligatoire, un par seance"
     synonyms: ["consentement"]
-  tenant:
-    definition: "Boutique K Beauty (Nice, Lyon, Cannes) — unite d'isolation multi-tenant"
-    synonyms: ["boutique"]
+  boutique:
+    definition: "Boutique K Beauty (Nice, Lyon, Cannes) — unite d'isolation multi-tenant via boutique_id"
+    synonyms: ["tenant"]
   praticien:
     definition: "Utilisateur principal du miroir — effectue les soins, prend les photos, genere les rapports"
     synonyms: ["praticienne"]
@@ -109,9 +117,9 @@ glossaire:
   provisioning:
     definition: "Premier demarrage du miroir : hotspot WiFi, config reseau, enregistrement device, mode normal"
     synonyms: ["first boot", "setup initial"]
-  panel_de_controle:
-    definition: "Interface web tenant pour piloter le miroir a distance : medias, produits, affichage, commandes"
-    synonyms: ["panel", "dashboard tenant"]
+  crm:
+    definition: "Interface web React pour gerants et collaborateurs — gestion clientes, seances, miroirs, medias, produits"
+    synonyms: ["panel", "back-office"]
 
 acteurs:
   - name: "Praticien"
@@ -121,23 +129,35 @@ acteurs:
   - name: "Client final"
     type: "external"
     permissions: ["valider consentement", "scanner QR code"]
-    description: "Client recevant le soin capillaire"
-  - name: "Tenant admin"
+    description: "Cliente recevant le soin capillaire"
+  - name: "Gerant"
     type: "internal"
-    permissions: ["gerer contenus miroir", "gerer produits", "gerer fiches clients", "exporter vers Shopify", "commander le miroir"]
-    description: "Gerant de boutique via le Panel de controle"
+    permissions: ["gerer contenus miroir", "gerer produits", "gerer fiches clients", "exporter vers Shopify", "configurer miroir", "gerer equipe"]
+    description: "Gerant de boutique via le CRM web"
+  - name: "Collaborateur"
+    type: "internal"
+    permissions: ["consulter fiches clients", "consulter seances"]
+    description: "Employe boutique avec acces lecture seule au CRM"
   - name: "Super admin"
     type: "internal"
-    permissions: ["acces global multi-tenant", "CRM complet", "gestion devices", "statistiques reseau"]
+    permissions: ["acces global multi-boutique", "CRUD boutiques", "gestion complete"]
     description: "Administrateur siege DreamTech / K Beauty"
+  - name: "No-codeur"
+    type: "internal"
+    permissions: ["configurer n8n workflows", "gerer WebDB", "configurer SMTP"]
+    description: "Operateur n8n et WebDB"
   - name: "Miroir (device)"
     type: "system"
-    permissions: ["s'authentifier par JWT", "envoyer snapshots", "recevoir commandes WebSocket", "sync medias"]
+    permissions: ["s'authentifier par Sanctum token", "envoyer photos", "recevoir config par polling", "sync medias"]
     description: "Device physique authentifie"
-  - name: "API IA (OpenRouter)"
+  - name: "Serveur IA (Express)"
     type: "system"
-    permissions: ["recevoir photos", "analyser images", "renvoyer diagnostic JSON"]
-    description: "Service d'analyse IA multimodale"
+    permissions: ["recevoir photos", "appeler OpenRouter", "renvoyer resultat JSON"]
+    description: "Service Express Node.js proxy IA"
+  - name: "n8n"
+    type: "system"
+    permissions: ["generer PDF", "envoyer emails", "nettoyer fichiers RGPD"]
+    description: "Outil d'automatisation du no-codeur, communique exclusivement via API Laravel"
   - name: "Shopify"
     type: "system"
     permissions: ["fournir catalogue produits", "recevoir fiches clients"]
@@ -147,58 +167,70 @@ processus_metier:
   - name: "Workflow seance"
     description: "Parcours complet d'une seance de soin capillaire en boutique"
     steps:
-      - "Recherche ou creation fiche client"
-      - "Validation consentement RGPD par le client"
+      - "Recherche ou creation fiche cliente"
+      - "Validation consentement RGPD par la cliente"
       - "Activation flux video microscope"
-      - "Analyse AVANT-SOIN : photos + diagnostic IA"
+      - "Analyse AVANT-SOIN : photos + analyse IA"
       - "Realisation du soin capillaire"
-      - "Analyse APRES-SOIN : photos + diagnostic IA"
+      - "Analyse APRES-SOIN : photos + analyse IA"
       - "Comparaison avant/apres"
-      - "Generation rapport PDF + QR code"
-      - "Client scanne le QR code"
+      - "Fin seance -> webhook n8n -> generation rapport PDF + QR code"
+      - "Cliente scanne le QR code (ou email fallback apres 1h)"
     criticity: "critical"
   - name: "Provisioning device"
     description: "Premier demarrage et configuration d'un miroir neuf"
     steps:
-      - "Boot Linux sans config reseau"
+      - "Boot Debian 12 sans config reseau"
       - "Creation hotspot WiFi SmartMirror-Setup-XXXX"
-      - "Formulaire config (SSID, password, Tenant ID)"
+      - "Formulaire config (SSID, password, Boutique ID)"
       - "Connexion nmcli au reseau boutique"
-      - "Ping API + enregistrement device + reception JWT"
+      - "Ping Laravel API + enregistrement device (POST /api/auth/mirror/register) + reception Sanctum token"
       - "Redemarrage en mode kiosk normal"
     criticity: "critical"
   - name: "Sync medias"
     description: "Synchronisation des contenus promotionnels vers le miroir"
     steps:
-      - "Upload media depuis Panel"
-      - "Stockage Supabase Storage"
-      - "Event WebSocket media:update vers device"
+      - "Upload media depuis CRM (POST /medias)"
+      - "Stockage serveur /storage/medias/{boutique_id}/"
+      - "Miroir polling GET /api/miroirs/{id}/config toutes les 30 min"
       - "Comparaison checksums vs cache local"
       - "Telechargement nouveaux fichiers en background"
-      - "Lecture depuis cache local uniquement"
+      - "Lecture depuis cache local uniquement (/var/smart-mirror/media/)"
     criticity: "medium"
   - name: "Export Shopify"
     description: "Export des donnees clients vers le CRM Shopify"
     steps:
-      - "Selection fiches clients a exporter"
+      - "Selection fiches clientes a exporter (CRM)"
       - "Correspondance par email"
       - "Upsert client Shopify API"
       - "Tag smart-mirror ajoute"
     criticity: "medium"
   - name: "Analyse IA"
-    description: "Analyse d'un snapshot par l'IA vision"
+    description: "Analyse d'une photo par le serveur IA Express"
     steps:
-      - "Reception snapshot JPEG"
-      - "Construction contexte (catalogue produits + historique client)"
-      - "Appel OpenRouter API (image + prompt systeme)"
+      - "Miroir envoie photo JPEG au serveur Express (avec X-Mirror-Token)"
+      - "Express construit contexte (catalogue produits + historique client)"
+      - "Appel OpenRouter API (image base64 + prompt systeme)"
       - "Validation JSON reponse"
-      - "Verification score confiance"
-      - "Affichage resultat sur miroir"
+      - "Verification score confiance (force non-concluant si < 60%)"
+      - "Retour resultat au miroir"
+      - "Miroir poste le resultat a Laravel (POST /api/photos/{id}/diagnostic)"
+    criticity: "critical"
+  - name: "Generation rapport PDF"
+    description: "Generation automatique du rapport par n8n"
+    steps:
+      - "Webhook depuis Laravel (fin de seance)"
+      - "n8n recupere donnees via API"
+      - "Generation PDF depuis template graphiste"
+      - "Sauvegarde /storage/rapports/{boutique_id}/{seance_id}.pdf"
+      - "Generation QR code (token signe, expire 30 jours)"
+      - "PATCH /api/n8n/seances/{id}/rapport"
+      - "Retour QR au miroir"
     criticity: "critical"
 
 regles_gestion:
   - id: "RG-001"
-    description: "Aucune capture possible sans consentement RGPD valide et horodate"
+    description: "Aucune capture possible sans consentement RGPD valide et horodate — contrainte API, pas seulement UI"
     priority: "critical"
     regulatory: true
   - id: "RG-002"
@@ -206,27 +238,27 @@ regles_gestion:
     priority: "critical"
     regulatory: true
   - id: "RG-003"
-    description: "Isolation multi-tenant par RLS — un tenant ne voit jamais les donnees d'un autre"
+    description: "Isolation multi-tenant par boutique_id Global Scope + RLS — une boutique ne voit jamais les donnees d'une autre"
     priority: "critical"
     regulatory: true
   - id: "RG-004"
-    description: "Si score IA < 0.60 — afficher analyse non concluante"
+    description: "Si score IA < 60% — afficher 'Analyse non concluante' avec raison"
     priority: "high"
     regulatory: false
   - id: "RG-005"
-    description: "Medias joues depuis le cache local uniquement, jamais en direct CDN"
+    description: "Medias joues depuis le cache local uniquement, jamais en direct serveur"
     priority: "high"
     regulatory: false
   - id: "RG-006"
-    description: "Snapshots bufferes localement si reseau indisponible, uploades a reconnexion"
+    description: "Photos bufferees localement si reseau indisponible, uploadees a reconnexion"
     priority: "high"
     regulatory: false
   - id: "RG-007"
-    description: "Device authentifie par JWT, rotation de token"
+    description: "Device authentifie par Sanctum token"
     priority: "high"
     regulatory: false
   - id: "RG-008"
-    description: "Donnees hebergees en datacenter EU (RGPD)"
+    description: "Donnees hebergees en datacenter EU France (RGPD art. 44)"
     priority: "critical"
     regulatory: true
   - id: "RG-009"
@@ -234,16 +266,31 @@ regles_gestion:
     priority: "medium"
     regulatory: false
   - id: "RG-010"
-    description: "L'analyse IA est un constat cosmetique observationnel, jamais un diagnostic medical"
+    description: "L'analyse IA est un constat cosmetique observationnel, JAMAIS un diagnostic medical. Termes interdits: diagnostic, pathologie, maladie, traitement, inflammation, alopecie"
     priority: "critical"
     regulatory: true
 
+tests_critiques:
+  - id: "TC-01"
+    description: "Isolation boutiques — un gerant ne peut acceder aux donnees d'une autre boutique via aucun endpoint"
+  - id: "TC-02"
+    description: "Consentement obligatoire — API retourne 422 si POST /api/seances sans consentement_id valide"
+  - id: "TC-03"
+    description: "Sync offline photos — photos synced=false uploadees integralement a la reconnexion sans perte ni duplication"
+  - id: "TC-04"
+    description: "Auth miroir + Express — token expire rejete (401 Laravel), appel Express sans X-Mirror-Token rejete (401)"
+  - id: "TC-05"
+    description: "Validation IA — reponse malformee OpenRouter interceptee sans crash, erreur propre retournee au miroir"
+  - id: "TC-06"
+    description: "Fallback email n8n — seance avec email, QR non scanne apres 1h, email_envoye=false declenche email et met a jour via API"
+
 edge_cases:
   - "Microscope debranche en cours de seance"
-  - "Perte WiFi pendant upload snapshot"
-  - "Image floue envoyee a l'API IA"
-  - "Client sans email (champs optionnels marketing)"
-  - "Plusieurs conditions capillaires detectees sur un seul snapshot"
+  - "Perte WiFi pendant upload photo"
+  - "Image floue envoyee au serveur IA"
+  - "Cliente sans email (champs optionnels)"
+  - "Plusieurs categories cosmetiques detectees sur une seule photo"
   - "Provider IA down sur OpenRouter"
-  - "Device sans internet au first boot (pas de hotspot disponible)"
-  - "Deux miroirs dans la meme boutique (multi-device par tenant)"
+  - "Device sans internet au first boot"
+  - "Deux miroirs dans la meme boutique (multi-device par boutique)"
+  - "QR code scanne apres expiration du lien (30 jours)"

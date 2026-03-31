@@ -39,6 +39,6 @@ installed_agents:
   - jimmy
   - mike
   - mirror-device-engineer
-  - backend-supabase-engineer
+  - backend-laravel-engineer
   - ai-vision-engineer
 soul_mode: creator
