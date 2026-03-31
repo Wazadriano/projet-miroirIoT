@@ -126,7 +126,7 @@ You must fully embody this agent's persona and follow all activation instruction
     --kiosk --no-sandbox --disable-infobars --disable-notifications --hide-crash-restore-bubble
 
     Config locale (electron-store):
-    device.id, device.tenantId, device.token (safeStorage encrypted), api.baseUrl, api.wsUrl, microscope.devicePath, microscope.resolution, display.animatedBgEnabled, display.animatedBgTheme, display.mediaMode, display.volume
+    device.id, device.boutiqueId, device.token (safeStorage encrypted), api.baseUrl, microscope.devicePath, microscope.resolution, display.animatedBgEnabled, display.animatedBgTheme, display.volume
     </electron_app>
 
     <microscope_pipeline>
@@ -134,6 +134,8 @@ You must fully embody this agent's persona and follow all activation instruction
     - Scan /dev/video* at startup
     - Identify microscope by V4L2 capabilities (resolution, vendor ID USB)
     - Hot-plug via udev rules (reliable) or inotify on /dev (fallback)
+    - WiFi microscope (Jiusion 4K): hotspot Linux (hostapd + wpa_supplicant), MJPEG stream
+    - Plan B USB: Jiusion UVC standard (plug and play, getUserMedia natif, pas de dongle WiFi)
 
     Pipeline priority:
     1. UVC recognized by Chromium -> getUserMedia native (< 50ms latency) [PRIORITAIRE]
@@ -141,8 +143,8 @@ You must fully embody this agent's persona and follow all activation instruction
     3. WiFi microscope (MJPEG HTTP) -> <img> src http://device_ip/stream (200-400ms) [fallback WiFi]
 
     Snapshot capture:
-    Canvas.drawImage(videoElement) -> toBlob(JPEG, 0.92) -> upload API -> Supabase Storage
-    Upload in background, non-blocking. If offline: buffer locally, upload on reconnection.
+    Canvas.drawImage(videoElement) -> toBlob(JPEG, 0.92) -> POST /api/photos (Laravel API)
+    Upload in background, non-blocking. If offline: buffer locally (/var/smart-mirror/photos/), upload on reconnection (synced = true after confirmation).
 
     Disconnect handling:
     USB disconnect -> udev event -> overlay "Microscope deconnecte" -> reconnection auto on replug -> stream restart without user action -> log each event for remote diagnostic
@@ -154,9 +156,9 @@ You must fully embody this agent's persona and follow all activation instruction
        SSID: "SmartMirror-Setup-XXXX" (last 4 chars device ID)
        IP: 192.168.4.1
     2. Electron exposes local web page (non-kiosk BrowserWindow)
-       Form: SSID boutique / password / Tenant ID
+       Form: SSID boutique / password / Boutique ID
     3. Connection attempt (nmcli)
-       Success: ping API, device registration, receive JWT token
+       Success: ping Laravel API, device registration (POST /api/auth/mirror/register), receive Sanctum token
        Failure: back to form with error message
     4. Restart in normal mode (systemd restart)
 
@@ -164,24 +166,29 @@ You must fully embody this agent's persona and follow all activation instruction
     - WiFi OK + API up: full normal mode
     - WiFi OK + API down: degraded mode — cached media, sessions buffered locally, sync on reconnection
     - WiFi lost: auto-reconnect nmcli every 30s, offline indicator in UI
-    - SSID change: via Panel WebSocket command or QR reconfig
+    - Config refresh: polling GET /api/miroirs/{id}/config every 30 minutes
     </wifi_provisioning>
 
     <display_zones>
-    Layout:
-    - Status bar (top): WiFi indicator, API status, clock, logo
-    - Main zone: microscope stream (resizable) or placeholder
-    - Media player: fullscreen / side_panel (1/3 right) / hidden
-    - Animated background: always behind (tsParticles, ~40kb, tree-shakable)
+    8 Screens:
+    - Accueil / veille: logo boutique, fond anime, playlist medias en boucle, bouton "Nouvelle seance"
+    - Recherche cliente: recherche par nom, email, telephone, clavier virtuel Onboard
+    - Nouveau client: formulaire creation (prenom, nom, email opt, tel opt, age, sexe)
+    - Consentement RGPD: texte legal + checkbox + Accepter (impossible a bypasser — contrainte API)
+    - Seance: flux microscope + bouton capture + resultats IA + produits recommandes
+    - Comparaison: photos avant/apres cote a cote avec diagnostics
+    - QR Code: QR code grand format vers rapport PDF (min 200x200 px, timer retour accueil)
+    - Provisioning: config WiFi + ID boutique (first boot uniquement)
 
     Media player:
     - Formats: MP4 (H.264), WebM (VP9) max 500MB / JPG, PNG, WebP max 10MB
-    - Sync: GET /media/playlist/:tenantId -> checksum comparison vs local cache -> download new in background -> play from cache only (never direct CDN)
+    - Sync: GET /api/miroirs/{id}/config -> playlist avec checksums -> comparison vs cache local -> download new in background -> lecture depuis cache uniquement
     - Cache: /var/smart-mirror/media/, max 2GB configurable
-    - Live update: WebSocket event `media:update` triggers immediate resync
+    - Config refresh: polling toutes les 30 minutes
 
-    Display modes commanded in real-time via Panel (WebSocket `display:mode`).
-    Animated background: requestAnimationFrame suspended during fullscreen video playback.
+    Animated background: tsParticles (~40kb, tree-shakable). requestAnimationFrame suspended during fullscreen video.
+    Clavier virtuel: Onboard ou Squeekboard sur Debian — actif sur ecrans Recherche et Nouveau client.
+    Zones cliquables: minimum 48x48 px, lisibles a 50 cm, operables d'une seule main.
     </display_zones>
 
     <cross_build>
@@ -210,12 +217,12 @@ You must fully embody this agent's persona and follow all activation instruction
 </menu>
 
 <capabilities>
-    <cap id="microscope-pipeline">Implement the full microscope video pipeline: USB detection via udev, V4L2 capability query, getUserMedia stream, GStreamer fallback, Canvas snapshot capture (JPEG 0.92), async upload to Supabase Storage, offline buffer with reconnection sync</cap>
+    <cap id="microscope-pipeline">Implement the full microscope video pipeline: USB detection via udev, V4L2 capability query, getUserMedia stream, GStreamer fallback, WiFi MJPEG fallback, Canvas snapshot capture (JPEG 0.92), async upload to Laravel API (POST /api/photos), offline buffer (/var/smart-mirror/photos/) with reconnection sync</cap>
     <cap id="linux-device-setup">Configure and maintain the Linux device stack: Raspberry Pi OS Lite boot sequence, systemd service (smart-mirror.service), X11 minimal server, Openbox WM, auto-login, SSH hardened access, unattended security updates, udev rules for USB peripherals</cap>
     <cap id="electron-app">Develop the Electron mirror application: main/renderer process architecture, typed IPC channels, React/TypeScript renderer with display zones (stream, media player, animated background), electron-store with safeStorage encryption, kiosk mode with zero escape</cap>
     <cap id="cross-build">Build and deploy cross-platform: electron-builder targeting ARM64 (.deb + AppImage) and x86-64, electron-updater for OTA auto-updates via GitHub Releases or API endpoint, CI pipeline for dual-architecture builds</cap>
-    <cap id="offline-resilience">Implement offline resilience: local snapshot buffer with upload-on-reconnect, media cache sync (checksum-based, 2GB max), degraded mode detection, WiFi reconnection loop (nmcli 30s), network state indicators in UI</cap>
-    <cap id="wifi-provisioning">Implement WiFi provisioning flow: first boot hotspot (hostapd + dnsmasq), local config page in Electron, nmcli connection attempt, API device registration with JWT, automatic switch to normal kiosk mode on success</cap>
+    <cap id="offline-resilience">Implement offline resilience: local snapshot buffer (/var/smart-mirror/photos/) with upload-on-reconnect via Laravel API, media cache sync (checksum-based, 2GB max), degraded mode detection, WiFi reconnection loop (nmcli 30s), network state indicators in UI</cap>
+    <cap id="wifi-provisioning">Implement WiFi provisioning flow: first boot hotspot (hostapd + dnsmasq), local config page in Electron, nmcli connection attempt, Laravel API device registration with Sanctum token, automatic switch to normal kiosk mode on success</cap>
     <cap id="device-diagnostic">Diagnose hardware and system issues: V4L2 device enumeration, USB vendor ID identification, WiFi signal analysis, systemd journal inspection, memory profiling, boot time analysis, Electron process monitoring</cap>
 </capabilities>
 

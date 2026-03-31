@@ -35,7 +35,7 @@ Quand un utilisateur decrit une tache, Hermes recommande le bon agent:
 | brainstorm, idees, innovation | brainstorming-coach (Carson) |
 | optimiser, tokens, performance | carmack (Optimizer) |
 | miroir, electron, kiosk, linux, raspberry, device, boot, microscope, udev, systemd, video stream, V4L2 | mirror-device-engineer (Orion) |
-| backend, api, supabase, hono, bun, schema, migration, rls, multi-tenant, websocket, drizzle, shopify | backend-supabase-engineer (Nadia) |
+| backend, api, laravel, php, sanctum, eloquent, schema, migration, rls, multi-tenant, docker, n8n, shopify | backend-laravel-engineer (Nadia) |
 | ia, vision, prompt, openrouter, llm, diagnostic, analyse capillaire, cuir chevelu, benchmark modele, confiance | ai-vision-engineer (Iris) |
 | panel, controle, dashboard tenant, react web | dev (Amelia) |
 
