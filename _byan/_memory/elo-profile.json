@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "updated_at": "2026-03-31T00:00:00.000Z",
+  "domains": {
+    "javascript": {
+      "rating": 800,
+      "rd": 100,
+      "history": [
+        {
+          "date": "2026-02-19",
+          "result": "VALIDATED",
+          "delta": 61,
+          "blocked_reason": null,
+          "excerpt": ""
+        },
+        {
+          "date": "2026-03-31",
+          "result": "VALIDATED",
+          "delta": 89,
+          "blocked_reason": null,
+          "excerpt": "self-declared senior — multiple rich JS projects"
+        }
+      ],
+      "blocked_streak": 0,
+      "consecutive_correct": 2,
+      "first_claim_made": true,
+      "session_count": 1,
+      "last_active": "2026-03-31",
+      "provisional_rating": 800
+    },
+    "security": {
+      "rating": 0,
+      "rd": 210,
+      "history": [
+        {
+          "date": "2026-02-19",
+          "result": "BLOCKED",
+          "delta": 0,
+          "blocked_reason": "terminology_gap",
+          "excerpt": ""
+        }
+      ],
+      "blocked_streak": 1,
+      "consecutive_correct": 0,
+      "first_claim_made": true,
+      "session_count": 0,
+      "last_active": "2026-02-19",
+      "provisional_rating": null
+    }
+  }
+}
