@@ -1,0 +1,16 @@
+{
+  "name": "smart-mirror-mock-api",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mock API simulating Laravel backend + Express IA proxy for mirror dev",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "cors": "^2.8.5",
+    "pg": "^8.13.0",
+    "uuid": "^11.0.0"
+  }
+}

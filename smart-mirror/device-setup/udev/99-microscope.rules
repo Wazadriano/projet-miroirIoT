@@ -1,0 +1,9 @@
+# Smart Mirror - Microscope USB hot-plug rules
+# Detects USB Video Class (UVC) devices and sets permissions for the mirror user
+
+# Generic UVC device - set permissions
+ACTION=="add", SUBSYSTEM=="video4linux", ATTR{index}=="0", TAG+="systemd", ENV{SYSTEMD_WANTS}="smart-mirror-microscope@%k.service"
+ACTION=="remove", SUBSYSTEM=="video4linux", TAG+="systemd"
+
+# Grant access to mirror user for all video devices
+SUBSYSTEM=="video4linux", GROUP="video", MODE="0660"

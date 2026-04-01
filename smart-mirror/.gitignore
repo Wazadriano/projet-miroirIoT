@@ -1,0 +1,21 @@
+node_modules/
+dist/
+out/
+.env
+*.AppImage
+*.deb
+
+# Electron
+mirror-app/out/
+mirror-app/dist/
+
+# Dev data
+.smart-mirror-photos/
+.smart-mirror-sync-queue.json
+
+# Docker
+pgdata/
+
+# OS
+.DS_Store
+Thumbs.db

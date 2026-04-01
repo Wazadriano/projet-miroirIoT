@@ -1,0 +1,26 @@
+[Unit]
+Description=Smart Mirror Electron Application
+After=graphical.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mirror
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/mirror/.Xauthority
+Environment=NODE_ENV=production
+WorkingDirectory=/opt/smart-mirror
+ExecStart=/opt/smart-mirror/SmartMirror.AppImage --kiosk --no-sandbox --disable-infobars --disable-notifications --hide-crash-restore-bubble
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Security hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/smart-mirror /home/mirror/.config
+PrivateTmp=true
+
+[Install]
+WantedBy=graphical.target

@@ -1,0 +1,11 @@
+# Openbox autostart - Smart Mirror kiosk mode
+# Disable screen blanking and power management
+xset s off
+xset -dpms
+xset s noblank
+
+# Hide cursor after 3 seconds of inactivity
+unclutter -idle 3 -root &
+
+# Start the smart mirror service (managed by systemd)
+# The actual app launch is handled by smart-mirror.service
