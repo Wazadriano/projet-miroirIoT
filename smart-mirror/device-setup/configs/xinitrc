@@ -1,0 +1,10 @@
+#!/bin/sh
+# X11 session init for Smart Mirror kiosk
+
+# Disable screen saver and power management
+xset s off
+xset -dpms
+xset s noblank
+
+# Start Openbox window manager
+exec openbox-session

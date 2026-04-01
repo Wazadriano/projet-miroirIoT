@@ -1,0 +1,46 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: smartmirror
+      POSTGRES_USER: smartmirror
+      POSTGRES_PASSWORD: smartmirror_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./mock-api/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smartmirror"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mock-api:
+    build:
+      context: ./mock-api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+      - "3001:3001"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: smartmirror
+      DB_USER: smartmirror
+      DB_PASSWORD: smartmirror_dev
+      MOCK_API_PORT: 8000
+      MOCK_IA_PORT: 3001
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
