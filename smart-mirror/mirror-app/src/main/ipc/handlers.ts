@@ -62,8 +62,11 @@ export function registerIpcHandlers(services: Services): void {
     const data = args[0] as {
       ssid: string; password: string; boutiqueId: string; apiBaseUrl: string
     }
-    const connected = await wifiService.connect(data.ssid, data.password)
-    if (!connected) return { success: false, error: 'WiFi connection failed' }
+    const ssid = data.ssid?.trim()
+    if (ssid) {
+      const connected = await wifiService.connect(ssid, data.password)
+      if (!connected) return { success: false, error: 'WiFi connection failed' }
+    }
 
     const result = await apiClient.registerDevice(data.boutiqueId)
     configService.provision({
@@ -165,18 +168,38 @@ export function registerIpcHandlers(services: Services): void {
   // --- Microscope ---
 
   safeHandle('microscope:getDevice', () => {
-    return microscopeService.getCurrentDevice()
+    return {
+      connected: microscopeService.isConnected(),
+      streamUrl: microscopeService.getStreamUrl(),
+      snapshotUrl: microscopeService.getSnapshotUrl()
+    }
   })
 
-  microscopeService.on('connected', (device) => {
+  safeHandle('microscope:connect', async () => {
+    microscopeService.connect()
+    return { success: true }
+  })
+
+  safeHandle('microscope:disconnect', () => {
+    microscopeService.disconnect()
+    return { success: true }
+  })
+
+  safeHandle('microscope:snapshot', async () => {
+    const frame = await microscopeService.captureSnapshotAsync()
+    if (frame.length === 0) return { success: false, error: 'No frame available' }
+    return { success: true, imageBase64: frame.toString('base64') }
+  })
+
+  microscopeService.on('connected', (info) => {
     BrowserWindow.getAllWindows().forEach(w =>
-      w.webContents.send('microscope:status', { connected: true, device })
+      w.webContents.send('microscope:status', { connected: true, ...info })
     )
   })
 
   microscopeService.on('disconnected', () => {
     BrowserWindow.getAllWindows().forEach(w =>
-      w.webContents.send('microscope:status', { connected: false, device: null })
+      w.webContents.send('microscope:status', { connected: false, streamUrl: null })
     )
   })
 
