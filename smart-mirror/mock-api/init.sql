@@ -159,3 +159,10 @@ INSERT INTO produits (boutique_id, nom, description, prix, tags) VALUES
     ('a1b2c3d4-0001-4000-8000-000000000001', 'Shampoing Hydratant K-Beauty', 'Soin hydratant pour cuir chevelu sec', 24.90, ARRAY['hydratation', 'cuir_chevelu_sec']),
     ('a1b2c3d4-0001-4000-8000-000000000001', 'Masque Revitalisant', 'Masque intensif pour cheveux abimes', 32.50, ARRAY['revitalisant', 'cheveux_abimes']),
     ('a1b2c3d4-0001-4000-8000-000000000001', 'Serum Anti-Pelliculaire', 'Traitement anti-pelliculaire doux', 19.90, ARRAY['antipelliculaire', 'cuir_chevelu_gras']);
+
+-- Seed: medias de test (images placeholder pour la playlist)
+INSERT INTO medias (boutique_id, type, nom_fichier, chemin_serveur, taille_octets, checksum, actif, ordre_affichage) VALUES
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'image', 'promo-soin-hydratant.jpg', 'https://placehold.co/1920x1080/1a1a2e/e0e0e0?text=Soin+Hydratant+K-Beauty', 102400, 'placeholder-1', TRUE, 1),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'image', 'promo-masque.jpg', 'https://placehold.co/1920x1080/2d1b69/e0e0e0?text=Masque+Revitalisant', 102400, 'placeholder-2', TRUE, 2),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'image', 'promo-serum.jpg', 'https://placehold.co/1920x1080/0d2137/e0e0e0?text=Serum+Anti-Pelliculaire', 102400, 'placeholder-3', TRUE, 3),
+    ('a1b2c3d4-0002-4000-8000-000000000002', 'image', 'promo-lyon.jpg', 'https://placehold.co/1920x1080/1a1a2e/e0e0e0?text=K+Beauty+Lyon', 102400, 'placeholder-4', TRUE, 1);

@@ -57,7 +57,7 @@ api.post('/api/auth/mirror/register', async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'No mirror found for this boutique' });
     }
-    res.json({ token, mirror: result.rows[0] });
+    res.json({ data: { token, mirror: result.rows[0] } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
