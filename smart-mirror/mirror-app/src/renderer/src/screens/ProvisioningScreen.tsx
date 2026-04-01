@@ -8,8 +8,19 @@ export function ProvisioningScreen(): JSX.Element {
     ssid: '',
     password: '',
     boutiqueId: '',
-    apiBaseUrl: 'http://localhost:8000/api'
+    apiBaseUrl: ''
   })
+
+  useEffect(() => {
+    window.mirrorApi.getConfig().then((config: unknown) => {
+      const c = config as { api?: { baseUrl?: string }; device?: { boutiqueId?: string } }
+      setForm(prev => ({
+        ...prev,
+        apiBaseUrl: c?.api?.baseUrl || prev.apiBaseUrl,
+        boutiqueId: c?.device?.boutiqueId || prev.boutiqueId
+      }))
+    })
+  }, [])
   const [step, setStep] = useState<'wifi' | 'config' | 'connecting' | 'done' | 'error'>('wifi')
   const [error, setError] = useState('')
   const [scanning, setScanning] = useState(false)
@@ -84,9 +95,9 @@ export function ProvisioningScreen(): JSX.Element {
           <div style={{ width: '100%', maxWidth: '500px', maxHeight: '400px', overflowY: 'auto' }}>
             {scanning && <p style={{ color: 'var(--color-text-muted)', textAlign: 'center' }}>Recherche des reseaux...</p>}
 
-            {networks.map((net) => (
+            {networks.map((net, index) => (
               <button
-                key={net.ssid}
+                key={`${net.ssid}-${index}`}
                 className="card"
                 onClick={() => selectNetwork(net.ssid)}
                 style={{
@@ -105,9 +116,14 @@ export function ProvisioningScreen(): JSX.Element {
             ))}
           </div>
 
-          <button className="btn-secondary" onClick={scanNetworks} disabled={scanning}>
-            Rafraichir
-          </button>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button className="btn-secondary" onClick={scanNetworks} disabled={scanning}>
+              Rafraichir
+            </button>
+            <button className="btn-secondary" onClick={() => setStep('config')}>
+              Configuration manuelle
+            </button>
+          </div>
         </>
       )}
 
@@ -118,7 +134,11 @@ export function ProvisioningScreen(): JSX.Element {
               <label style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)', marginBottom: '4px', display: 'block' }}>
                 Reseau WiFi
               </label>
-              <input value={form.ssid} readOnly style={{ opacity: 0.7 }} />
+              <input
+                value={form.ssid}
+                placeholder="SSID ou laisser vide"
+                onChange={(e) => setForm(prev => ({ ...prev, ssid: e.target.value }))}
+              />
             </div>
 
             <div>

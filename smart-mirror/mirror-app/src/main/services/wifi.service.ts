@@ -43,7 +43,7 @@ export class WifiService extends EventEmitter {
         timeout: 10000
       })
 
-      return output
+      const networks = output
         .split('\n')
         .filter(Boolean)
         .map(line => {
@@ -51,6 +51,15 @@ export class WifiService extends EventEmitter {
           return { ssid, signal: parseInt(signal || '0'), security: security || 'open' }
         })
         .filter(n => n.ssid)
+
+      const deduped = new Map<string, WifiNetwork>()
+      for (const net of networks) {
+        const existing = deduped.get(net.ssid)
+        if (!existing || net.signal > existing.signal) {
+          deduped.set(net.ssid, net)
+        }
+      }
+      return Array.from(deduped.values()).sort((a, b) => b.signal - a.signal)
     } catch {
       return [{ ssid: 'dev-network', signal: 100, security: 'WPA2' }]
     }

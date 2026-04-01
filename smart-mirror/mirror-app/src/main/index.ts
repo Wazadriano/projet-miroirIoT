@@ -21,7 +21,7 @@ const updaterService = new UpdaterService()
 const wifiService = new WifiService()
 
 function createWindow(): void {
-  const isKiosk = !is.dev
+  const isKiosk = !is.dev || process.env.FORCE_KIOSK === '1' || process.argv.includes('--kiosk')
 
   mainWindow = new BrowserWindow({
     width: 1920,
@@ -37,6 +37,11 @@ function createWindow(): void {
       nodeIntegration: false
     }
   })
+
+  // Auto-grant camera/media permissions (kiosk has no dialog)
+  mainWindow.webContents.session.setPermissionRequestHandler(
+    (_wc, permission, callback) => callback(['media', 'mediaKeySystem'].includes(permission))
+  )
 
   mainWindow.on('ready-to-show', () => {
     mainWindow?.show()
@@ -78,6 +83,11 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+
+// Prevent uncaught errors from crashing the app
+process.on('uncaughtException', (err) => {
+  console.error('[Main] Uncaught exception:', err.message)
+})
 
 app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.dreamtech.smartmirror')

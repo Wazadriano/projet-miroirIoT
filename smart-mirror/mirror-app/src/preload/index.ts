@@ -39,9 +39,15 @@ const api = {
     ipcRenderer.invoke('photo:loadFullRes', localPath),
 
   // Microscope
-  getMicroscopeDevice: (): Promise<{ path: string; name: string; isUvc: boolean } | null> =>
+  getMicroscopeDevice: (): Promise<{ connected: boolean; streamUrl: string; snapshotUrl: string }> =>
     ipcRenderer.invoke('microscope:getDevice'),
-  onMicroscopeStatus: (callback: (status: { connected: boolean; device: unknown }) => void): void => {
+  connectMicroscope: (ip?: string): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke('microscope:connect', ip),
+  disconnectMicroscope: (): Promise<{ success: boolean }> =>
+    ipcRenderer.invoke('microscope:disconnect'),
+  captureMicroscopeSnapshot: (): Promise<{ success: boolean; imageBase64?: string; error?: string }> =>
+    ipcRenderer.invoke('microscope:snapshot'),
+  onMicroscopeStatus: (callback: (status: { connected: boolean; streamUrl?: string }) => void): void => {
     ipcRenderer.on('microscope:status', (_event, status) => callback(status))
   },
 

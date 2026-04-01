@@ -89,14 +89,14 @@ export class ConfigService {
     const encrypted = this.store.get('device.token')
     if (!encrypted) return ''
     if (!safeStorage.isEncryptionAvailable()) {
-      console.error('[ConfigService] safeStorage unavailable - token cannot be decrypted')
-      return ''
+      // Dev/VM env without keyring: token stored as plaintext
+      return encrypted as string
     }
     try {
-      return safeStorage.decryptString(Buffer.from(encrypted, 'base64'))
+      return safeStorage.decryptString(Buffer.from(encrypted as string, 'base64'))
     } catch {
-      // Token was stored before safeStorage was available (dev env)
-      return encrypted
+      // Token was stored before safeStorage was available
+      return encrypted as string
     }
   }
 

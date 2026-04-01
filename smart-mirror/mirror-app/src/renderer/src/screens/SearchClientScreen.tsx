@@ -39,7 +39,7 @@ export function SearchClientScreen(): JSX.Element {
 
   return (
     <div className="screen" style={{ paddingTop: '80px', justifyContent: 'flex-start', gap: '24px' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>Rechercher une cliente</h2>
+      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>Rechercher un client</h2>
 
       <div style={{ width: '100%', maxWidth: '600px' }}>
         <input
@@ -97,7 +97,7 @@ export function SearchClientScreen(): JSX.Element {
           Retour
         </button>
         <button className="btn-primary" onClick={() => setScreen('new-client')}>
-          Nouvelle cliente
+          Nouveau client
         </button>
       </div>
     </div>

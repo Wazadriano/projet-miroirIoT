@@ -6,75 +6,98 @@ export function SessionScreen(): JSX.Element {
     cliente, seance, microscopeConnected, photosAvant, photosApres,
     setScreen, addPhoto, setLastCapture, updatePhotoDiagnostic
   } = useSessionStore()
-  const videoRef = useRef<HTMLVideoElement>(null)
+  const imgRef = useRef<HTMLImageElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [streamActive, setStreamActive] = useState(false)
+  const [streamUrl, setStreamUrl] = useState<string | null>(null)
   const [phase, setPhase] = useState<'avant' | 'apres'>('avant')
   const [capturing, setCapturing] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [lastDiagnostic, setLastDiagnostic] = useState<Diagnostic | null>(null)
-  const streamRef = useRef<MediaStream | null>(null)
+
+  const checkStreamReady = useCallback(async (retries = 10): Promise<void> => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const res = await fetch('http://localhost:9100/snapshot.jpg', { method: 'HEAD' })
+        if (res.ok) {
+          setStreamUrl('http://localhost:9100/stream.mjpg')
+          setStreamActive(true)
+          return
+        }
+      } catch { /* not ready yet */ }
+      await new Promise(r => setTimeout(r, 1000))
+    }
+    setStreamActive(false)
+  }, [])
 
   const startStream = useCallback(async (): Promise<void> => {
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices()
-      const videoDevices = devices.filter(d => d.kind === 'videoinput')
-
-      const microscope = videoDevices.find(d =>
-        !d.label.toLowerCase().includes('built-in') &&
-        !d.label.toLowerCase().includes('integrated') &&
-        !d.label.toLowerCase().includes('facetime')
-      ) || videoDevices[0]
-
-      if (!microscope) return
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: { exact: microscope.deviceId },
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-          frameRate: { ideal: 30 }
-        }
-      })
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        streamRef.current = stream
-        setStreamActive(true)
+      const device = await window.mirrorApi.getMicroscopeDevice()
+      if (device?.connected) {
+        await checkStreamReady()
+      } else {
+        await window.mirrorApi.connectMicroscope()
+        // Poll until stream is ready
+        await checkStreamReady()
       }
     } catch {
       setStreamActive(false)
     }
-  }, [])
+  }, [checkStreamReady])
 
   useEffect(() => {
     startStream()
-    return () => {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(t => t.stop())
+
+    window.mirrorApi.onMicroscopeStatus((status) => {
+      if (status.connected && status.streamUrl) {
+        setStreamUrl(status.streamUrl)
+        setStreamActive(true)
+      } else {
+        setStreamActive(false)
+        setStreamUrl(null)
       }
+    })
+
+    return () => {
+      window.mirrorApi.disconnectMicroscope()
     }
   }, [startStream])
 
+  const makeThumbnail = (base64: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image()
+      img.onload = (): void => {
+        const canvas = document.createElement('canvas')
+        const scale = 80 / Math.max(img.width, img.height)
+        canvas.width = img.width * scale
+        canvas.height = img.height * scale
+        const ctx = canvas.getContext('2d')
+        if (ctx) ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        resolve(canvas.toDataURL('image/jpeg', 0.6).split(',')[1])
+      }
+      img.onerror = () => resolve(base64.substring(0, 500))
+      img.src = `data:image/jpeg;base64,${base64}`
+    })
+  }
+
   const handleCapture = async (): Promise<void> => {
-    if (!videoRef.current || !canvasRef.current || !seance) return
+    if (!seance) {
+      console.warn('No active session for capture')
+      return
+    }
 
     setCapturing(true)
-    const video = videoRef.current
-    const canvas = canvasRef.current
-    canvas.width = video.videoWidth
-    canvas.height = video.videoHeight
 
-    const ctx = canvas.getContext('2d')
-    if (!ctx) { setCapturing(false); return }
-    ctx.drawImage(video, 0, 0)
+    // Capture via IPC snapshot (high quality, from main process)
+    const snapshot = await window.mirrorApi.captureMicroscopeSnapshot()
+    if (!snapshot.success || !snapshot.imageBase64) {
+      console.warn('Snapshot failed:', snapshot.error)
+      setCapturing(false)
+      return
+    }
 
-    // Efficient base64 encoding via canvas dataURL
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.92)
-    const base64 = dataUrl.split(',')[1]
-
-    // Generate small thumbnail for store (saves RAM)
-    const thumbnailBase64 = generateThumbnail(canvas)
+    const base64 = snapshot.imageBase64
+    const thumbnailBase64 = await makeThumbnail(base64)
 
     try {
       const { localPath, photoId } = await window.mirrorApi.savePhoto({
@@ -132,19 +155,27 @@ export function SessionScreen(): JSX.Element {
       }}>
         {/* Video stream area */}
         <div style={{ flex: 2, position: 'relative' }}>
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            style={{
+          {streamUrl ? (
+            <img
+              ref={imgRef}
+              src={streamUrl}
+              alt="Microscope"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                background: '#111',
+                borderRadius: 'var(--radius)'
+              }}
+            />
+          ) : (
+            <div style={{
               width: '100%',
               height: '100%',
-              objectFit: 'contain',
               background: '#111',
               borderRadius: 'var(--radius)'
-            }}
-          />
+            }} />
+          )}
           <canvas ref={canvasRef} style={{ display: 'none' }} />
 
           {!streamActive && !microscopeConnected && (
@@ -197,7 +228,7 @@ export function SessionScreen(): JSX.Element {
           overflowY: 'auto'
         }}>
           <div className="card">
-            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Cliente</p>
+            <p style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>Client</p>
             <p style={{ fontSize: '1.1rem' }}>{cliente?.prenom} {cliente?.nom}</p>
           </div>
 

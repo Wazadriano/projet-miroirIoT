@@ -47,7 +47,7 @@ export function NewClientScreen(): JSX.Element {
 
   return (
     <div className="screen" style={{ paddingTop: '80px', justifyContent: 'flex-start', gap: '20px' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>Nouvelle cliente</h2>
+      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>Nouveau client</h2>
 
       <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         <div style={{ display: 'flex', gap: '12px' }}>
