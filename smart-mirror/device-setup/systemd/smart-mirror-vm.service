@@ -1,0 +1,28 @@
+[Unit]
+Description=Smart Mirror Electron Application (VM Dev)
+After=graphical.target network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mirror
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/mirror/.Xauthority
+Environment=NODE_ENV=production
+Environment=FORCE_KIOSK=1
+Environment=API_BASE_URL=http://__HOST_IP__:8000/api
+Environment=IA_PROXY_URL=http://__HOST_IP__:3001
+WorkingDirectory=/opt/smart-mirror
+ExecStart=/opt/smart-mirror/SmartMirror.AppImage --kiosk --no-sandbox --disable-gpu --disable-infobars --disable-notifications --hide-crash-restore-bubble
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Relaxed security for dev VM
+NoNewPrivileges=true
+ReadWritePaths=/var/smart-mirror /home/mirror/.config
+PrivateTmp=true
+
+[Install]
+WantedBy=graphical.target

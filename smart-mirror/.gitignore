@@ -19,3 +19,6 @@ pgdata/
 # OS
 .DS_Store
 Thumbs.db
+snapshots/
+out/
+node_modules/

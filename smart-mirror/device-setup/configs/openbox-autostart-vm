@@ -1,0 +1,7 @@
+# Openbox autostart - Smart Mirror VM (dev mode)
+# Disable screen blanking and power management
+xset s off
+xset -dpms
+xset s noblank
+
+# Cursor stays visible in dev VM (no unclutter)
