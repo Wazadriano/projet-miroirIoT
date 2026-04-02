@@ -37,10 +37,16 @@ export function NewClientScreen(): JSX.Element {
   }
 
   return (
-    <div className="screen-padded" style={{ gap: 12 }}>
+    <div className="screen-padded" style={{ gap: '1.5vh' }}>
       <Header subtitle="Inscription Nouveau Client" />
 
-      <div style={{ width: '100%', maxWidth: '88vw', display: 'flex', flexDirection: 'column', gap: 10, zIndex: 1, marginTop: 10 }}>
+      {/* Bouton retour recherche */}
+      <button className="glass-btn" onClick={() => setScreen('search')}
+        style={{ fontSize: 'var(--fs-body-sm)', padding: '1vw 4vw', minHeight: '8vw', alignSelf: 'flex-start', zIndex: 1 }}>
+        Recherche
+      </button>
+
+      <div style={{ width: '100%', maxWidth: '88vw', display: 'flex', flexDirection: 'column', gap: '2.5vw', zIndex: 1 }}>
         <div>
           <label className="label">Nom :</label>
           <input className="glass-input" value={form.nom} onChange={(e) => setForm(p => ({ ...p, nom: e.target.value }))} />

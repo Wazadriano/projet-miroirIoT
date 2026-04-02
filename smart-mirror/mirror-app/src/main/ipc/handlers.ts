@@ -116,6 +116,16 @@ export function registerIpcHandlers(services: Services): void {
     return apiClient.endSeance(seanceId)
   })
 
+  safeHandle('seance:generateReport', async (_event, ...args) => {
+    const seanceId = args[0] as string
+    return apiClient.generateReport(seanceId)
+  })
+
+  safeHandle('seance:getQRCode', async (_event, ...args) => {
+    const seanceId = args[0] as string
+    return apiClient.getQRCode(seanceId)
+  })
+
   // --- Photos ---
 
   safeHandle('photo:save', async (_event, ...args) => {

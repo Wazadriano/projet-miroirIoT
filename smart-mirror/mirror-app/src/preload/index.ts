@@ -30,6 +30,10 @@ const api = {
     ipcRenderer.invoke('seance:start', data),
   endSeance: (seanceId: string): Promise<unknown> =>
     ipcRenderer.invoke('seance:end', seanceId),
+  generateReport: (seanceId: string): Promise<unknown> =>
+    ipcRenderer.invoke('seance:generateReport', seanceId),
+  getQRCode: (seanceId: string): Promise<{ qrcode: string; reportUrl: string }> =>
+    ipcRenderer.invoke('seance:getQRCode', seanceId),
 
   // Photos
   savePhoto: (data: { imageBase64: string; seanceId: string; phase: 'avant' | 'apres' }): Promise<{ localPath: string; photoId: string }> =>
