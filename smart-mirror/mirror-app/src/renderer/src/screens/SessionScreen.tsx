@@ -15,6 +15,7 @@ export function SessionScreen(): JSX.Element {
   const [capturing, setCapturing] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [lastDiagnostic, setLastDiagnostic] = useState<Diagnostic | null>(null)
+  const captureRef = useRef<() => void>(() => {})
 
   const checkStreamReady = useCallback(async (retries = 10): Promise<void> => {
     for (let i = 0; i < retries; i++) {
@@ -47,7 +48,7 @@ export function SessionScreen(): JSX.Element {
 
   useEffect(() => {
     startStream()
-    window.mirrorApi.onMicroscopeStatus((status) => {
+    const cleanupStatus = window.mirrorApi.onMicroscopeStatus((status) => {
       if (status.connected && status.streamUrl) {
         setStreamUrl(status.streamUrl)
         setStreamActive(true)
@@ -56,7 +57,16 @@ export function SessionScreen(): JSX.Element {
         setStreamUrl(null)
       }
     })
-    return () => { window.mirrorApi.disconnectMicroscope() }
+
+    const cleanupButton = window.mirrorApi.onMicroscopeButton(() => {
+      captureRef.current()
+    })
+
+    return () => {
+      cleanupStatus()
+      cleanupButton()
+      window.mirrorApi.disconnectMicroscope()
+    }
   }, [startStream])
 
   const makeThumbnail = (base64: string): Promise<string> => {
@@ -77,7 +87,7 @@ export function SessionScreen(): JSX.Element {
   }
 
   const handleCapture = async (): Promise<void> => {
-    if (!seance) return
+    if (!seance || capturing) return
     setCapturing(true)
     const snapshot = await window.mirrorApi.captureMicroscopeSnapshot()
     if (!snapshot.success || !snapshot.imageBase64) {
@@ -108,6 +118,8 @@ export function SessionScreen(): JSX.Element {
       setAnalyzing(false)
     }
   }
+
+  captureRef.current = handleCapture
 
   const currentPhotos = phase === 'avant' ? photosAvant : photosApres
 
@@ -144,10 +156,19 @@ export function SessionScreen(): JSX.Element {
         ) : (
           <div style={{
             width: '100%', height: '100%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--color-warning)', fontSize: 'var(--fs-body)'
+            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+            gap: '2vh'
           }}>
-            Microscope non connecte
+            <span style={{ color: 'var(--color-warning)', fontSize: 'var(--fs-body)' }}>
+              Microscope non connecte
+            </span>
+            <button className="glass-btn" onClick={() => {
+              setStreamActive(false)
+              setStreamUrl(null)
+              startStream()
+            }} style={{ fontSize: 'var(--fs-body-sm)', padding: '1.5vw 4vw', minHeight: '8vw' }}>
+              Reconnecter
+            </button>
           </div>
         )}
 

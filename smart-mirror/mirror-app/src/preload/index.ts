@@ -49,8 +49,15 @@ const api = {
     ipcRenderer.invoke('microscope:disconnect'),
   captureMicroscopeSnapshot: (): Promise<{ success: boolean; imageBase64?: string; error?: string }> =>
     ipcRenderer.invoke('microscope:snapshot'),
-  onMicroscopeStatus: (callback: (status: { connected: boolean; streamUrl?: string }) => void): void => {
-    ipcRenderer.on('microscope:status', (_event, status) => callback(status))
+  onMicroscopeStatus: (callback: (status: { connected: boolean; streamUrl?: string }) => void): (() => void) => {
+    const handler = (_event: unknown, status: { connected: boolean; streamUrl?: string }): void => callback(status)
+    ipcRenderer.on('microscope:status', handler)
+    return () => ipcRenderer.removeListener('microscope:status', handler)
+  },
+  onMicroscopeButton: (callback: () => void): (() => void) => {
+    const handler = (): void => callback()
+    ipcRenderer.on('microscope:button-pressed', handler)
+    return () => ipcRenderer.removeListener('microscope:button-pressed', handler)
   },
 
   // WiFi
