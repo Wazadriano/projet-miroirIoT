@@ -57,29 +57,45 @@ export function NewClientScreen(): JSX.Element {
         {/* Sexe selector */}
         <div>
           <label className="label">Sexe :</label>
-          <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
-            <button
-              className={form.sexe === 'M' ? 'glass-btn' : 'glass-btn'}
-              onClick={() => setForm(p => ({ ...p, sexe: 'M' }))}
-              style={{
-                flex: 1, minHeight: '10vw',
-                boxShadow: form.sexe === 'M' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
-              }}
-            >H</button>
-            <button
-              className={form.sexe === 'F' ? 'glass-btn' : 'glass-btn'}
-              onClick={() => setForm(p => ({ ...p, sexe: 'F' }))}
-              style={{
-                flex: 1, minHeight: '10vw',
-                boxShadow: form.sexe === 'F' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
-              }}
-            >F</button>
+          <div style={{ display: 'flex', gap: '2.5vw', marginTop: '1.5vw' }}>
+            {[
+              { value: 'M', label: 'Homme' },
+              { value: 'F', label: 'Femme' },
+              { value: 'autre', label: 'Non-Precise' }
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                className="glass-btn"
+                onClick={() => setForm(p => ({ ...p, sexe: opt.value }))}
+                style={{
+                  flex: 1,
+                  minHeight: '10vw',
+                  fontSize: 'var(--fs-body-sm)',
+                  background: form.sexe === opt.value ? 'rgba(232, 201, 181, 0.2)' : undefined,
+                  boxShadow: form.sexe === opt.value
+                    ? 'inset 0px 0px 3.75vw 0px var(--color-shadow-gold-light)'
+                    : undefined
+                }}
+              >{opt.label}</button>
+            ))}
           </div>
         </div>
 
         <div>
           <label className="label">Age :</label>
-          <input className="glass-input" type="number" value={form.age} onChange={(e) => setForm(p => ({ ...p, age: e.target.value }))} />
+          <input
+            className="glass-input"
+            type="number"
+            min="0"
+            max="120"
+            value={form.age}
+            onChange={(e) => {
+              const val = e.target.value
+              if (val === '' || (parseInt(val) >= 0 && parseInt(val) <= 120)) {
+                setForm(p => ({ ...p, age: val }))
+              }
+            }}
+          />
         </div>
 
         {/* RGPD checkboxes */}

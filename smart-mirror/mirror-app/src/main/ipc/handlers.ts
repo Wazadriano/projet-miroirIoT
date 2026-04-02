@@ -208,6 +208,12 @@ export function registerIpcHandlers(services: Services): void {
     )
   })
 
+  microscopeService.on('button-pressed', () => {
+    BrowserWindow.getAllWindows().forEach(w =>
+      w.webContents.send('microscope:button-pressed')
+    )
+  })
+
   // --- Media Cache ---
 
   safeHandle('media:getPlaylist', async () => {
