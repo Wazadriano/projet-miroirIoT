@@ -1,65 +1,63 @@
 import { useState, useEffect } from 'react'
 import { useSessionStore } from '../stores/session.store'
+import { Header } from '../components/Header'
 
-// Fallback consent text — used when API is unreachable.
-// In production, this text is fetched from the API to allow
-// marketing/legal to update it without a code deploy.
-const DEFAULT_CONSENT_TEXT = `En acceptant ce consentement, vous autorisez K Beauty Cosmetics a realiser une analyse microscopique de votre cuir chevelu a des fins cosmetiques et observationnelles uniquement.
+const DEFAULT_CONSENT_TEXT = `En acceptant ce consentement, vous autorisez K Beauty Cosmetics a :
+- Capturer des photographies de votre cuir chevelu a l'aide d'un microscope numerique
+- Analyser ces images via un service d'intelligence artificielle a des fins cosmetiques
+- Stocker temporairement ces donnees pour generer votre rapport de seance
+- Vous transmettre le rapport par email ou QR code
 
-Les images capturees et les resultats de l'analyse seront :
-- Stockes de maniere securisee sur nos serveurs en France (RGPD art. 44)
-- Utilises uniquement pour votre suivi cosmetique personnel
-- Accessibles uniquement au personnel autorise de cette boutique
-- Supprimables sur simple demande de votre part
+Vos donnees sont traitees conformement au RGPD. Vous pouvez exercer vos droits d'acces, de rectification et de suppression a tout moment en contactant votre salon.
 
-Cette analyse est purement cosmetique et observationnelle. Elle ne constitue en aucun cas un diagnostic medical.
-
-Vous pouvez revoquer ce consentement a tout moment en contactant la boutique.`
+Ce consentement est valable uniquement pour la seance en cours.`
 
 export function ConsentScreen(): JSX.Element {
   const { cliente, setScreen, setConsentement, setSeance } = useSessionStore()
+  const [consentText, setConsentText] = useState(DEFAULT_CONSENT_TEXT)
   const [accepted, setAccepted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [consentText, setConsentText] = useState(DEFAULT_CONSENT_TEXT)
 
-  // Fetch consent text from API config (allows legal/marketing to update without deploy)
   useEffect(() => {
     window.mirrorApi.fetchMirrorConfig()
       .then((config) => {
-        const cfg = config as { config?: { texte_consentement?: string } } | null
-        if (cfg?.config?.texte_consentement) {
-          setConsentText(cfg.config.texte_consentement)
+        const c = config as { config?: { texte_consentement?: string } }
+        if (c?.config?.texte_consentement) {
+          setConsentText(c.config.texte_consentement)
         }
       })
-      .catch(() => {
-        // Use default text
-      })
+      .catch(() => {})
   }, [])
 
   if (!cliente) {
-    setScreen('search')
-    return <></>
+    return (
+      <div className="screen-padded">
+        <Header subtitle="Consentement" />
+        <p className="body-md" style={{ zIndex: 1, marginTop: 40 }}>Aucun client selectionne</p>
+        <button className="glass-btn" onClick={() => setScreen('search')} style={{ marginTop: 16, zIndex: 1 }}>
+          Retour
+        </button>
+      </div>
+    )
   }
 
   const handleAccept = async (): Promise<void> => {
     if (!accepted) return
-
     setLoading(true)
     setError('')
-
     try {
       const consent = await window.mirrorApi.createConsentement({
         clienteId: cliente.id,
         texteConsent: consentText
       })
-      setConsentement(consent as Consentement)
+      setConsentement(consent)
 
       const seance = await window.mirrorApi.startSeance({
         clienteId: cliente.id,
-        consentementId: (consent as Consentement).id
+        consentementId: (consent as { id: string }).id
       })
-      setSeance(seance as Seance)
+      setSeance(seance)
       setScreen('session')
     } catch (err) {
       setError((err as Error).message)
@@ -69,67 +67,40 @@ export function ConsentScreen(): JSX.Element {
   }
 
   return (
-    <div className="screen" style={{ paddingTop: '80px', justifyContent: 'flex-start', gap: '24px' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>
-        Consentement RGPD
-      </h2>
-      <p style={{ color: 'var(--color-text-muted)' }}>
+    <div className="screen-padded" style={{ gap: 16 }}>
+      <Header subtitle="Consentement" />
+
+      <p className="title-sm" style={{ zIndex: 1, marginTop: 10 }}>
         {cliente.prenom} {cliente.nom}
       </p>
 
-      <div
-        className="card"
-        style={{
-          maxWidth: '700px',
-          maxHeight: '400px',
-          overflowY: 'auto',
-          whiteSpace: 'pre-line',
-          lineHeight: '1.6',
-          fontSize: '1rem'
-        }}
-      >
-        {consentText}
+      <div className="glass-card-subtle" style={{
+        width: '100%',
+        maxWidth: 350,
+        maxHeight: 300,
+        overflowY: 'auto',
+        zIndex: 1
+      }}>
+        <p className="body-sm" style={{ whiteSpace: 'pre-line', lineHeight: 1.6, opacity: 0.8 }}>
+          {consentText}
+        </p>
       </div>
 
-      <label style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '12px',
-        cursor: 'pointer',
-        fontSize: '1.1rem'
-      }}>
-        <input
-          type="checkbox"
-          checked={accepted}
-          onChange={(e) => setAccepted(e.target.checked)}
-          style={{
-            width: '24px',
-            height: '24px',
-            minWidth: '24px',
-            minHeight: '24px',
-            accentColor: 'var(--color-accent)'
-          }}
-        />
+      <label className="checkbox-row" style={{ zIndex: 1, marginTop: 8 }}>
+        <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
         J'ai lu et j'accepte les conditions ci-dessus
       </label>
 
-      {error && (
-        <p style={{ color: 'var(--color-error)', fontSize: '0.9rem' }}>{error}</p>
-      )}
+      {error && <p style={{ color: 'var(--color-error)', fontSize: 12, zIndex: 1 }}>{error}</p>}
 
-      <div style={{ display: 'flex', gap: '16px' }}>
-        <button className="btn-secondary" onClick={() => setScreen('search')}>
-          Retour
-        </button>
-        <button
-          className="btn-primary"
-          onClick={handleAccept}
-          disabled={!accepted || loading}
-          style={{ opacity: accepted ? 1 : 0.5 }}
-        >
-          {loading ? 'Validation...' : 'Accepter et commencer la seance'}
-        </button>
-      </div>
+      <button
+        className="glass-btn"
+        onClick={handleAccept}
+        disabled={!accepted || loading}
+        style={{ width: 190, height: 50, zIndex: 1, marginTop: 8 }}
+      >
+        {loading ? '...' : 'ACCEPTER'}
+      </button>
     </div>
   )
 }

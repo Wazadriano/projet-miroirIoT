@@ -4,6 +4,7 @@ import { StatusBar } from './components/StatusBar'
 import { AnimatedBackground } from './components/AnimatedBackground'
 import { MediaPlayer } from './components/MediaPlayer'
 import { HomeScreen } from './screens/HomeScreen'
+import { AccueilScreen } from './screens/AccueilScreen'
 import { SearchClientScreen } from './screens/SearchClientScreen'
 import { NewClientScreen } from './screens/NewClientScreen'
 import { ConsentScreen } from './screens/ConsentScreen'
@@ -14,6 +15,7 @@ import { ProvisioningScreen } from './screens/ProvisioningScreen'
 
 const SCREENS = {
   home: HomeScreen,
+  accueil: AccueilScreen,
   search: SearchClientScreen,
   'new-client': NewClientScreen,
   consent: ConsentScreen,
@@ -41,16 +43,14 @@ export default function App(): JSX.Element {
   const { screen, setScreen, setProvisioned, setMicroscope, setWifiConnected } = useSessionStore()
   const [displayConfig, setDisplayConfig] = useState<DisplayConfig>({
     animatedBgEnabled: true,
-    animatedBgTheme: 'particles',
+    animatedBgTheme: 'golden',
     volume: 70,
     mediaMode: 'fullscreen'
   })
   const [playlist, setPlaylist] = useState<MediaItem[]>([])
   const [videoFullscreen, setVideoFullscreen] = useState(false)
 
-  // Screens where media player should be active
-  const showMedia = screen === 'home' || screen === 'session'
-  // Suspend animated bg during fullscreen video
+  const showMedia = screen === 'home'
   const suspendBg = videoFullscreen && displayConfig.mediaMode === 'fullscreen'
 
   useEffect(() => {
@@ -68,15 +68,11 @@ export default function App(): JSX.Element {
       const wifi = await window.mirrorApi.getWifiStatus()
       setWifiConnected(wifi.connected)
 
-      // Load display config
       try {
         const config = await window.mirrorApi.getDisplayConfig()
         if (config) setDisplayConfig(config as DisplayConfig)
-      } catch {
-        // Use defaults
-      }
+      } catch { /* defaults */ }
 
-      // Fetch media playlist
       try {
         const data = await window.mirrorApi.getPlaylist()
         if (data?.playlist?.length > 0) {
@@ -87,9 +83,7 @@ export default function App(): JSX.Element {
             nom_fichier: item.nom_fichier
           })))
         }
-      } catch {
-        // Offline — playlist will be empty until sync
-      }
+      } catch { /* offline */ }
     }
 
     init()
@@ -98,7 +92,6 @@ export default function App(): JSX.Element {
       setMicroscope(status.connected, status.device as MicroscopeDevice | null)
     })
 
-    // Real-time WiFi status from main process monitoring (30s interval)
     window.mirrorApi.onWifiStatusChanged((status) => {
       setWifiConnected(status.connected)
     })
@@ -106,7 +99,6 @@ export default function App(): JSX.Element {
     const interval = setInterval(async () => {
       const wifi = await window.mirrorApi.getWifiStatus()
       setWifiConnected(wifi.connected)
-
       const queueSize = await window.mirrorApi.getSyncQueueSize()
       useSessionStore.getState().setSyncQueueSize(queueSize)
     }, 15_000)
@@ -128,20 +120,12 @@ export default function App(): JSX.Element {
         suspended={suspendBg}
       />
 
-      {showMedia && playlist.length > 0 && (
-        <MediaPlayer
-          playlist={playlist}
-          mode={displayConfig.mediaMode}
-          volume={displayConfig.volume}
-          onFullscreenChange={handleFullscreenChange}
-        />
-      )}
+      {/* MediaPlayer disabled - product carousel on HomeScreen replaces it
+         TODO: Re-enable when veille mode (idle timeout) is implemented */}
 
-      {screen !== 'provisioning' && <StatusBar />}
+      {screen !== 'provisioning' && screen !== 'home' && <StatusBar />}
 
-      <div style={{ position: 'relative', zIndex: 10, width: '100%', height: '100%' }}>
-        <ScreenComponent />
-      </div>
+      <ScreenComponent />
     </>
   )
 }

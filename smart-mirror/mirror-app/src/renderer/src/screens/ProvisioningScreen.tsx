@@ -48,8 +48,8 @@ export function ProvisioningScreen(): JSX.Element {
   }
 
   const handleConnect = async (): Promise<void> => {
-    if (!form.ssid || !form.boutiqueId) {
-      setError('SSID et Boutique ID sont obligatoires')
+    if (!form.boutiqueId) {
+      setError('Boutique ID est obligatoire')
       return
     }
 

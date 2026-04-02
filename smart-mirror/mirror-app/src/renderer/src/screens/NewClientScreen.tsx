@@ -1,34 +1,31 @@
 import { useState } from 'react'
 import { useSessionStore } from '../stores/session.store'
+import { Header } from '../components/Header'
 
 export function NewClientScreen(): JSX.Element {
   const { setScreen, setCliente } = useSessionStore()
   const [form, setForm] = useState({
-    prenom: '',
-    nom: '',
-    email: '',
-    telephone: '',
-    age: '',
-    sexe: ''
+    nom: '', prenom: '', email: '', sexe: '', age: ''
   })
+  const [rgpd1, setRgpd1] = useState(false)
+  const [rgpd2, setRgpd2] = useState(false)
   const [error, setError] = useState('')
-  const [saving, setSaving] = useState(false)
 
   const handleSubmit = async (): Promise<void> => {
-    if (!form.prenom.trim() || !form.nom.trim()) {
-      setError('Prenom et nom sont obligatoires')
+    if (!form.prenom || !form.nom) {
+      setError('Nom et prenom obligatoires')
       return
     }
-
-    setSaving(true)
+    if (!rgpd1 || !rgpd2) {
+      setError('Veuillez accepter les conditions')
+      return
+    }
     setError('')
-
     try {
       const cliente = await window.mirrorApi.createCliente({
-        prenom: form.prenom.trim(),
-        nom: form.nom.trim(),
-        email: form.email.trim() || undefined,
-        telephone: form.telephone.trim() || undefined,
+        prenom: form.prenom,
+        nom: form.nom,
+        email: form.email || undefined,
         age: form.age ? parseInt(form.age) : undefined,
         sexe: form.sexe || undefined
       })
@@ -36,94 +33,75 @@ export function NewClientScreen(): JSX.Element {
       setScreen('consent')
     } catch (err) {
       setError((err as Error).message)
-    } finally {
-      setSaving(false)
     }
   }
 
-  const updateField = (field: string, value: string): void => {
-    setForm(prev => ({ ...prev, [field]: value }))
-  }
-
   return (
-    <div className="screen" style={{ paddingTop: '80px', justifyContent: 'flex-start', gap: '20px' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>Nouveau client</h2>
+    <div className="screen-padded" style={{ gap: 12 }}>
+      <Header subtitle="Inscription Nouveau Client" />
 
-      <div style={{ width: '100%', maxWidth: '500px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <input
-            placeholder="Prenom *"
-            value={form.prenom}
-            onChange={(e) => updateField('prenom', e.target.value)}
-            autoFocus
-          />
-          <input
-            placeholder="Nom *"
-            value={form.nom}
-            onChange={(e) => updateField('nom', e.target.value)}
-          />
+      <div style={{ width: '100%', maxWidth: 350, display: 'flex', flexDirection: 'column', gap: 10, zIndex: 1, marginTop: 10 }}>
+        <div>
+          <label className="label">Nom :</label>
+          <input className="glass-input" value={form.nom} onChange={(e) => setForm(p => ({ ...p, nom: e.target.value }))} />
+        </div>
+        <div>
+          <label className="label">Prenom :</label>
+          <input className="glass-input" value={form.prenom} onChange={(e) => setForm(p => ({ ...p, prenom: e.target.value }))} />
+        </div>
+        <div>
+          <label className="label">Adresse mail :</label>
+          <input className="glass-input" type="email" value={form.email} onChange={(e) => setForm(p => ({ ...p, email: e.target.value }))} />
         </div>
 
-        <input
-          type="email"
-          placeholder="Email (optionnel)"
-          value={form.email}
-          onChange={(e) => updateField('email', e.target.value)}
-        />
-
-        <input
-          type="tel"
-          placeholder="Telephone (optionnel)"
-          value={form.telephone}
-          onChange={(e) => updateField('telephone', e.target.value)}
-        />
-
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <input
-            type="number"
-            placeholder="Age"
-            value={form.age}
-            onChange={(e) => updateField('age', e.target.value)}
-            style={{ maxWidth: '120px' }}
-          />
-          <select
-            value={form.sexe}
-            onChange={(e) => updateField('sexe', e.target.value)}
-            style={{
-              flex: 1,
-              padding: '14px 16px',
-              borderRadius: 'var(--radius)',
-              border: '1px solid #334155',
-              background: 'var(--color-surface)',
-              color: form.sexe ? 'var(--color-text)' : 'var(--color-text-muted)',
-              fontSize: '1.1rem',
-              minHeight: '48px'
-            }}
-          >
-            <option value="">Sexe</option>
-            <option value="F">Feminin</option>
-            <option value="M">Masculin</option>
-            <option value="autre">Autre</option>
-          </select>
+        {/* Sexe selector */}
+        <div>
+          <label className="label">Sexe :</label>
+          <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+            <button
+              className={form.sexe === 'M' ? 'glass-btn' : 'glass-btn'}
+              onClick={() => setForm(p => ({ ...p, sexe: 'M' }))}
+              style={{
+                flex: 1, minHeight: 40,
+                boxShadow: form.sexe === 'M' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
+              }}
+            >H</button>
+            <button
+              className={form.sexe === 'F' ? 'glass-btn' : 'glass-btn'}
+              onClick={() => setForm(p => ({ ...p, sexe: 'F' }))}
+              style={{
+                flex: 1, minHeight: 40,
+                boxShadow: form.sexe === 'F' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
+              }}
+            >F</button>
+          </div>
         </div>
 
-        {error && (
-          <p style={{ color: 'var(--color-error)', fontSize: '0.9rem' }}>{error}</p>
-        )}
-
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-          <button className="btn-secondary" onClick={() => setScreen('search')} style={{ flex: 1 }}>
-            Retour
-          </button>
-          <button
-            className="btn-primary"
-            onClick={handleSubmit}
-            disabled={saving}
-            style={{ flex: 1 }}
-          >
-            {saving ? 'Enregistrement...' : 'Creer'}
-          </button>
+        <div>
+          <label className="label">Age :</label>
+          <input className="glass-input" type="number" value={form.age} onChange={(e) => setForm(p => ({ ...p, age: e.target.value }))} />
         </div>
+
+        {/* RGPD checkboxes */}
+        <label className="checkbox-row" style={{ marginTop: 8 }}>
+          <input type="checkbox" checked={rgpd1} onChange={(e) => setRgpd1(e.target.checked)} />
+          J'accepte le traitement de mes donnees
+        </label>
+        <label className="checkbox-row">
+          <input type="checkbox" checked={rgpd2} onChange={(e) => setRgpd2(e.target.checked)} />
+          J'accepte la politique de confidentialite
+        </label>
+
+        {error && <p style={{ color: 'var(--color-error)', fontSize: 12 }}>{error}</p>}
+
+        <button
+          className="glass-btn"
+          onClick={handleSubmit}
+          disabled={!form.prenom || !form.nom || !rgpd1 || !rgpd2}
+          style={{ width: '100%', marginTop: 8 }}
+        >
+          INSCRIPTION
+        </button>
       </div>
     </div>
   )
