@@ -50,7 +50,7 @@ export default function App(): JSX.Element {
   const [playlist, setPlaylist] = useState<MediaItem[]>([])
   const [videoFullscreen, setVideoFullscreen] = useState(false)
 
-  const showMedia = screen === 'home'
+  const [showMedia, setShowMedia] = useState(false)
   const suspendBg = videoFullscreen && displayConfig.mediaMode === 'fullscreen'
 
   useEffect(() => {
@@ -117,11 +117,41 @@ export default function App(): JSX.Element {
       <AnimatedBackground
         enabled={displayConfig.animatedBgEnabled}
         theme={displayConfig.animatedBgTheme}
-        suspended={suspendBg}
+        suspended={suspendBg || showMedia}
       />
 
-      {/* MediaPlayer disabled - product carousel on HomeScreen replaces it
-         TODO: Re-enable when veille mode (idle timeout) is implemented */}
+      {showMedia && playlist.length > 0 && (
+        <>
+          <MediaPlayer
+            playlist={playlist}
+            mode={displayConfig.mediaMode}
+            volume={displayConfig.volume}
+            onFullscreenChange={handleFullscreenChange}
+          />
+          <button onClick={() => setShowMedia(false)} style={{
+            position: 'fixed', top: '2vh', right: '2vw', zIndex: 20,
+            width: '10vw', height: '10vw', borderRadius: '50%',
+            background: 'rgba(0,0,0,0.6)', border: 'none', cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontSize: 'var(--fs-body)'
+          }}>X</button>
+        </>
+      )}
+
+      {!showMedia && screen !== 'provisioning' && screen !== 'home' && screen !== 'accueil' && playlist.length > 0 && (
+        <button onClick={() => setShowMedia(true)} style={{
+          position: 'fixed', bottom: '2vh', right: '2vw', zIndex: 15,
+          width: '12vw', height: '12vw', borderRadius: '50%',
+          background: 'var(--color-glass-bg)', backdropFilter: 'blur(10px)',
+          boxShadow: 'inset 0 0 2.5vw 0 var(--color-shadow-gold)',
+          border: 'none', cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center'
+        }}>
+          <svg width="5vw" height="5vw" viewBox="0 0 24 24" fill="var(--color-accent)">
+            <polygon points="5,3 19,12 5,21"/>
+          </svg>
+        </button>
+      )}
 
       {screen !== 'provisioning' && screen !== 'home' && <StatusBar />}
 
