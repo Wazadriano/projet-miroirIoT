@@ -2,13 +2,12 @@ import { useEffect, useState } from 'react'
 import { useSessionStore } from '../stores/session.store'
 
 export function QRCodeScreen(): JSX.Element {
-  const { resetSession } = useSessionStore()
-  const [countdown, setCountdown] = useState(60)
+  const { resetSession, setScreen } = useSessionStore()
+  const [countdown, setCountdown] = useState(30)
 
-  // Auto-return to home after 60 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      setCountdown((prev) => {
+      setCountdown(prev => {
         if (prev <= 1) {
           resetSession()
           return 0
@@ -16,56 +15,57 @@ export function QRCodeScreen(): JSX.Element {
         return prev - 1
       })
     }, 1000)
-
     return () => clearInterval(timer)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [resetSession])
 
   return (
-    <div className="screen" style={{ gap: '30px' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>
-        Seance terminee
+    <div className="screen" style={{ gap: 24 }}>
+      <h2 className="title-xl" style={{ zIndex: 1, maxWidth: 300 }}>
+        Retrouvez votre bilan
       </h2>
 
-      <div className="card" style={{
-        width: '280px',
-        height: '280px',
+      {/* QR placeholder */}
+      <div style={{
+        width: 200,
+        height: 200,
+        background: '#FFFFFF',
+        borderRadius: 25,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: '#fff'
+        zIndex: 1,
+        boxShadow: '0px 0px 4px 2px var(--color-shadow-gold-light)'
       }}>
-        {/* QR code will be generated server-side by n8n */}
-        {/* This is a placeholder - in production, the rapport_url from the API */}
-        <div style={{
-          width: '200px',
-          height: '200px',
-          background: '#e2e8f0',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: '#475569',
-          fontSize: '0.9rem',
-          textAlign: 'center',
-          borderRadius: '8px'
-        }}>
-          QR Code du rapport<br />
-          (genere par n8n)
-        </div>
+        <svg width="150" height="150" viewBox="0 0 150 150">
+          <rect x="10" y="10" width="40" height="40" fill="#000" rx="4"/>
+          <rect x="100" y="10" width="40" height="40" fill="#000" rx="4"/>
+          <rect x="10" y="100" width="40" height="40" fill="#000" rx="4"/>
+          <rect x="60" y="60" width="30" height="30" fill="#000" rx="2"/>
+          <rect x="15" y="15" width="30" height="30" fill="#FFF" rx="2"/>
+          <rect x="20" y="20" width="20" height="20" fill="#000" rx="2"/>
+          <rect x="105" y="15" width="30" height="30" fill="#FFF" rx="2"/>
+          <rect x="110" y="20" width="20" height="20" fill="#000" rx="2"/>
+          <rect x="15" y="105" width="30" height="30" fill="#FFF" rx="2"/>
+          <rect x="20" y="110" width="20" height="20" fill="#000" rx="2"/>
+        </svg>
       </div>
 
-      <p style={{ color: 'var(--color-text-muted)', textAlign: 'center', maxWidth: '400px' }}>
-        Scannez ce QR code pour acceder a votre rapport d'analyse capillaire.
-        Le rapport sera egalement envoye par email si disponible.
-      </p>
-
-      <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>
+      <p className="body-sm" style={{ opacity: 0.5, zIndex: 1 }}>
         Retour automatique dans {countdown}s
       </p>
 
-      <button className="btn-secondary" onClick={resetSession}>
-        Retour a l'accueil
-      </button>
+      {/* Action buttons */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, zIndex: 1, width: '100%', maxWidth: 250 }}>
+        <button className="glass-btn" onClick={() => { resetSession() }} style={{ width: '100%' }}>
+          VEILLE
+        </button>
+        <button className="glass-btn" onClick={() => setScreen('comparison')} style={{ width: '100%' }}>
+          AVANT / APRES
+        </button>
+        <button className="glass-btn" onClick={() => {}} style={{ width: '100%' }}>
+          CONSEIL
+        </button>
+      </div>
     </div>
   )
 }

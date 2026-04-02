@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 type Screen =
   | 'home'
+  | 'accueil'
   | 'search'
   | 'new-client'
   | 'consent'

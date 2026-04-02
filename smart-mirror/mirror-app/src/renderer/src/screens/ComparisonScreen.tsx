@@ -1,160 +1,85 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useSessionStore } from '../stores/session.store'
+import { Header } from '../components/Header'
 
 export function ComparisonScreen(): JSX.Element {
   const { cliente, seance, photosAvant, photosApres, setScreen } = useSessionStore()
+  const [noteSeance, setNoteSeance] = useState('')
 
-  const lastAvant = photosAvant[photosAvant.length - 1]
-  const lastApres = photosApres[photosApres.length - 1]
-
-  // Load full-res from disk for comparison display
-  const [fullResAvant, setFullResAvant] = useState<string | null>(null)
-  const [fullResApres, setFullResApres] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (lastAvant?.localPath) {
-      window.mirrorApi.loadFullResPhoto(lastAvant.localPath).then((res) => {
-        if (res.success && res.imageBase64) setFullResAvant(res.imageBase64)
-      })
-    }
-    if (lastApres?.localPath) {
-      window.mirrorApi.loadFullResPhoto(lastApres.localPath).then((res) => {
-        if (res.success && res.imageBase64) setFullResApres(res.imageBase64)
-      })
-    }
-  }, [lastAvant?.localPath, lastApres?.localPath])
-
-  const handleFinish = async (): Promise<void> => {
+  const handleNext = async (): Promise<void> => {
     if (seance) {
       try {
         await window.mirrorApi.endSeance(seance.id)
-      } catch {
-        // Offline - will sync later
-      }
+      } catch { /* offline */ }
     }
     setScreen('qrcode')
   }
 
-  const avantSrc = fullResAvant
-    ? `data:image/jpeg;base64,${fullResAvant}`
-    : lastAvant?.thumbnailBase64
-      ? `data:image/jpeg;base64,${lastAvant.thumbnailBase64}`
-      : null
-
-  const apresSrc = fullResApres
-    ? `data:image/jpeg;base64,${fullResApres}`
-    : lastApres?.thumbnailBase64
-      ? `data:image/jpeg;base64,${lastApres.thumbnailBase64}`
-      : null
+  const latestAvant = photosAvant[photosAvant.length - 1]
+  const latestApres = photosApres[photosApres.length - 1]
 
   return (
-    <div className="screen" style={{ paddingTop: '60px', justifyContent: 'flex-start', gap: '20px' }}>
-      <h2 style={{ fontSize: '1.8rem', fontWeight: 400 }}>
-        Comparaison avant / apres
-      </h2>
-      <p style={{ color: 'var(--color-text-muted)' }}>
-        {cliente?.prenom} {cliente?.nom}
-      </p>
+    <div className="screen-padded" style={{ gap: 12, justifyContent: 'flex-start' }}>
+      <Header subtitle="Bilan" />
 
-      <div style={{
-        display: 'flex',
-        gap: '24px',
-        width: '100%',
-        maxWidth: '1200px',
-        flex: 1
-      }}>
-        {/* Before */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h3 style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontWeight: 400 }}>
-            Avant soin
-          </h3>
-          {avantSrc ? (
-            <>
-              <img
-                src={avantSrc}
-                alt="Avant soin"
-                style={{
-                  width: '100%',
-                  height: '300px',
-                  objectFit: 'contain',
-                  borderRadius: 'var(--radius)',
-                  background: '#111'
-                }}
-              />
-              {lastAvant?.diagnostic && (
-                <DiagnosticSummary diagnostic={lastAvant.diagnostic} />
-              )}
-            </>
-          ) : (
-            <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-              Aucune capture avant soin
-            </div>
+      {/* Before/After comparison */}
+      <div style={{ display: 'flex', gap: 12, width: '100%', maxWidth: 350, marginTop: 10, zIndex: 1 }}>
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          <p className="body-sm" style={{ marginBottom: 6, opacity: 0.6 }}>Avant</p>
+          <div className="img-gold-shadow" style={{
+            width: '100%', aspectRatio: '1', background: '#222', overflow: 'hidden'
+          }}>
+            {latestAvant?.thumbnailBase64 && (
+              <img src={`data:image/jpeg;base64,${latestAvant.thumbnailBase64}`} alt=""
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            )}
+          </div>
+        </div>
+        <div style={{ flex: 1, textAlign: 'center' }}>
+          <p className="body-sm" style={{ marginBottom: 6, opacity: 0.6 }}>Apres</p>
+          <div className="img-gold-shadow" style={{
+            width: '100%', aspectRatio: '1', background: '#222', overflow: 'hidden'
+          }}>
+            {latestApres?.thumbnailBase64 && (
+              <img src={`data:image/jpeg;base64,${latestApres.thumbnailBase64}`} alt=""
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Diagnostic results */}
+      {latestAvant?.diagnostic && (
+        <div className="glass-card-subtle" style={{ width: '100%', maxWidth: 350, zIndex: 1 }}>
+          <p className="body-sm" style={{ lineHeight: 1.6 }}>
+            {latestAvant.diagnostic.categories?.map((cat: { nom: string; score: number; niveau: string }) => (
+              <span key={cat.nom}>&#8226; {cat.nom}: {cat.score}% ({cat.niveau})<br/></span>
+            ))}
+          </p>
+          {latestAvant.diagnostic.commentaire && (
+            <p className="body-sm" style={{ marginTop: 8, opacity: 0.7 }}>
+              {(latestAvant.diagnostic as Diagnostic).commentaire}
+            </p>
           )}
         </div>
+      )}
 
-        {/* After */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <h3 style={{ textAlign: 'center', color: 'var(--color-text-muted)', fontWeight: 400 }}>
-            Apres soin
-          </h3>
-          {apresSrc ? (
-            <>
-              <img
-                src={apresSrc}
-                alt="Apres soin"
-                style={{
-                  width: '100%',
-                  height: '300px',
-                  objectFit: 'contain',
-                  borderRadius: 'var(--radius)',
-                  background: '#111'
-                }}
-              />
-              {lastApres?.diagnostic && (
-                <DiagnosticSummary diagnostic={lastApres.diagnostic} />
-              )}
-            </>
-          ) : (
-            <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
-              Aucune capture apres soin
-            </div>
-          )}
-        </div>
+      {/* Note praticien */}
+      <div style={{ width: '100%', maxWidth: 350, zIndex: 1 }}>
+        <p className="label" style={{ marginBottom: 6 }}>Note praticien :</p>
+        <textarea
+          className="glass-input"
+          placeholder="Ajouter une note de seance..."
+          value={noteSeance}
+          onChange={(e) => setNoteSeance(e.target.value)}
+          style={{ minHeight: 60, borderRadius: 'var(--radius)', resize: 'none' }}
+        />
       </div>
 
-      <div style={{ display: 'flex', gap: '16px' }}>
-        <button className="btn-secondary" onClick={() => setScreen('session')}>
-          Retour a la seance
-        </button>
-        <button className="btn-primary" onClick={handleFinish}>
-          Terminer et generer le rapport
-        </button>
-      </div>
-    </div>
-  )
-}
-
-function DiagnosticSummary({ diagnostic }: { diagnostic: Diagnostic }): JSX.Element {
-  return (
-    <div className="card" style={{ fontSize: '0.85rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-        <span style={{ fontWeight: 600 }}>Score global</span>
-        <span style={{
-          color: diagnostic.score_global > 60 ? 'var(--color-success)' : 'var(--color-warning)'
-        }}>
-          {diagnostic.score_global}/100
-        </span>
-      </div>
-      {diagnostic.categories.map((cat) => (
-        <div key={cat.nom} style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          padding: '2px 0'
-        }}>
-          <span style={{ color: 'var(--color-text-muted)' }}>{cat.nom}</span>
-          <span>{cat.score}%</span>
-        </div>
-      ))}
+      <button className="glass-btn" onClick={handleNext}
+        style={{ width: 190, height: 50, zIndex: 1, marginTop: 8 }}>
+        SUIVANT
+      </button>
     </div>
   )
 }

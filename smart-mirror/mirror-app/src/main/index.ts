@@ -1,4 +1,10 @@
 import { app, BrowserWindow, shell } from 'electron'
+
+// Enable CDP remote debugging for Playwright testing
+if (process.env.REMOTE_DEBUG === '1') {
+  app.commandLine.appendSwitch('remote-debugging-port', '9222')
+  app.commandLine.appendSwitch('remote-debugging-address', '0.0.0.0')
+}
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { registerIpcHandlers } from './ipc/handlers'
@@ -24,8 +30,8 @@ function createWindow(): void {
   const isKiosk = !is.dev || process.env.FORCE_KIOSK === '1' || process.argv.includes('--kiosk')
 
   mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: 1080,
+    height: 1920,
     fullscreen: isKiosk,
     kiosk: isKiosk,
     frame: !isKiosk,
