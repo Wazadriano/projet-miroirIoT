@@ -3,6 +3,12 @@ const cors = require('cors');
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
 const QRCode = require('qrcode');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+
+const RAPPORTS_DIR = '/tmp/rapports';
+if (!fs.existsSync(RAPPORTS_DIR)) fs.mkdirSync(RAPPORTS_DIR, { recursive: true });
 
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
@@ -277,24 +283,122 @@ api.post('/api/miroirs/:id/heartbeat', async (req, res) => {
   }
 });
 
-// Report: generate mock PDF and return URL
+// Serve PDF reports as static files
+api.use('/api/rapports', express.static(RAPPORTS_DIR));
+
+// Report: generate real PDF
 api.post('/api/seances/:id/report', async (req, res) => {
   try {
-    const seance = await pool.query('SELECT * FROM seances WHERE id = $1', [req.params.id]);
-    if (seance.rows.length === 0) return res.status(404).json({ error: 'Seance not found' });
-    const reportUrl = `http://localhost:8000/api/seances/${req.params.id}/report.pdf`;
-    res.json({ data: { url: reportUrl, generated: true } });
+    const seanceResult = await pool.query('SELECT s.*, c.prenom, c.nom, c.email FROM seances s LEFT JOIN clientes c ON s.cliente_id = c.id WHERE s.id = $1', [req.params.id]);
+    if (seanceResult.rows.length === 0) return res.status(404).json({ error: 'Seance not found' });
+    const seance = seanceResult.rows[0];
+
+    const photosResult = await pool.query('SELECT * FROM photos WHERE seance_id = $1 ORDER BY created_at', [req.params.id]);
+    const photos = photosResult.rows;
+
+    const pdfPath = path.join(RAPPORTS_DIR, `${req.params.id}.pdf`);
+    const reportUrl = `http://localhost:8000/api/rapports/${req.params.id}.pdf`;
+
+    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const stream = fs.createWriteStream(pdfPath);
+    doc.pipe(stream);
+
+    // Header
+    doc.fontSize(24).font('Helvetica-Bold').text('K Beauty Cosmetics', { align: 'center' });
+    doc.moveDown(0.5);
+    doc.fontSize(16).font('Helvetica').text('Rapport de seance', { align: 'center' });
+    doc.moveDown(1);
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke('#E8C9B5');
+    doc.moveDown(1);
+
+    // Client info
+    doc.fontSize(12).font('Helvetica-Bold').text('Client');
+    doc.fontSize(11).font('Helvetica')
+      .text(`Nom : ${seance.prenom || ''} ${seance.nom || ''}`)
+      .text(`Date : ${new Date(seance.date_debut).toLocaleDateString('fr-FR')}`)
+      .text(`Email : ${seance.email || 'Non renseigne'}`);
+    doc.moveDown(1);
+
+    // Diagnostic IA
+    const diagPhoto = photos.find(p => p.diagnostic_ia);
+    if (diagPhoto && diagPhoto.diagnostic_ia) {
+      const diag = typeof diagPhoto.diagnostic_ia === 'string' ? JSON.parse(diagPhoto.diagnostic_ia) : diagPhoto.diagnostic_ia;
+      doc.fontSize(12).font('Helvetica-Bold').text('Diagnostic IA');
+      doc.moveDown(0.3);
+      if (diag.score_global) {
+        doc.fontSize(11).font('Helvetica').text(`Score global : ${diag.score_global}/100`);
+      }
+      if (diag.categories) {
+        diag.categories.forEach(cat => {
+          doc.text(`  - ${cat.nom} : ${cat.score}% (${cat.niveau})`);
+        });
+      }
+      if (diag.commentaire) {
+        doc.moveDown(0.5);
+        doc.fontSize(10).font('Helvetica-Oblique').text(diag.commentaire);
+      }
+      if (diag.produits_recommandes && diag.produits_recommandes.length > 0) {
+        doc.moveDown(0.5);
+        doc.fontSize(11).font('Helvetica-Bold').text('Produits recommandes :');
+        diag.produits_recommandes.forEach(p => doc.font('Helvetica').text(`  - ${p}`));
+      }
+      doc.moveDown(1);
+    }
+
+    // Photos
+    if (photos.length > 0) {
+      doc.fontSize(12).font('Helvetica-Bold').text('Photos');
+      doc.fontSize(10).font('Helvetica');
+      photos.forEach(p => {
+        doc.text(`  ${p.phase} - ${new Date(p.created_at).toLocaleString('fr-FR')}${p.diagnostic_ia ? ' (analysee)' : ''}`);
+      });
+      doc.moveDown(1);
+    }
+
+    // Note praticien
+    if (seance.note_seance) {
+      doc.fontSize(12).font('Helvetica-Bold').text('Note praticien');
+      doc.fontSize(11).font('Helvetica').text(seance.note_seance);
+      doc.moveDown(1);
+    }
+
+    // Footer
+    doc.moveDown(2);
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).stroke('#E8C9B5');
+    doc.moveDown(0.5);
+    doc.fontSize(8).font('Helvetica').fillColor('#888')
+      .text('Ce rapport est genere automatiquement par K Beauty Cosmetics. Les resultats sont a titre indicatif et ne constituent pas un avis medical.', { align: 'center' });
+
+    doc.end();
+
+    await new Promise(resolve => stream.on('finish', resolve));
+
+    // Update seance with report URL
+    await pool.query('UPDATE seances SET rapport_pdf_path = $1, rapport_url = $2 WHERE id = $3', [pdfPath, reportUrl, req.params.id]);
+
+    res.json({ data: { url: reportUrl, generated: true, path: pdfPath } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// QR Code: generate QR code as data URL
+// QR Code: generate QR pointing to the PDF report
 api.get('/api/seances/:id/qrcode', async (req, res) => {
   try {
-    const reportUrl = `http://localhost:8000/api/seances/${req.params.id}/report.pdf`;
+    const reportUrl = `http://localhost:8000/api/rapports/${req.params.id}.pdf`;
     const qrDataUrl = await QRCode.toDataURL(reportUrl, { width: 400, margin: 2 });
     res.json({ data: { qrcode: qrDataUrl, reportUrl } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Send report to CRM (mock: updates seance record)
+api.post('/api/seances/:id/send-to-crm', async (req, res) => {
+  try {
+    const reportUrl = `http://localhost:8000/api/rapports/${req.params.id}.pdf`;
+    await pool.query('UPDATE seances SET rapport_url = $1 WHERE id = $2', [reportUrl, req.params.id]);
+    res.json({ data: { sent: true, reportUrl } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
