@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 const { v4: uuidv4 } = require('uuid');
+const QRCode = require('qrcode');
 
 const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',
@@ -271,6 +272,29 @@ api.post('/api/miroirs/:id/heartbeat', async (req, res) => {
       [req.params.id, req.body.ip || null]
     );
     res.json({ status: 'ok' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Report: generate mock PDF and return URL
+api.post('/api/seances/:id/report', async (req, res) => {
+  try {
+    const seance = await pool.query('SELECT * FROM seances WHERE id = $1', [req.params.id]);
+    if (seance.rows.length === 0) return res.status(404).json({ error: 'Seance not found' });
+    const reportUrl = `http://localhost:8000/api/seances/${req.params.id}/report.pdf`;
+    res.json({ data: { url: reportUrl, generated: true } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// QR Code: generate QR code as data URL
+api.get('/api/seances/:id/qrcode', async (req, res) => {
+  try {
+    const reportUrl = `http://localhost:8000/api/seances/${req.params.id}/report.pdf`;
+    const qrDataUrl = await QRCode.toDataURL(reportUrl, { width: 400, margin: 2 });
+    res.json({ data: { qrcode: qrDataUrl, reportUrl } });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

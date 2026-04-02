@@ -165,6 +165,18 @@ export class ApiClientService {
     return result.data
   }
 
+  // --- Report / QR ---
+
+  async generateReport(seanceId: string): Promise<unknown> {
+    const res = await this.request<unknown>(`${this.baseUrl}/seances/${seanceId}/report`, { method: 'POST' })
+    return res.data
+  }
+
+  async getQRCode(seanceId: string): Promise<unknown> {
+    const res = await this.request<unknown>(`${this.baseUrl}/seances/${seanceId}/qrcode`)
+    return res.data
+  }
+
   // --- Config ---
 
   async fetchAndUpdateConfig(mirrorId: string): Promise<unknown> {

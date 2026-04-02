@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useSessionStore } from '../stores/session.store'
 import { Header } from '../components/Header'
+import { SideNav } from '../components/SideNav'
 
 export function ComparisonScreen(): JSX.Element {
   const { cliente, seance, photosAvant, photosApres, setScreen } = useSessionStore()
@@ -19,8 +20,9 @@ export function ComparisonScreen(): JSX.Element {
   const latestApres = photosApres[photosApres.length - 1]
 
   return (
-    <div className="screen-padded" style={{ gap: 12, justifyContent: 'flex-start' }}>
+    <div className="screen-padded" style={{ gap: '1.5vh', justifyContent: 'flex-start' }}>
       <Header subtitle="Bilan" />
+      <SideNav onHome={() => setScreen('home')} />
 
       {/* Before/After comparison */}
       <div style={{ display: 'flex', gap: 12, width: '100%', maxWidth: '88vw', marginTop: 10, zIndex: 1 }}>

@@ -27,6 +27,7 @@ export function HomeScreen(): JSX.Element {
       <div style={{ marginTop: '3vh', textAlign: 'center', zIndex: 1 }}>
         <h1 className="title-xl" style={{ letterSpacing: '0.5vw' }}>K BEAUTY</h1>
         <p className="title-sm" style={{ letterSpacing: '1vw', marginTop: '0.5vh', opacity: 0.8 }}>COSMETICS</p>
+        <p style={{ fontSize: 'var(--fs-sm)', marginTop: '0.3vh', opacity: 0.6 }}>&#54868;&#51109;&#54408;</p>
       </div>
 
       {/* Product carousel */}

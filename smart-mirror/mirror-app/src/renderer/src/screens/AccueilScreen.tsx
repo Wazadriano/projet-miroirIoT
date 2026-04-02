@@ -32,6 +32,26 @@ export function AccueilScreen(): JSX.Element {
         onUser={() => setScreen('search')}
       />
 
+      {/* Profil boutique */}
+      <div style={{
+        position: 'absolute',
+        bottom: '10vh',
+        left: '8vw',
+        width: '14.5vw',
+        height: '14.5vw',
+        borderRadius: '50%',
+        background: 'var(--color-glass-bg)',
+        backdropFilter: 'blur(10px)',
+        boxShadow: '0px 0px 1vw 0.5vw var(--color-shadow-gold-light)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1,
+        overflow: 'hidden'
+      }}>
+        <span style={{ fontSize: 'var(--fs-body-sm)', opacity: 0.4 }}>Photo</span>
+      </div>
+
       <p className="body-sm" style={{
         position: 'absolute',
         bottom: '4vh',
