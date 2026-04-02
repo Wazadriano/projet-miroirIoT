@@ -16,10 +16,22 @@
   --font-body: 'Montserrat', sans-serif;
   --font-detail: 'Inter', sans-serif;
 
-  --radius: 10px;
+  /* Figma base: 399px wide. All sizes as vw = px/399*100 */
+  --radius: 2.5vw;
   --radius-pill: 1000px;
-  --radius-circle: 200px;
+  --radius-circle: 50%;
   --transition: 300ms ease;
+
+  /* Typography scaled to viewport */
+  --fs-xl: 8vw;      /* 32px / 399 */
+  --fs-lg: 6vw;      /* 24px / 399 */
+  --fs-md: 5vw;      /* 20px / 399 */
+  --fs-sm: 3.75vw;   /* 15px / 399 */
+  --fs-body: 3.5vw;  /* 14px / 399 */
+  --fs-body-sm: 3vw; /* 12px / 399 */
+  --fs-btn: 4vw;     /* 16px / 399 */
+  --fs-detail: 2.75vw; /* 11px / 399 */
+  --fs-label: 3vw;   /* 12px / 399 */
 }
 
 * {
@@ -44,8 +56,8 @@ html, body, #root {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius);
-  box-shadow: inset 0px 0px 50px 0px var(--color-shadow-gold);
-  padding: 16px;
+  box-shadow: inset 0px 0px 12vw 0px var(--color-shadow-gold);
+  padding: 2.5vw;
   color: var(--color-text);
 }
 
@@ -54,27 +66,26 @@ html, body, #root {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius);
-  box-shadow: inset 0px 0px 2px 0px var(--color-shadow-gold);
-  padding: 16px;
+  box-shadow: inset 0px 0px 0.5vw 0px var(--color-shadow-gold);
+  padding: 4vw;
   color: var(--color-text);
 }
 
 .glass-btn {
   font-family: var(--font-body);
   font-weight: 700;
-  font-size: 16px;
+  font-size: var(--fs-btn);
   cursor: pointer;
   border: none;
   outline: none;
-  min-width: 48px;
-  min-height: 48px;
+  min-height: 12vw;
   border-radius: var(--radius-pill);
-  padding: 6px 20px;
+  padding: 1.5vw 5vw;
   color: var(--color-text);
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 10px 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
   transition: all var(--transition);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -89,22 +100,15 @@ html, body, #root {
   cursor: not-allowed;
 }
 
-.glass-btn-large {
-  composes: glass-btn;
-  width: 190px;
-  height: 50px;
-  font-size: 16px;
-}
-
 .glass-pill {
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: 14px;
-  padding: 4px 16px;
+  font-size: var(--fs-body);
+  padding: 1vw 4vw;
   border-radius: var(--radius-pill);
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 10px 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
   color: var(--color-text);
   display: inline-block;
 }
@@ -112,23 +116,23 @@ html, body, #root {
 .glass-input {
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: 14px;
-  padding: 12px 16px;
+  font-size: var(--fs-body);
+  padding: 3vw 4vw;
   border-radius: var(--radius-pill);
   border: none;
   outline: none;
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 10px 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
   color: var(--color-text);
   width: 100%;
-  min-height: 48px;
+  min-height: 12vw;
   transition: box-shadow var(--transition);
 }
 
 .glass-input:focus {
-  box-shadow: inset 0px 0px 15px 0px var(--color-shadow-gold-light);
+  box-shadow: inset 0px 0px 3.75vw 0px var(--color-shadow-gold-light);
 }
 
 .glass-input::placeholder {
@@ -140,7 +144,7 @@ html, body, #root {
 .title-xl {
   font-family: var(--font-title);
   font-weight: 400;
-  font-size: 32px;
+  font-size: var(--fs-xl);
   line-height: 1.33;
   text-align: center;
 }
@@ -148,7 +152,7 @@ html, body, #root {
 .title-lg {
   font-family: var(--font-title);
   font-weight: 500;
-  font-size: 24px;
+  font-size: var(--fs-lg);
   line-height: 1.33;
   text-align: center;
 }
@@ -156,14 +160,14 @@ html, body, #root {
 .title-md {
   font-family: var(--font-title);
   font-weight: 500;
-  font-size: 20px;
+  font-size: var(--fs-md);
   line-height: 1.33;
 }
 
 .title-sm {
   font-family: var(--font-title);
   font-weight: 500;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   line-height: 1.33;
   text-align: center;
 }
@@ -171,21 +175,21 @@ html, body, #root {
 .body-md {
   font-family: var(--font-body);
   font-weight: 500;
-  font-size: 14px;
+  font-size: var(--fs-body);
   line-height: 1.22;
 }
 
 .body-sm {
   font-family: var(--font-body);
   font-weight: 400;
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   line-height: 1.22;
 }
 
 .detail {
   font-family: var(--font-detail);
   font-weight: 400;
-  font-size: 11px;
+  font-size: var(--fs-detail);
   line-height: 1.21;
   text-align: center;
 }
@@ -193,7 +197,7 @@ html, body, #root {
 .label {
   font-family: var(--font-body);
   font-weight: 200;
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   color: rgba(255, 255, 255, 0.6);
 }
 
@@ -206,7 +210,7 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 5vw;
   position: relative;
   z-index: 1;
 }
@@ -217,7 +221,7 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 100px 20px 20px;
+  padding: 18vw 5vw 5vw;
   position: relative;
   z-index: 1;
 }
@@ -239,14 +243,14 @@ html, body, #root {
   top: 0;
   left: 0;
   right: 0;
-  height: 40px;
+  height: 5vh;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 5vw;
   background: rgba(0, 0, 0, 0.4);
   z-index: 50;
-  font-size: 0.8rem;
+  font-size: var(--fs-body-sm);
   color: rgba(255, 255, 255, 0.5);
   font-family: var(--font-body);
 }
@@ -254,13 +258,13 @@ html, body, #root {
 /* Image effects */
 
 .img-gold-shadow {
-  box-shadow: 0px 0px 4px 3px var(--color-shadow-gold-light);
-  border-radius: 25px;
+  box-shadow: 0px 0px 1vw 0.75vw var(--color-shadow-gold-light);
+  border-radius: 6.25vw;
 }
 
 .img-circle {
   border-radius: var(--radius-circle);
-  box-shadow: 0px 0px 4px 2px var(--color-shadow-gold-light);
+  box-shadow: 0px 0px 1vw 0.5vw var(--color-shadow-gold-light);
 }
 
 /* Animated background */
@@ -279,6 +283,9 @@ html, body, #root {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.bg-animate-img {
   animation: bgPulse 20s ease-in-out infinite;
 }
 
@@ -304,16 +311,16 @@ html, body, #root {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 30px;
+  height: 4.2vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 10px 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
   font-family: var(--font-title);
   font-weight: 400;
-  font-size: 15px;
+  font-size: var(--fs-sm);
   color: var(--color-text);
 }
 
@@ -321,13 +328,13 @@ html, body, #root {
 
 .carousel-dots {
   display: flex;
-  gap: 8px;
+  gap: 2vw;
   justify-content: center;
 }
 
 .carousel-dots .dot {
-  width: 7px;
-  height: 7px;
+  width: 1.8vw;
+  height: 1.8vw;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
 }
@@ -341,23 +348,23 @@ html, body, #root {
 .checkbox-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2.5vw;
   font-family: var(--font-body);
-  font-size: 12px;
+  font-size: var(--fs-body-sm);
   color: var(--color-text);
   cursor: pointer;
 }
 
 .checkbox-row input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 4.5vw;
+  height: 4.5vw;
   accent-color: var(--color-accent);
 }
 
 /* Scrollbar */
 
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 1vw;
 }
 
 ::-webkit-scrollbar-track {
@@ -366,10 +373,10 @@ html, body, #root {
 
 ::-webkit-scrollbar-thumb {
   background: rgba(232, 201, 181, 0.3);
-  border-radius: 4px;
+  border-radius: 1vw;
 }
 
-/* Legacy compat (used by old components) */
+/* Legacy compat */
 
 button {
   font-family: var(--font-body);
@@ -381,14 +388,13 @@ button {
 .btn-primary {
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 10px 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
   color: var(--color-text);
   border-radius: var(--radius-pill);
-  padding: 12px 24px;
+  padding: 3vw 6vw;
   font-weight: 700;
-  font-size: 16px;
-  min-width: 48px;
-  min-height: 48px;
+  font-size: var(--fs-btn);
+  min-height: 12vw;
   transition: all var(--transition);
   text-transform: uppercase;
 }
@@ -400,14 +406,13 @@ button {
 .btn-secondary {
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 2px 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 0.5vw 0px var(--color-shadow-gold);
   color: var(--color-text);
   border-radius: var(--radius-pill);
-  padding: 12px 24px;
+  padding: 3vw 6vw;
   font-weight: 500;
-  font-size: 14px;
-  min-width: 48px;
-  min-height: 48px;
+  font-size: var(--fs-body);
+  min-height: 12vw;
   transition: all var(--transition);
 }
 
@@ -423,6 +428,24 @@ input, textarea {
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
   border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: inset 0px 0px 2px 0px var(--color-shadow-gold);
+  padding: 4vw;
+  box-shadow: inset 0px 0px 0.5vw 0px var(--color-shadow-gold);
+}
+
+/* Disable effects when no GPU */
+body.no-gpu *,
+body.no-gpu .glass-card,
+body.no-gpu .glass-card-subtle,
+body.no-gpu .glass-btn,
+body.no-gpu .glass-input,
+body.no-gpu .btn-primary,
+body.no-gpu .btn-secondary,
+body.no-gpu .card,
+body.no-gpu .promo-banner {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+body.no-gpu .bg-animated img {
+  animation: none !important;
 }

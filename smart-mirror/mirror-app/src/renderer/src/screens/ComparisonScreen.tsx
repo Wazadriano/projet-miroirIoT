@@ -23,7 +23,7 @@ export function ComparisonScreen(): JSX.Element {
       <Header subtitle="Bilan" />
 
       {/* Before/After comparison */}
-      <div style={{ display: 'flex', gap: 12, width: '100%', maxWidth: 350, marginTop: 10, zIndex: 1 }}>
+      <div style={{ display: 'flex', gap: 12, width: '100%', maxWidth: '88vw', marginTop: 10, zIndex: 1 }}>
         <div style={{ flex: 1, textAlign: 'center' }}>
           <p className="body-sm" style={{ marginBottom: 6, opacity: 0.6 }}>Avant</p>
           <div className="img-gold-shadow" style={{
@@ -50,7 +50,7 @@ export function ComparisonScreen(): JSX.Element {
 
       {/* Diagnostic results */}
       {latestAvant?.diagnostic && (
-        <div className="glass-card-subtle" style={{ width: '100%', maxWidth: 350, zIndex: 1 }}>
+        <div className="glass-card-subtle" style={{ width: '100%', maxWidth: '88vw', zIndex: 1 }}>
           <p className="body-sm" style={{ lineHeight: 1.6 }}>
             {latestAvant.diagnostic.categories?.map((cat: { nom: string; score: number; niveau: string }) => (
               <span key={cat.nom}>&#8226; {cat.nom}: {cat.score}% ({cat.niveau})<br/></span>
@@ -65,19 +65,19 @@ export function ComparisonScreen(): JSX.Element {
       )}
 
       {/* Note praticien */}
-      <div style={{ width: '100%', maxWidth: 350, zIndex: 1 }}>
+      <div style={{ width: '100%', maxWidth: '88vw', zIndex: 1 }}>
         <p className="label" style={{ marginBottom: 6 }}>Note praticien :</p>
         <textarea
           className="glass-input"
           placeholder="Ajouter une note de seance..."
           value={noteSeance}
           onChange={(e) => setNoteSeance(e.target.value)}
-          style={{ minHeight: 60, borderRadius: 'var(--radius)', resize: 'none' }}
+          style={{ minHeight: '8vh', borderRadius: 'var(--radius)', resize: 'none' }}
         />
       </div>
 
       <button className="glass-btn" onClick={handleNext}
-        style={{ width: 190, height: 50, zIndex: 1, marginTop: 8 }}>
+        style={{ width: '47.5vw', zIndex: 1, marginTop: 8 }}>
         SUIVANT
       </button>
     </div>

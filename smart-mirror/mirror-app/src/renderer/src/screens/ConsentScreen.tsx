@@ -76,8 +76,8 @@ export function ConsentScreen(): JSX.Element {
 
       <div className="glass-card-subtle" style={{
         width: '100%',
-        maxWidth: 350,
-        maxHeight: 300,
+        maxWidth: '88vw',
+        maxHeight: '35vh',
         overflowY: 'auto',
         zIndex: 1
       }}>
@@ -97,7 +97,7 @@ export function ConsentScreen(): JSX.Element {
         className="glass-btn"
         onClick={handleAccept}
         disabled={!accepted || loading}
-        style={{ width: 190, height: 50, zIndex: 1, marginTop: 8 }}
+        style={{ width: '47.5vw', zIndex: 1, marginTop: 8 }}
       >
         {loading ? '...' : 'ACCEPTER'}
       </button>

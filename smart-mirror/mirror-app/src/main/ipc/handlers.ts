@@ -94,6 +94,11 @@ export function registerIpcHandlers(services: Services): void {
 
   // --- Consentement ---
 
+  safeHandle('consent:checkValid', async (_event, ...args) => {
+    const clienteId = args[0] as string
+    return apiClient.checkValidConsent(clienteId)
+  })
+
   safeHandle('consent:create', async (_event, ...args) => {
     const data = args[0] as { clienteId: string; texteConsent: string }
     return apiClient.createConsentement(data.clienteId, data.texteConsent)

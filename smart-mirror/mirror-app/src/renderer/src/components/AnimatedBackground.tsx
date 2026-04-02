@@ -11,7 +11,7 @@ export function AnimatedBackground({ enabled, suspended }: AnimatedBackgroundPro
 
   return (
     <div className="bg-animated">
-      <img src={backgroundImage} alt="" />
+      <img src={backgroundImage} alt="" className="bg-animate-img" />
     </div>
   )
 }

@@ -55,7 +55,7 @@ export function QRCodeScreen(): JSX.Element {
       </p>
 
       {/* Action buttons */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, zIndex: 1, width: '100%', maxWidth: 250 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, zIndex: 1, width: '100%', maxWidth: '62.5vw' }}>
         <button className="glass-btn" onClick={() => { resetSession() }} style={{ width: '100%' }}>
           VEILLE
         </button>

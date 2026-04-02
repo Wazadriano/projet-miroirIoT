@@ -72,6 +72,13 @@ export class ApiClientService {
 
   // --- Consentements ---
 
+  async checkValidConsent(clienteId: string): Promise<{ valid: boolean; consent?: unknown }> {
+    const res = await this.request<{ valid: boolean; consent?: unknown }>(
+      `${this.baseUrl}/clientes/${clienteId}/consent-valid`
+    )
+    return res.data
+  }
+
   async createConsentement(clienteId: string, texteConsent: string): Promise<unknown> {
     const res = await this.request<unknown>(`${this.baseUrl}/consentements`, {
       method: 'POST',

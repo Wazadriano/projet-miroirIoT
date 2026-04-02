@@ -24,39 +24,39 @@ export function HomeScreen(): JSX.Element {
   return (
     <div className="screen" style={{ padding: 0, justifyContent: 'flex-start' }}>
       {/* Logo */}
-      <div style={{ marginTop: 20, textAlign: 'center', zIndex: 1 }}>
-        <h1 className="title-xl" style={{ fontSize: 28, letterSpacing: 2 }}>K BEAUTY</h1>
-        <p className="title-sm" style={{ letterSpacing: 4, marginTop: 4, opacity: 0.8 }}>COSMETICS</p>
+      <div style={{ marginTop: '3vh', textAlign: 'center', zIndex: 1 }}>
+        <h1 className="title-xl" style={{ letterSpacing: '0.5vw' }}>K BEAUTY</h1>
+        <p className="title-sm" style={{ letterSpacing: '1vw', marginTop: '0.5vh', opacity: 0.8 }}>COSMETICS</p>
       </div>
 
       {/* Product carousel */}
       <div style={{
         display: 'flex',
-        gap: 10,
+        gap: '2.5vw',
         justifyContent: 'center',
         alignItems: 'stretch',
-        marginTop: 40,
-        padding: '0 10px',
+        marginTop: '3vh',
+        padding: '0 2.5vw',
         zIndex: 1,
         flex: 1,
-        maxHeight: 320
+        maxHeight: '45vh'
       }}>
         {PRODUCTS.map((product, i) => (
           <div key={i} className="glass-card" style={{
             flex: 1,
-            maxWidth: 140,
+            maxWidth: '30vw',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            padding: 10,
+            padding: '2.5vw',
             opacity: 0.59,
-            borderRadius: 10,
-            boxShadow: 'inset 0px 0px 50px 0px var(--color-shadow-gold)'
+            borderRadius: '2.5vw',
+            boxShadow: 'inset 0px 0px 12.5vw 0px var(--color-shadow-gold)'
           }}>
             <img
               src={product.image}
               alt=""
-              style={{ height: 120, objectFit: 'contain', marginBottom: 10 }}
+              style={{ height: '20vh', objectFit: 'contain', marginBottom: '1.5vh' }}
             />
             <p className="detail" style={{ flex: 1 }}>{product.text}</p>
           </div>
@@ -64,7 +64,7 @@ export function HomeScreen(): JSX.Element {
       </div>
 
       {/* Carousel dots */}
-      <div className="carousel-dots" style={{ marginTop: 16, zIndex: 1 }}>
+      <div className="carousel-dots" style={{ marginTop: '2vh', zIndex: 1 }}>
         <div className="dot active" />
         <div className="dot" />
         <div className="dot" />
@@ -74,7 +74,7 @@ export function HomeScreen(): JSX.Element {
       <button
         className="glass-btn"
         onClick={() => setScreen('accueil')}
-        style={{ width: 190, height: 50, marginTop: 24, zIndex: 1 }}
+        style={{ width: '47.5vw', marginTop: '3vh', zIndex: 1 }}
       >
         COMMENCER
       </button>

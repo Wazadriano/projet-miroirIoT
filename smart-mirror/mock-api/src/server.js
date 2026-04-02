@@ -105,6 +105,26 @@ api.post('/api/clientes', async (req, res) => {
   }
 });
 
+// Consentements: check valid (within 30 days, not revoked)
+api.get('/api/clientes/:id/consent-valid', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT * FROM consentements
+       WHERE cliente_id = $1 AND date_revocation IS NULL
+       AND date_consentement > NOW() - INTERVAL '30 days'
+       ORDER BY date_consentement DESC LIMIT 1`,
+      [req.params.id]
+    );
+    if (result.rows.length > 0) {
+      res.json({ data: { valid: true, consent: result.rows[0] } });
+    } else {
+      res.json({ data: { valid: false } });
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Consentements: create
 api.post('/api/consentements', async (req, res) => {
   const { boutique_id, cliente_id, texte_consent } = req.body;

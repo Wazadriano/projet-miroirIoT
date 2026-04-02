@@ -16,22 +16,22 @@ export function Header({ subtitle }: HeaderProps): JSX.Element {
     }}>
       <div style={{
         width: '100%',
-        padding: '20px 20px 10px',
+        padding: '2.5vw 5vw 1.5vw',
         textAlign: 'center'
       }}>
-        <h1 className="title-lg" style={{ letterSpacing: '1px' }}>
+        <h1 className="title-lg" style={{ letterSpacing: '0.25vw' }}>
           KBEAUTY - BUBBLE HAIR SPA
         </h1>
       </div>
       <div style={{
         width: '100%',
-        height: 30,
+        height: '4.2vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         background: 'var(--color-glass-bg)',
         backdropFilter: 'blur(10px)',
-        boxShadow: 'inset 0px 0px 10px 0px var(--color-shadow-gold)'
+        boxShadow: 'inset 0px 0px 2.5vw 0px var(--color-shadow-gold)'
       }}>
         {subtitle && (
           <span className="title-sm">{subtitle}</span>

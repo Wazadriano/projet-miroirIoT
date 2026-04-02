@@ -112,7 +112,7 @@ export function SessionScreen(): JSX.Element {
   const currentPhotos = phase === 'avant' ? photosAvant : photosApres
 
   return (
-    <div className="screen-padded" style={{ justifyContent: 'flex-start', paddingBottom: 10 }}>
+    <div className="screen-padded" style={{ justifyContent: 'flex-start', paddingBottom: '1vh' }}>
       <Header subtitle="Diagnostic en cours" />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
@@ -123,16 +123,16 @@ export function SessionScreen(): JSX.Element {
       />
 
       {/* Live badge */}
-      <div className="glass-pill" style={{ marginTop: 8, zIndex: 1 }}>Live</div>
+      <div className="glass-pill" style={{ marginTop: '1vh', zIndex: 1 }}>Live</div>
 
       {/* Microscope stream - circle */}
       <div style={{
-        width: 280,
-        height: 280,
+        width: '70vw',
+        height: '70vw',
         borderRadius: 'var(--radius-circle)',
         overflow: 'hidden',
-        boxShadow: '0px 0px 4px 2px var(--color-shadow-gold-light)',
-        marginTop: 12,
+        boxShadow: '0px 0px 1vw 0.5vw var(--color-shadow-gold-light)',
+        marginTop: '1.5vh',
         position: 'relative',
         zIndex: 1,
         background: '#111'
@@ -145,7 +145,7 @@ export function SessionScreen(): JSX.Element {
           <div style={{
             width: '100%', height: '100%',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            color: 'var(--color-warning)', fontSize: 14
+            color: 'var(--color-warning)', fontSize: 'var(--fs-body)'
           }}>
             Microscope non connecte
           </div>
@@ -156,8 +156,8 @@ export function SessionScreen(): JSX.Element {
           onClick={handleCapture}
           disabled={capturing || analyzing}
           style={{
-            position: 'absolute', bottom: 10, right: 10,
-            width: 40, height: 40, borderRadius: '50%',
+            position: 'absolute', bottom: '2.5vw', right: '2.5vw',
+            width: '10vw', height: '10vw', borderRadius: '50%',
             background: 'var(--color-glass-bg)', backdropFilter: 'blur(10px)',
             border: 'none', cursor: 'pointer', display: 'flex',
             alignItems: 'center', justifyContent: 'center',
@@ -173,9 +173,9 @@ export function SessionScreen(): JSX.Element {
       {/* Diagnostic text */}
       {(analyzing || lastDiagnostic) && (
         <div className="glass-card-subtle" style={{
-          width: '100%', maxWidth: 350, marginTop: 12, zIndex: 1, padding: 12
+          width: '100%', maxWidth: '88vw', marginTop: '1.5vh', zIndex: 1, padding: '3vw'
         }}>
-          <p className="title-md" style={{ marginBottom: 8 }}>Diagnostic :</p>
+          <p className="title-md" style={{ marginBottom: '1vh' }}>Diagnostic :</p>
           {analyzing ? (
             <p className="body-sm" style={{ opacity: 0.6 }}>Analyse en cours...</p>
           ) : lastDiagnostic && (
@@ -188,11 +188,11 @@ export function SessionScreen(): JSX.Element {
 
       {/* Thumbnails */}
       <div style={{
-        display: 'flex', gap: 8, marginTop: 12, zIndex: 1, justifyContent: 'center', flexWrap: 'wrap'
+        display: 'flex', gap: '2vw', marginTop: '1.5vh', zIndex: 1, justifyContent: 'center', flexWrap: 'wrap'
       }}>
         {currentPhotos.slice(0, 4).map((photo) => (
           <div key={photo.photoId} className="img-gold-shadow" style={{
-            width: 70, height: 70, overflow: 'hidden', background: '#222'
+            width: '17.5vw', height: '17.5vw', overflow: 'hidden', background: '#222'
           }}>
             {photo.thumbnailBase64 && (
               <img src={`data:image/jpeg;base64,${photo.thumbnailBase64}`} alt=""
@@ -203,15 +203,15 @@ export function SessionScreen(): JSX.Element {
       </div>
 
       {/* Phase toggle + Next */}
-      <div style={{ display: 'flex', gap: 8, marginTop: 12, zIndex: 1 }}>
+      <div style={{ display: 'flex', gap: '2vw', marginTop: '1.5vh', zIndex: 1 }}>
         <button className="glass-btn" onClick={() => setPhase('avant')}
-          style={{ fontSize: 12, padding: '6px 14px', minHeight: 36,
+          style={{ fontSize: 'var(--fs-body-sm)', padding: '1.5vw 3.5vw', minHeight: '9vw',
             boxShadow: phase === 'avant' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
           }}>
           Avant ({photosAvant.length})
         </button>
         <button className="glass-btn" onClick={() => setPhase('apres')}
-          style={{ fontSize: 12, padding: '6px 14px', minHeight: 36,
+          style={{ fontSize: 'var(--fs-body-sm)', padding: '1.5vw 3.5vw', minHeight: '9vw',
             boxShadow: phase === 'apres' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
           }}>
           Apres ({photosApres.length})
@@ -219,7 +219,7 @@ export function SessionScreen(): JSX.Element {
       </div>
 
       <button className="glass-btn" onClick={() => setScreen('comparison')}
-        style={{ width: 132, height: 39, marginTop: 12, zIndex: 1 }}>
+        style={{ width: '33vw', height: '10vw', marginTop: '1.5vh', zIndex: 1 }}>
         SUIVANT
       </button>
     </div>

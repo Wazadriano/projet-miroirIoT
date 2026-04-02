@@ -20,8 +20,21 @@ export function SearchClientScreen(): JSX.Element {
     return () => { cancelled = true }
   }, [debouncedQuery])
 
-  const handleSelect = (cliente: Cliente): void => {
+  const handleSelect = async (cliente: Cliente): Promise<void> => {
     setCliente(cliente)
+    try {
+      const result = await window.mirrorApi.checkValidConsent(cliente.id)
+      if (result.valid && result.consent) {
+        const seance = await window.mirrorApi.startSeance({
+          clienteId: cliente.id,
+          consentementId: (result.consent as { id: string }).id
+        })
+        useSessionStore.getState().setConsentement(result.consent)
+        useSessionStore.getState().setSeance(seance)
+        setScreen('session')
+        return
+      }
+    } catch { /* no valid consent, show consent screen */ }
     setScreen('consent')
   }
 
@@ -30,10 +43,10 @@ export function SearchClientScreen(): JSX.Element {
       <Header subtitle="Recherche Client" />
 
       {/* Search bar */}
-      <div style={{ width: '100%', maxWidth: 350, marginTop: 20, position: 'relative', zIndex: 1 }}>
+      <div style={{ width: '100%', maxWidth: '88vw', marginTop: '2.5vh', position: 'relative', zIndex: 1 }}>
         <div style={{ position: 'relative' }}>
           <svg width="21" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5"
-            style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)' }}>
+            style={{ position: 'absolute', left: '4vw', top: '50%', transform: 'translateY(-50%)' }}>
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
           <input
@@ -41,21 +54,21 @@ export function SearchClientScreen(): JSX.Element {
             placeholder="Rechercher"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{ paddingLeft: 48, fontFamily: 'var(--font-title)', fontWeight: 400, fontSize: 15 }}
+            style={{ paddingLeft: '12vw', fontFamily: 'var(--font-title)', fontWeight: 400, fontSize: 'var(--fs-sm)' }}
           />
         </div>
       </div>
 
       {/* Results */}
-      <p className="title-sm" style={{ marginTop: 24, zIndex: 1 }}>Resultats Rapides</p>
+      <p className="title-sm" style={{ marginTop: '3vh', zIndex: 1 }}>Resultats Rapides</p>
 
       <div style={{
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
-        gap: 16,
-        marginTop: 16,
+        gap: '4vw',
+        marginTop: '2vh',
         width: '100%',
-        maxWidth: 350,
+        maxWidth: '88vw',
         flex: 1,
         overflowY: 'auto',
         zIndex: 1
@@ -89,7 +102,9 @@ export function SearchClientScreen(): JSX.Element {
             </div>
             <span className="title-sm">{cliente.prenom} {cliente.nom}</span>
             <span className="body-sm" style={{ opacity: 0.6 }}>
-              {cliente.created_at ? new Date(cliente.created_at).toLocaleDateString('fr-FR') : ''}
+              {(cliente as Record<string, unknown>).created_at
+                ? new Date(String((cliente as Record<string, unknown>).created_at)).toLocaleDateString('fr-FR')
+                : ''}
             </span>
           </button>
         ))}
