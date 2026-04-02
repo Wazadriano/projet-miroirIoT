@@ -5,6 +5,14 @@ if (process.env.REMOTE_DEBUG === '1') {
   app.commandLine.appendSwitch('remote-debugging-port', '9222')
   app.commandLine.appendSwitch('remote-debugging-address', '0.0.0.0')
 }
+
+// Disable GPU in VM (no hardware acceleration)
+if (process.env.ELECTRON_DISABLE_GPU === '1') {
+  app.disableHardwareAcceleration()
+  app.commandLine.appendSwitch('disable-gpu')
+  app.commandLine.appendSwitch('disable-gpu-compositing')
+  app.commandLine.appendSwitch('disable-software-rasterizer')
+}
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { registerIpcHandlers } from './ipc/handlers'
@@ -87,6 +95,13 @@ function createWindow(): void {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+  }
+
+  // Inject no-gpu class for VM performance
+  if (process.env.ELECTRON_DISABLE_GPU === '1') {
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow?.webContents.executeJavaScript('document.body.classList.add("no-gpu")')
+    })
   }
 }
 

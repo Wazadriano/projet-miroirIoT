@@ -20,6 +20,8 @@ const api = {
     ipcRenderer.invoke('clientes:create', data),
 
   // Consentement
+  checkValidConsent: (clienteId: string): Promise<{ valid: boolean; consent?: unknown }> =>
+    ipcRenderer.invoke('consent:checkValid', clienteId),
   createConsentement: (data: { clienteId: string; texteConsent: string }): Promise<unknown> =>
     ipcRenderer.invoke('consent:create', data),
 

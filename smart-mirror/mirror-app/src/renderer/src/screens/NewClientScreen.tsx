@@ -40,7 +40,7 @@ export function NewClientScreen(): JSX.Element {
     <div className="screen-padded" style={{ gap: 12 }}>
       <Header subtitle="Inscription Nouveau Client" />
 
-      <div style={{ width: '100%', maxWidth: 350, display: 'flex', flexDirection: 'column', gap: 10, zIndex: 1, marginTop: 10 }}>
+      <div style={{ width: '100%', maxWidth: '88vw', display: 'flex', flexDirection: 'column', gap: 10, zIndex: 1, marginTop: 10 }}>
         <div>
           <label className="label">Nom :</label>
           <input className="glass-input" value={form.nom} onChange={(e) => setForm(p => ({ ...p, nom: e.target.value }))} />
@@ -62,7 +62,7 @@ export function NewClientScreen(): JSX.Element {
               className={form.sexe === 'M' ? 'glass-btn' : 'glass-btn'}
               onClick={() => setForm(p => ({ ...p, sexe: 'M' }))}
               style={{
-                flex: 1, minHeight: 40,
+                flex: 1, minHeight: '10vw',
                 boxShadow: form.sexe === 'M' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
               }}
             >H</button>
@@ -70,7 +70,7 @@ export function NewClientScreen(): JSX.Element {
               className={form.sexe === 'F' ? 'glass-btn' : 'glass-btn'}
               onClick={() => setForm(p => ({ ...p, sexe: 'F' }))}
               style={{
-                flex: 1, minHeight: 40,
+                flex: 1, minHeight: '10vw',
                 boxShadow: form.sexe === 'F' ? 'inset 0px 0px 15px 0px var(--color-shadow-gold-light)' : undefined
               }}
             >F</button>
