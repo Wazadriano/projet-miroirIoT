@@ -1,7 +1,7 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-# CRM config (change these for your deployment)
+# CRM config
 export CRM_BASE_URL="${CRM_BASE_URL:-https://api-kbeauty.a3n.fr/api}"
 export CRM_TOKEN="${CRM_TOKEN:-CHANGEME_SET_VIA_ENV}"
 
@@ -17,6 +17,17 @@ if command -v docker &> /dev/null && docker info &> /dev/null; then
   done
 else
   echo "[Smart Mirror] Docker not available -- running without local backend."
+fi
+
+# Start microscope proxy if not already running
+if ! curl -s http://localhost:9100/ > /dev/null 2>&1; then
+  echo "[Smart Mirror] Starting microscope proxy on :9100..."
+  cd microscope-proxy
+  node proxy.js > /tmp/microscope-proxy.log 2>&1 &
+  cd ..
+  echo "[Smart Mirror] Microscope proxy started (log: /tmp/microscope-proxy.log)"
+else
+  echo "[Smart Mirror] Microscope proxy already running."
 fi
 
 echo "[Smart Mirror] CRM: $CRM_BASE_URL"
