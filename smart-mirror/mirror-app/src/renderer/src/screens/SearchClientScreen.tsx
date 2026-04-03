@@ -120,6 +120,35 @@ export function SearchClientScreen(): JSX.Element {
         ))}
       </div>
 
+      {/* Back button */}
+      <button
+        onClick={() => setScreen('accueil')}
+        style={{
+          position: 'absolute',
+          bottom: 30,
+          left: 30,
+          width: 46,
+          height: 46,
+          borderRadius: '50%',
+          background: 'var(--color-glass-bg)',
+          backdropFilter: 'blur(10px)',
+          boxShadow: '0px 0px 4px 3px var(--color-shadow-gold-light)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: 'none',
+          cursor: 'pointer',
+          zIndex: 1,
+          padding: 0,
+          minWidth: 'unset',
+          minHeight: 'unset'
+        }}
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
       {/* New client button */}
       <button
         onClick={() => setScreen('new-client')}
