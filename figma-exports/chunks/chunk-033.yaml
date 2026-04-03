@@ -1,0 +1,288 @@
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 199.44
+        y: 588.34
+      dimensions:
+        width: 69.8
+        height: 69.8
+    fill_LBSFKK:
+      - type: IMAGE
+        imageRef: b0af1bdd8f31341805c777786f65b27ab2399ceb
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9754806160926819
+              - 0
+              - 0.012259774841368198
+            - - 0
+              - 0.604938268661499
+              - 0.1975308656692505
+          filenameSuffix: 528d27
+    layout_PSHZKR:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 279.21
+        y: 588.34
+      dimensions:
+        width: 69.8
+        height: 69.8
+    fill_LBTKN8:
+      - type: IMAGE
+        imageRef: dfdbf956ec5cd33c8a5760c2d6730697178ff332
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9813334941864014
+              - 0
+              - 0.009333333000540733
+            - - 0
+              - 0.604938268661499
+              - 0.1975308656692505
+          filenameSuffix: '201080'
+    layout_9OXZC7:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 8
+        y: 451
+      dimensions:
+        width: 187
+        height: 49
+    style_8S75QQ:
+      fontFamily: Playfair Display
+      fontWeight: 500
+      fontSize: 20
+      lineHeight: 1.3329999923706055em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_RI5X2W:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7.97
+        y: 139.61
+      dimensions:
+        width: 279.21
+        height: 279.21
+    layout_BJPVJ2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 229.35
+        y: 149.58
+      dimensions:
+        width: 39.89
+        height: 39.89
+    layout_NSN2QQ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 239.32
+        y: 159.55
+      dimensions:
+        width: 19.94
+        height: 19.94
+    layout_AUF4MI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 319.1
+        y: 169.52
+      dimensions:
+        width: 59.83
+        height: 219.38
+    layout_KV2SL1:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 5.3
+        y: 0.01
+      dimensions:
+        width: 54.53
+        height: 219.37
+    layout_LR0E4V:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0.29
+        y: 0
+      dimensions:
+        width: 54.24
+        height: 219.06
+    layout_IMZ7R2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7.45
+        y: 30.63
+      dimensions:
+        width: 44.69
+        height: 45.94
+    layout_78PNYT:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 14.9
+        y: 0
+      dimensions:
+        width: 24.95
+        height: 28.95
+    layout_OKXZG7:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 19.62
+        y: 93.21
+      dimensions:
+        width: 29.92
+        height: 29.92
+    layout_V3SSKP:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 22.35
+        y: 160.79
+      dimensions:
+        width: 22.35
+        height: 22.97
+    layout_5MD40B:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 239
+        y: 526
+      dimensions:
+        width: 132
+        height: 39
+    layout_CY2P31:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 233
+        y: 535
+      dimensions:
+        width: 141
+        height: 25
+    layout_YS9XSC:
+      mode: none
+      sizing: {}
+      dimensions:
+        width: 24
+        height: 24
+    layout_33KLUI:
+      mode: none
+      sizing: {}
+      dimensions:
+        width: 14
+        height: 14
+    layout_2YV9L2:
+      mode: none
+      sizing: {}
+      dimensions:
+        width: 49
+        height: 63
+    fill_9LO764:
+      - '#B3B2B2'
+    layout_ULH8HA:
+      mode: none
+      sizing: {}
+      dimensions:
+        width: 6
+        height: 22
+    layout_36FKCF:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 0.53
+        y: 0
+      dimensions:
+        width: 5.47
+        height: 22
+    layout_LACL2V:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0.44
+        y: 0
+      dimensions:
+        width: 5.02
+        height: 22.01
+    layout_MVFTJY:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 5.02
+        height: 22.01
+    layout_9MR742:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0.75
+        y: 3.07
+      dimensions:
+        width: 4.48
+        height: 4.61
+    layout_FDTQ2E:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1.49
+        y: 0
+      dimensions:
+        width: 2.5
+        height: 2.9
+    layout_7YGGU0:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1.97
+        y: 9.35
+      dimensions:
+        width: 3
+        height: 3
+    layout_CFM8SX:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 2.24
+        y: 16.12
+      dimensions:
+        width: 2.24
+        height: 2.3

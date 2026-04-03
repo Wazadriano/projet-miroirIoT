@@ -1,0 +1,800 @@
+        y: 259
+      dimensions:
+        width: 120
+        height: 262
+    layout_SOBAH1:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 120
+        height: 262
+    layout_UNC9VA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 49.86
+        y: 269.24
+      dimensions:
+        width: 29.92
+        height: 109.69
+    fill_HP6ZTU:
+      - type: IMAGE
+        imageRef: 0faa0ed14f8951ad61382b9df151d194f0b86fab
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.23076924681663513
+              - 0
+              - 0.38461539149284363
+            - - 0
+              - 0.8461538553237915
+              - 0
+          filenameSuffix: 3885bd
+    layout_1DM47F:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 179
+        y: 278
+      dimensions:
+        width: 46
+        height: 101
+    fill_S0RNJ6:
+      - type: IMAGE
+        imageRef: 24e397e25496c6a9ccd57fd06e89db35011b3782
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.4545454680919647
+              - 0
+              - 0.27272728085517883
+            - - 0
+              - 1
+              - 0
+          filenameSuffix: 254d84
+    layout_J3SSJH:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 318
+        y: 280
+      dimensions:
+        width: 25
+        height: 92
+    fill_TOQR4A:
+      - type: IMAGE
+        imageRef: 7700730d2bf23950e50b6143ed1c595e422e8a5d
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.20000001788139343
+              - 0
+              - 0.4000000059604645
+            - - 0
+              - 0.73333340883255
+              - 0.13333335518836975
+          filenameSuffix: 1928cd
+    layout_7FMCV2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 14
+        y: 392
+      dimensions:
+        width: 109.69
+        height: 89.75
+    style_NW612N:
+      fontFamily: Inter
+      fontWeight: 400
+      fontSize: 11
+      lineHeight: 1.2102272727272727em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_RDAVCR:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 146
+        y: 392
+      dimensions:
+        width: 109.69
+        height: 89.75
+    layout_7LPBTE:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 276
+        y: 392
+      dimensions:
+        width: 109.69
+        height: 89.75
+    layout_8F6MVD:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 114
+        y: 539
+      dimensions:
+        width: 189.52
+        height: 49.88
+    layout_BD7ZFJ:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 190
+        height: 50
+    layout_OBBASX:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 190
+        height: 50
+    layout_JGUDHV:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 135
+        y: 557
+      dimensions:
+        width: 141
+        height: 25
+    style_R6I350:
+      fontFamily: Montserrat
+      fontWeight: 700
+      fontSize: 16
+      lineHeight: 1.218999981880188em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_SDPE2X:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 681
+      dimensions:
+        width: 399
+        height: 25
+    style_X1C4Z4:
+      fontFamily: Playfair Display
+      fontWeight: 400
+      fontSize: 15
+      lineHeight: 1.3329999287923178em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_MLB1NX:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 185
+        y: 525
+      dimensions:
+        width: 36
+        height: 7.2
+    layout_D2USZE:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 7.2
+        height: 7.2
+    layout_HW042P:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 14.4
+        y: 0
+      dimensions:
+        width: 6.48
+        height: 7.2
+    layout_LTUBIU:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 29.52
+        y: 0
+      dimensions:
+        width: 6.48
+        height: 7.2
+    layout_JM5GHU:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -2
+        y: 0
+      dimensions:
+        width: 399
+        height: 708
+    fill_OBRYG3:
+      - type: IMAGE
+        imageRef: d3078312c758be87be7550663337b5568c4699ad
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.8453389406204224
+              - 0
+              - 0.041313547641038895
+            - - 0
+              - 0.9992088675498962
+              - 0.0003955696302000433
+          filenameSuffix: 1a6700
+    layout_GY1FL5:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 60
+        y: 439
+      dimensions:
+        width: 113
+        height: 141
+    fill_WI1XME:
+      - type: IMAGE
+        imageRef: 425c7825f4726310d335810503531bcadd936f98
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9785810112953186
+              - 0
+              - 0.010709504596889019
+            - - 0
+              - 0.8333333730697632
+              - 0.0833333358168602
+          filenameSuffix: caedba
+    effect_ZPFZOA:
+      boxShadow: 0px 0px 4px 3px rgba(232, 201, 181, 1)
+    layout_3HN67M:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 82
+        y: 135
+      dimensions:
+        width: 253
+        height: 46
+    layout_LWYDIP:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 253
+        height: 46
+    layout_VDAXOF:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 253
+        height: 46
+    layout_0SHAIO:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 60
+        y: 429
+      dimensions:
+        width: 60
+        height: 10
+    style_ISPKGH:
+      fontFamily: Montserrat
+      fontWeight: 200
+      fontSize: 1
+      lineHeight: 1.218999981880188em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_5SZ3SV:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 130
+        y: 374
+      dimensions:
+        width: 50
+        height: 10
+    layout_PFAQUW:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 239
+        y: 369
+      dimensions:
+        width: 81
+        height: 20
+    style_VY4QD4:
+      fontFamily: Montserrat
+      fontWeight: 500
+      fontSize: 2
+      lineHeight: 1.218999981880188em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_9WGR0F:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 19.94
+        y: 19.94
+      dimensions:
+        width: 349.01
+        height: 49.86
+    style_D3PRMB:
+      fontFamily: Playfair Display
+      fontWeight: 500
+      fontSize: 24
+      lineHeight: 1.3329999446868896em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_LABIBG:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 0
+        y: 60
+      dimensions:
+        width: 397
+        height: 30
+    layout_BVDXVE:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 397
+        height: 30
+    layout_LFOH1R:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 397
+        height: 30
+    layout_6LGQWB:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 129.63
+        y: 63.83
+      dimensions:
+        width: 139.61
+        height: 19.94
+    style_WG5V6R:
+      fontFamily: Playfair Display
+      fontWeight: 500
+      fontSize: 15
+      lineHeight: 1.3329999287923178em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_BSC9KJ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 94
+        y: 148
+      dimensions:
+        width: 139.61
+        height: 19.94
+    layout_A7ZAHN:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 99
+        y: 148
+      dimensions:
+        width: 21
+        height: 20
+    fill_F33GD0:
+      - '#E8C9B5'
+    layout_2Z1E13:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 60
+        y: 248
+      dimensions:
+        width: 108
+        height: 135
+    fill_NCK94N:
+      - type: IMAGE
+        imageRef: 4018f72ee6776bf4961d237e339a0104f42cf1c5
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9846359491348267
+              - 0
+              - 0.00768203055486083
+            - - 0
+              - 0.8333333730697632
+              - 0.0833333358168602
+          filenameSuffix: 2e131e
+    layout_UPP93W:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 237
+        y: 245
+      dimensions:
+        width: 109
+        height: 136
+    fill_GSUIFW:
+      - type: IMAGE
+        imageRef: c2a0c3b07718f6f8f64834839f0bdfef1f91c6ce
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9866130948066711
+              - 0
+              - 0.006693440489470959
+            - - 0
+              - 0.8333333730697632
+              - 0.015480483882129192
+          filenameSuffix: '504e86'
+    layout_BMPS4I:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 244
+        y: 436
+      dimensions:
+        width: 107
+        height: 138
+    fill_TOTUJH:
+      - type: IMAGE
+        imageRef: 11b562b542aafbb4d68d2d51e37d07585bdc1eb6
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9753825068473816
+              - 0
+              - 0.012308715842664242
+            - - 0
+              - 0.858208954334259
+              - 0.058457713574171066
+          filenameSuffix: 175b15
+    layout_RZDJZ4:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 42
+        y: 389
+      dimensions:
+        width: 144
+        height: 19
+    layout_3DY3VM:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 51
+        y: 210
+      dimensions:
+        width: 144
+        height: 19
+    layout_6XKZKA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 65
+        y: 408
+      dimensions:
+        width: 99
+        height: 16
+    style_AJAGTZ:
+      fontFamily: Montserrat
+      fontWeight: 400
+      fontSize: 12
+      lineHeight: 1.219000021616618em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_78JQ6X:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 65
+        y: 611
+      dimensions:
+        width: 99
+        height: 16
+    layout_5DPH94:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 243
+        y: 408
+      dimensions:
+        width: 99
+        height: 16
+    layout_EV7CZ0:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 242
+        y: 608
+      dimensions:
+        width: 99
+        height: 16
+    layout_EZNE1X:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 222
+        y: 386
+      dimensions:
+        width: 144
+        height: 19
+    layout_X6R2FP:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 42
+        y: 592
+      dimensions:
+        width: 144
+        height: 19
+    layout_1XVZQN:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 225
+        y: 588
+      dimensions:
+        width: 144
+        height: 19
+    layout_K0JQ2Z:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 309
+        y: 285
+      dimensions:
+        width: 71
+        height: 69
+    layout_8OUEVA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 71
+        height: 69
+    fill_I5SSMD:
+      - '#F7F7F7'
+      - rgba(0, 0, 0, 0.32)
+      - rgba(255, 255, 255, 0.65)
+    layout_7Q3A5U:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 322
+        y: 305
+      dimensions:
+        width: 45
+        height: 30
+    layout_K4BKSO:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 328
+        y: 638
+      dimensions:
+        width: 46.05
+        height: 46.05
+    layout_K9LN31:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -10
+        y: 548
+      dimensions:
+        width: 304
+        height: 12
+    style_OP0GAW:
+      fontFamily: Montserrat
+      fontWeight: 500
+      fontSize: 12
+      lineHeight: 1.219000021616618em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_DES460:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -5
+        y: 500
+      dimensions:
+        width: 304
+        height: 12
+    layout_945GEK:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 79
+        y: 135
+      dimensions:
+        width: 253
+        height: 46
+    layout_3VNU07:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 20
+        y: 135
+      dimensions:
+        width: 47
+        height: 46
+    layout_M949FW:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 47
+        height: 46
+    layout_X05FOX:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 47
+        height: 46
+    layout_WKHHDX:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 20
+        y: 202
+      dimensions:
+        width: 47
+        height: 46
+    layout_8O0MP9:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 20
+        y: 278
+      dimensions:
+        width: 47
+        height: 46
+    layout_RK2BHF:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 20
+        y: 351
+      dimensions:
+        width: 47
+        height: 46
+    layout_BB2247:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 20
+        y: 426
+      dimensions:
+        width: 47
+        height: 46
+    layout_AVREXL:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:

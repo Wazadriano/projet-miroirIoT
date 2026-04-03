@@ -1,0 +1,800 @@
+      dimensions:
+        width: 18.92
+        height: 22.62
+    layout_696WFC:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 15.58
+        y: 12.28
+      dimensions:
+        width: 14.22
+        height: 3.87
+    layout_3082ZE:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 145.31
+        y: 665.44
+      dimensions:
+        width: 139.53
+        height: 5.01
+    layout_DZ0YUV:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 52.92
+        y: 0.06
+      dimensions:
+        width: 4.43
+        height: 4.87
+    layout_V60BPX:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 17.86
+        y: 0
+      dimensions:
+        width: 5.04
+        height: 5
+    layout_9A01ZW:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 4.73
+        height: 5
+    layout_B7FGWG:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 118.17
+        y: 0.01
+      dimensions:
+        width: 4.65
+        height: 4.99
+    layout_7JZ0GT:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 35.96
+        y: 0.01
+      dimensions:
+        width: 3.5
+        height: 4.98
+    layout_26P8RE:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 136.06
+        y: 0.01
+      dimensions:
+        width: 3.47
+        height: 5
+    layout_EDL344:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 71.1
+        y: 0.08
+      dimensions:
+        width: 2.97
+        height: 4.84
+    layout_99DG32:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 87.09
+        y: 0.08
+      dimensions:
+        width: 3.62
+        height: 4.85
+    layout_10C0MD:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 104.02
+        y: 0.09
+      dimensions:
+        width: 0.71
+        height: 4.82
+    layout_YOUD4N:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 207.5
+        y: 675.39
+      dimensions:
+        width: 24.02
+        height: 6.77
+    layout_VOXFYB:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 2.21
+      dimensions:
+        width: 4.3
+        height: 3.72
+    layout_6VUXKK:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 18.44
+        y: 4.16
+      dimensions:
+        width: 4.84
+        height: 2.61
+    layout_YHR4ZH:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 9.74
+        y: 4.03
+      dimensions:
+        width: 4.46
+        height: 2.71
+    layout_MO3COB:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 8.98
+        y: 0.56
+      dimensions:
+        width: 3.62
+        height: 3.31
+    layout_RPIX11:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 4.65
+        y: 0
+      dimensions:
+        width: 1.78
+        height: 6.74
+    layout_12L8ZH:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 18.45
+        y: 1.06
+      dimensions:
+        width: 4.82
+        height: 1.63
+    layout_IC1AYZ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 17.72
+        y: 2.87
+      dimensions:
+        width: 6.3
+        height: 1.18
+    layout_WLQOPB:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 13.41
+        y: 0
+      dimensions:
+        width: 1.87
+        height: 4.01
+    layout_8U1LGC:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0.02
+        y: 1.39
+      dimensions:
+        width: 4.13
+        height: 0.68
+    layout_XPHDGI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 18.51
+        y: 0.38
+      dimensions:
+        width: 4.71
+        height: 0.61
+    layout_7IF2W2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1.01
+        y: 0.42
+      dimensions:
+        width: 2.22
+        height: 0.68
+    layout_O5P71A:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 353
+        y: 634
+      dimensions:
+        width: 36
+        height: 36
+    fill_4QJVJR:
+      - type: GRADIENT_RADIAL
+        gradient: radial-gradient(circle at -11% 135%, rgba(249, 237, 65, 1) 0%, rgba(255, 131, 61, 1) 24%, rgba(238, 84, 104, 1) 40%, rgba(231, 64, 123, 1) 49%, rgba(0, 40, 255, 1) 100%)
+    layout_9R0Z4J:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7.85
+        y: 7.85
+      dimensions:
+        width: 20.3
+        height: 20.3
+    layout_Z4C6HI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 20.3
+        height: 20.3
+    layout_JKPPIC:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 5.01
+        y: 5.02
+      dimensions:
+        width: 10.27
+        height: 10.27
+    layout_ZJKPWI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 14.51
+        y: 3.12
+      dimensions:
+        width: 2.67
+        height: 2.67
+    layout_BD808M:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7
+        y: 582
+      dimensions:
+        width: 103
+        height: 38
+    style_KTF53X:
+      fontFamily: Montserrat
+      fontWeight: 700
+      fontSize: 13
+      lineHeight: 1.219000009390024em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_C4FH7W:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 249
+        y: 496
+      dimensions:
+        width: 132
+        height: 39
+    layout_LRYFFH:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 132
+        height: 39
+    layout_LA3K5D:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 132
+        height: 39
+    layout_8QZGN1:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 245
+        y: 505
+      dimensions:
+        width: 141
+        height: 25
+    layout_YG0XCS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 33
+        y: 179
+      dimensions:
+        width: 138
+        height: 199
+    fill_FXNKPJ:
+      - type: IMAGE
+        imageRef: b208a824b2472493c7c476a4e3b791a37654b191
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.7225128412246704
+              - 0
+              - 0.09545909613370895
+            - - 0
+              - 0.7000002264976501
+              - 0.15000000596046448
+          filenameSuffix: 21d6da
+    effect_TK78W3:
+      boxShadow: 0px 0px 4px 2px rgba(232, 201, 181, 1)
+    layout_FW1GBL:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 180
+        y: 179
+      dimensions:
+        width: 144
+        height: 199
+    fill_VTZV01:
+      - type: IMAGE
+        imageRef: 11b562b542aafbb4d68d2d51e37d07585bdc1eb6
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9444907307624817
+              - 0
+              - 0.0030375111382454634
+            - - 0
+              - 0.896600604057312
+              - 0.008425180800259113
+          filenameSuffix: 1b6606
+    layout_4889R3:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 325
+        y: 170
+      dimensions:
+        width: 59
+        height: 218
+    layout_DM9NAS:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 5.23
+        y: 0.01
+      dimensions:
+        width: 53.77
+        height: 217.99
+    layout_S4HQ3J:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: -0.47
+        y: -0.0
+      dimensions:
+        width: 54.24
+        height: 218.06
+    layout_7ZRYME:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 54.24
+        height: 218.06
+    layout_EO2M4L:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7.35
+        y: 30.43
+      dimensions:
+        width: 44.07
+        height: 45.65
+    layout_7L9R0U:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 14.69
+        y: 0
+      dimensions:
+        width: 24.61
+        height: 28.77
+    layout_GK37AB:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 19.35
+        y: 92.62
+      dimensions:
+        width: 29.5
+        height: 29.73
+    layout_ZIJ7QI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 22.04
+        y: 159.77
+      dimensions:
+        width: 22.04
+        height: 22.82
+    layout_EMBAX5:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 31
+        y: 140
+      dimensions:
+        width: 109
+        height: 19
+    layout_EI6OXO:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -1
+        y: 419
+      dimensions:
+        width: 189
+        height: 69
+    style_YZBF2J:
+      fontFamily: Montserrat
+      fontWeight: 500
+      fontSize: 15
+      lineHeight: 1.218999989827474em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_9JTTYL:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 59
+        y: 450
+      dimensions:
+        width: 319
+        height: 61
+    style_M36KZT:
+      fontFamily: Montserrat
+      fontWeight: 500
+      fontSize: 12
+      lineHeight: 1.219000021616618em
+      textAlignHorizontal: LEFT
+      textAlignVertical: TOP
+    layout_8ZXWCC:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 20.57
+        y: 19.93
+      dimensions:
+        width: 358.82
+        height: 99.67
+    layout_R3K0R3:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 358.82
+        height: 68.92
+    layout_04JZNS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 131.96
+        y: 16.87
+      dimensions:
+        width: 31.99
+        height: 43.5
+    layout_YWFLFS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 170.93
+        y: 17.24
+      dimensions:
+        width: 29.28
+        height: 42.82
+    layout_01EGWW:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 242.65
+        y: 17.2
+      dimensions:
+        width: 34.38
+        height: 43.49
+    layout_7RPFY5:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 202.8
+        y: 17.19
+      dimensions:
+        width: 35.97
+        height: 42.89
+    layout_IOPEY1:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 321.28
+        y: 17.22
+      dimensions:
+        width: 37.55
+        height: 42.83
+    layout_IQ4684:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 281.09
+        y: 17.24
+      dimensions:
+        width: 38.09
+        height: 42.8
+    layout_GPU6KU:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 116.86
+        height: 68.92
+    layout_F7TUF4:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 68.87
+        height: 68.92
+    layout_HV62QI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 81.46
+        y: 17.64
+      dimensions:
+        width: 35.4
+        height: 42.41
+    layout_PGQO07:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 29.14
+        y: 23.03
+      dimensions:
+        width: 26.6
+        height: 7.26
+    layout_R7CYIO:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 180.43
+        y: 69.07
+      dimensions:
+        width: 9
+        height: 9
+    layout_L3935R:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 115.43
+        y: 69.07
+      dimensions:
+        width: 9
+        height: 9
+    layout_M8S5WA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 81.43
+        y: 69.07
+      dimensions:
+        width: 9
+        height: 9
+    layout_T7J55F:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 304.43
+        y: 69.07
+      dimensions:
+        width: 8
+        height: 9
+    layout_7H2OD1:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 148.43
+        y: 69.07
+      dimensions:
+        width: 8
+        height: 9
+    layout_74JTR3:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 336.43
+        y: 69.07
+      dimensions:
+        width: 8
+        height: 9
+    layout_GA4P87:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 215.43
+        y: 69.07
+      dimensions:
+        width: 5
+        height: 9
+    layout_NHQ3D7:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 244.43
+        y: 69.07
+      dimensions:
+        width: 8
+        height: 9
+    layout_VWJO2P:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 277.43
+        y: 69.07
+      dimensions:
+        width: 1
+        height: 9
+    layout_6TCQZ9:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 197.38
+        y: 86.98
+      dimensions:
+        width: 44.93
+        height: 12.69
+    layout_48EWDJ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 34.49
+        y: 7.8
+      dimensions:
+        width: 9.06
+        height: 4.89
+    layout_IQTVIE:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 18.23
+        y: 7.55
+      dimensions:
+        width: 8.35
+        height: 5.09
+    layout_BRRHZ2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 16.8
+        y: 1.05
+      dimensions:
+        width: 6.77
+        height: 6.2
+    layout_I7W3LA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 8.69
+        y: 0
+      dimensions:
+        width: 3.33
+        height: 12.64
+    layout_YWQT9Q:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 34.51
+        y: 1.99
+      dimensions:
+        width: 9.01
+        height: 3.06
+    layout_PBFOIV:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 33.15
+        y: 5.38
+      dimensions:
+        width: 11.78
+        height: 2.21
+    layout_W8MK30:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 25.09
+        y: 0
+      dimensions:
+        width: 3.49
+        height: 7.53
+    layout_I0TSW4:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0.04
+        y: 2.6
+      dimensions:
+        width: 7.72
+        height: 1.28
+    layout_PXQ9PZ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 34.63
+        y: 0.7
+      dimensions:
+        width: 8.81
+        height: 1.15
+    layout_NJZTOJ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 40
+        y: 378
+      dimensions:
+        width: 81
+        height: 100
+    layout_WFS4GI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 81
+        height: 100
+    layout_CH8MMK:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 41
+        y: 119
+      dimensions:
+        width: 80

@@ -1,0 +1,800 @@
+                    type: VARIANT
+                children:
+                  - id: I144:2114;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_MP11VG
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I144:2114;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_MP11VG
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 68:2232
+            name: Live
+            type: TEXT
+            layout: layout_VJ4QRI
+            text: Live
+            textStyle: style_JDKKOW
+            fills: fill_7GZMXH
+          - id: 128:1293
+            name: Cheveux légèrement secs sur les longueurs, racines équilibrées. Un soin hydratant apportera plus de douceur et de brillance.
+            type: TEXT
+            layout: layout_VWVW4H
+            text: Cheveux légèrement secs sur les longueurs, racines équilibrées. Un soin hydratant apportera plus de douceur et de brillance.
+            textStyle: style_M36KZT
+            fills: fill_7GZMXH
+          - id: 68:2236
+            name: Button - Liquid Glass - Text
+            type: INSTANCE
+            layout: layout_JE5BY8
+            effects: effect_NOR0C7
+            borderRadius: 1000px
+            componentId: 11:1112
+            componentProperties:
+              - name: Tinted
+                value: 'False'
+                type: VARIANT
+            children:
+              - id: I68:2236;5583:24021
+                name: BG
+                type: INSTANCE
+                layout: layout_9V41PZ
+                componentId: 10:973
+                componentProperties:
+                  - name: Mode
+                    value: Light
+                    type: VARIANT
+                  - name: State
+                    value: Default
+                    type: VARIANT
+                children:
+                  - id: I68:2236;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_E0IBJ2
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I68:2236;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_E0IBJ2
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 68:2237
+            name: ChatGPT Image 31 mars 2026 à 11_25_00 13
+            type: RECTANGLE
+            layout: layout_IDWW43
+            fills: fill_9YJ7A7
+            borderRadius: 25px
+          - id: 68:2238
+            name: ChatGPT Image 31 mars 2026 à 11_25_00 copie 4
+            type: RECTANGLE
+            layout: layout_7ZOBR0
+            fills: fill_DW2K1G
+            borderRadius: 25px
+          - id: 68:2239
+            name: ChatGPT Image 31 mars 2026 à 11_25_00 copie 2 1
+            type: RECTANGLE
+            layout: layout_8EHDF3
+            fills: fill_LBSFKK
+            borderRadius: 25px
+          - id: 68:2240
+            name: ChatGPT Image 31 mars 2026 à 11_25_00 copie 3 1
+            type: RECTANGLE
+            layout: layout_PSHZKR
+            fills: fill_LBTKN8
+            borderRadius: 25px
+          - id: 68:2241
+            name: 'Diagnostic :'
+            type: TEXT
+            layout: layout_9OXZC7
+            text: 'Diagnostic :'
+            textStyle: style_8S75QQ
+            fills: fill_7GZMXH
+          - id: 68:2245
+            name: ChatGPT Image 31 mars 2026 à 11_51_47 1
+            type: RECTANGLE
+            layout: layout_RI5X2W
+            fills: fill_PH6WY4
+            effects: effect_TK78W3
+            borderRadius: 200px
+          - id: 68:2246
+            name: Liquid Glass - Regular - Small
+            type: INSTANCE
+            layout: layout_BJPVJ2
+            effects: effect_NOR0C7
+            componentId: 10:973
+            componentProperties:
+              - name: Mode
+                value: Light
+                type: VARIANT
+              - name: State
+                value: Default
+                type: VARIANT
+            children:
+              - id: I68:2246;6491:20172
+                name: Fill + Shadow
+                type: FRAME
+                layout: layout_9DPU8W
+                fills: fill_53G9VT
+                effects: effect_OGGT0N
+                borderRadius: 296px
+              - id: I68:2246;6491:20173
+                name: Glass Effect
+                type: FRAME
+                layout: layout_9DPU8W
+                fills: fill_S77YKB
+                borderRadius: 296px
+          - id: 68:2247
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_NSN2QQ
+            fills: fill_F33GD0
+          - id: 68:2248
+            name: Group 4
+            type: INSTANCE
+            layout: layout_AUF4MI
+            effects: effect_2UW7N8
+            componentId: 21:390
+            children:
+              - id: I68:2248;19:14
+                name: Button - Liquid Glass - Text
+                type: INSTANCE
+                layout: layout_KV2SL1
+                borderRadius: 1000px
+                componentId: 11:1112
+                componentProperties:
+                  - name: Tinted
+                    value: 'False'
+                    type: VARIANT
+                children:
+                  - id: I68:2248;19:14;5583:24021
+                    name: BG
+                    type: INSTANCE
+                    layout: layout_LR0E4V
+                    componentId: 10:973
+                    componentProperties:
+                      - name: Mode
+                        value: Light
+                        type: VARIANT
+                      - name: State
+                        value: Default
+                        type: VARIANT
+                    children:
+                      - id: I68:2248;19:14;5583:24021;6491:20172
+                        name: Fill + Shadow
+                        type: FRAME
+                        layout: layout_H4SKEA
+                        fills: fill_57DR1A
+                        effects: effect_OGGT0N
+                        borderRadius: 296px
+                      - id: I68:2248;19:14;5583:24021;6491:20173
+                        name: Glass Effect
+                        type: FRAME
+                        layout: layout_H4SKEA
+                        fills: fill_S77YKB
+                        borderRadius: 296px
+              - id: I68:2248;19:20
+                name: home_24dp_1F1F1F_FILL0_wght100_GRAD0_opsz24 1
+                type: IMAGE-SVG
+                layout: layout_IMZ7R2
+                fills: fill_7GZMXH
+              - id: I68:2248;125:2722
+                name: Vector
+                type: IMAGE-SVG
+                layout: layout_OKXZG7
+                fills: fill_F33GD0
+              - id: I68:2248;21:21
+                name: Vector
+                type: IMAGE-SVG
+                layout: layout_V3SSKP
+                fills: fill_F33GD0
+          - id: 125:2534
+            name: Button - Liquid Glass - Text
+            type: INSTANCE
+            layout: layout_5MD40B
+            effects: effect_NOR0C7
+            borderRadius: 1000px
+            componentId: 11:1112
+            componentProperties:
+              - name: Tinted
+                value: 'False'
+                type: VARIANT
+            children:
+              - id: I125:2534;5583:24021
+                name: BG
+                type: INSTANCE
+                layout: layout_LRYFFH
+                componentId: 10:973
+                componentProperties:
+                  - name: Mode
+                    value: Light
+                    type: VARIANT
+                  - name: State
+                    value: Default
+                    type: VARIANT
+                children:
+                  - id: I125:2534;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_LA3K5D
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I125:2534;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_LA3K5D
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 125:2540
+            name: SUIVANT
+            type: TEXT
+            layout: layout_CY2P31
+            text: SUIVANT
+            textStyle: style_R6I350
+            fills: fill_7GZMXH
+      - id: 125:2457
+        name: male_24dp_1F1F1F_FILL0_wght200_GRAD0_opsz24 1
+        type: FRAME
+        layout: layout_YS9XSC
+        fills: fill_7GZMXH
+      - id: 142:2815
+        name: male_24dp_1F1F1F_FILL0_wght200_GRAD0_opsz24 2
+        type: FRAME
+        layout: layout_33KLUI
+        fills: fill_7GZMXH
+      - id: 142:2027
+        name: arrow_range_24dp_1F1F1F_FILL0_wght200_GRAD0_opsz24 1
+        type: FRAME
+        layout: layout_YS9XSC
+        fills: fill_7GZMXH
+  - id: 21:391
+    name: Composant
+    type: CANVAS
+    children:
+      - id: 21:403
+        name: Rectangle 1
+        type: RECTANGLE
+        layout: layout_2YV9L2
+        fills: fill_9LO764
+      - id: 21:390
+        name: Group 3
+        type: COMPONENT
+        layout: layout_ULH8HA
+        effects: effect_2UW7N8
+        children:
+          - id: 19:14
+            name: Button - Liquid Glass - Text
+            type: INSTANCE
+            layout: layout_36FKCF
+            borderRadius: 1000px
+            componentId: 11:1112
+            componentProperties:
+              - name: Tinted
+                value: 'False'
+                type: VARIANT
+            children:
+              - id: I19:14;5583:24021
+                name: BG
+                type: INSTANCE
+                layout: layout_LACL2V
+                componentId: 10:973
+                componentProperties:
+                  - name: Mode
+                    value: Light
+                    type: VARIANT
+                  - name: State
+                    value: Default
+                    type: VARIANT
+                children:
+                  - id: I19:14;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_MVFTJY
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I19:14;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_MVFTJY
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 19:20
+            name: home_24dp_1F1F1F_FILL0_wght100_GRAD0_opsz24 1
+            type: IMAGE-SVG
+            layout: layout_9MR742
+            fills: fill_7GZMXH
+          - id: 125:2722
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_7YGGU0
+            fills: fill_F33GD0
+          - id: 21:21
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_CFM8SX
+            fills: fill_F33GD0
+globalVars:
+  styles:
+    layout_70A88T:
+      mode: none
+      sizing: {}
+      dimensions:
+        width: 39.8
+        height: 70.8
+    fill_7GZMXH:
+      - '#FFFFFF'
+    layout_YSJY6F:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 2
+        y: 14
+      dimensions:
+        width: 29
+        height: 29
+    fill_UCLBNJ:
+      - '#D9D9D9'
+    layout_4HML4H:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 5
+        y: 4
+      dimensions:
+        width: 28
+        height: 0
+    stroke_ZH14C3:
+      colors:
+        - '#000000'
+      strokeWeight: 1px
+    layout_VOMGJO:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 12
+        y: 10
+      dimensions:
+        width: 14
+        height: 0
+    layout_G1MOZ9:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -0.5
+        y: 51.98
+      dimensions:
+        width: 42
+        height: 0.02
+    stroke_AU7AKW:
+      colors:
+        - '#000000'
+      strokeWeight: 0.44999998807907104px
+    layout_J8SO2W:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 55
+      dimensions:
+        width: 40
+        height: 10
+    layout_M7MU5F:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 11
+        y: 56
+      dimensions:
+        width: 8
+        height: 8
+    fill_DWF8F5:
+      - '#453333'
+    layout_0MD1O0:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 31
+        y: 56
+      dimensions:
+        width: 8
+        height: 8
+    layout_PXUI2J:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 21
+        y: 56
+      dimensions:
+        width: 8
+        height: 8
+    layout_NU1159:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 25
+        y: 16
+      dimensions:
+        width: 4
+        height: 4
+    layout_JPV4YJ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1
+        y: 56
+      dimensions:
+        width: 8
+        height: 8
+    layout_SDA9D4:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 34.06
+        y: 15.02
+      dimensions:
+        width: 5.65
+        height: 26.13
+    layout_JV8OUD:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 2
+        y: 45
+      dimensions:
+        width: 32
+        height: 5
+    layout_P1W6YS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 22
+        y: 66
+      dimensions:
+        width: 1
+        height: 1
+    fill_PYN7D9:
+      - '#000000'
+    layout_WJD6IT:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 16
+        y: 66
+      dimensions:
+        width: 1
+        height: 1
+    layout_VM96UG:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 19
+        y: 66
+      dimensions:
+        width: 1
+        height: 1
+    layout_5XAG7P:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 35
+        y: 16
+      dimensions:
+        width: 4
+        height: 5
+    fill_26MSDC:
+      - rgba(69, 51, 51, 0.47)
+    layout_EXVLAF:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 35
+        y: 22
+      dimensions:
+        width: 4
+        height: 5
+    layout_NJVUWZ:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 35
+        y: 29
+      dimensions:
+        width: 4
+        height: 5
+    layout_V6ICJO:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 35
+        y: 35
+      dimensions:
+        width: 4
+        height: 5
+    layout_K68RR8:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 4
+        y: 47
+      dimensions:
+        width: 27
+        height: 0
+    stroke_3XM6C6:
+      colors:
+        - '#000000'
+      strokeWeight: 0.25px
+    layout_BH8RSS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 4
+        y: 48
+      dimensions:
+        width: 27
+        height: 0
+    layout_HS7PYV:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 5
+        y: 14
+      dimensions:
+        width: 29
+        height: 29
+    layout_R5H5ZL:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 12
+        y: 50
+      dimensions:
+        width: 14
+        height: 0
+    layout_3DZYT6:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 5
+        y: 53
+      dimensions:
+        width: 27
+        height: 8
+    layout_X742XB:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 13
+        y: 55
+      dimensions:
+        width: 4
+        height: 4
+    layout_WJXWL1:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 20
+        y: 55
+      dimensions:
+        width: 4
+        height: 4
+    layout_IXFTNW:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 29
+        y: 18
+      dimensions:
+        width: 4
+        height: 4
+    layout_1L135Z:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 26
+        y: 55
+      dimensions:
+        width: 4
+        height: 4
+    layout_AIKT7V:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7
+        y: 55
+      dimensions:
+        width: 4
+        height: 4
+    layout_TZHRDI:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 22
+        y: 64
+      dimensions:
+        width: 15
+        height: 4
+    layout_NWKBI0:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 2
+        y: 64
+      dimensions:
+        width: 15
+        height: 4
+    layout_3X5FAC:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 3
+        y: 5
+      dimensions:
+        width: 33
+        height: 62
+    layout_VPZP4G:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 33
+        y: 4
+      dimensions:
+        width: 4
+        height: 4
+    layout_B2QZ8Z:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 5
+        y: 79
+      dimensions:
+        width: 51
+        height: 15
+    layout_NWBW5I:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 3
+        y: 111
+      dimensions:
+        width: 6
+        height: 6
+    layout_KPTNNS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 3
+        y: 101
+      dimensions:
+        width: 6
+        height: 6
+    layout_3JQDG4:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 13
+        y: 104
+      dimensions:
+        width: 18
+        height: 0
+    layout_7V6QRO:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 22
+        y: 75
+      dimensions:
+        width: 18
+        height: 0
+    layout_V2BIFS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 13
+        y: 114
+      dimensions:
+        width: 18
+        height: 0
+    layout_OXU9HD:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7
+        y: 83
+      dimensions:
+        width: 7
+        height: 8
+    fill_45WBOC:
+      - '#232020'
+    layout_6CU76B:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 18
+        y: 83
+      dimensions:
+        width: 7
+        height: 8
+    layout_WQPWH5:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 37
+        y: 83
+      dimensions:
+        width: 7
+        height: 8
+    layout_Z1WA6O:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 43
+        y: 37
+      dimensions:
+        width: 4
+        height: 5
+    layout_WB0V72:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 47
+        y: 83
+      dimensions:
+        width: 7
+        height: 8
+    layout_CWQSTC:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -48
+        y: 81
+      dimensions:
+        width: 39.8
+        height: 70.8
+    layout_G3ECFK:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 5
+        y: 5
+      dimensions:
+        width: 28
+        height: 0
+    layout_JZ22BS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1
+        y: 8
+      dimensions:
+        width: 15
+        height: 15
+    layout_N25QTD:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1
+        y: 26
+      dimensions:
+        width: 15
+        height: 15
+    layout_9VNPF7:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 17
+        y: 8
+      dimensions:
+        width: 15
+        height: 15
+    layout_Z750JX:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:

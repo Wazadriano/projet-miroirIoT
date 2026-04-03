@@ -1,0 +1,800 @@
+        height: 100
+    layout_5EW3DV:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 140
+        y: 119
+      dimensions:
+        width: 80
+        height: 99
+    fill_KBNWHK:
+      - type: IMAGE
+        imageRef: 11b562b542aafbb4d68d2d51e37d07585bdc1eb6
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9753825664520264
+              - 0
+              - 0.012308715842664242
+            - - 0
+              - 0.8333333730697632
+              - 0.0833333358168602
+          filenameSuffix: 48e7bc
+    layout_W5KVPD:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 239
+        y: 119
+      dimensions:
+        width: 80
+        height: 100
+    fill_FSYWVA:
+      - type: IMAGE
+        imageRef: f4ab0c0a6f8c96ce4b4b0386e7250e72f7086212
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9760000109672546
+              - 0
+              - 0.012000000104308128
+            - - 0
+              - 0.8333333730697632
+              - 0.0833333358168602
+          filenameSuffix: 67d325
+    layout_DYVWYS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -19
+        y: 89
+      dimensions:
+        width: 189
+        height: 69
+    style_8LX4MV:
+      fontFamily: Montserrat
+      fontWeight: 500
+      fontSize: 1.5
+      lineHeight: 1.219000021616618em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_DGQ486:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -19
+        y: 218
+      dimensions:
+        width: 189
+        height: 70
+    layout_4FP6FS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: -19
+        y: 348
+      dimensions:
+        width: 189
+        height: 70
+    layout_62DWCA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 41
+        y: 378
+      dimensions:
+        width: 83.14
+        height: 97
+    fill_DFOT5V:
+      - type: IMAGE
+        imageRef: b208a824b2472493c7c476a4e3b791a37654b191
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.8826348781585693
+              - 0
+              - 0.09545909613370895
+            - - 0
+              - 0.7000002264976501
+              - 0.15000000596046448
+          filenameSuffix: 6b09eb
+    layout_U1HOJX:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 140
+        y: 378
+      dimensions:
+        width: 83
+        height: 96
+    fill_DW2K1G:
+      - type: IMAGE
+        imageRef: b8345a9582ee27e4c947d47b2092008f21a20e6a
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9781312346458435
+              - 0
+              - 0.010934393852949142
+            - - 0
+              - 0.7777777910232544
+              - 0.1111111119389534
+          filenameSuffix: b90a2f
+    layout_RJMTRF:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 239
+        y: 378
+      dimensions:
+        width: 83
+        height: 97
+    fill_4RU6L9:
+      - type: IMAGE
+        imageRef: b0af1bdd8f31341805c777786f65b27ab2399ceb
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9754804968833923
+              - 0
+              - 0.012259774841368198
+            - - 0
+              - 0.7777777910232544
+              - 0.1111111119389534
+          filenameSuffix: 1a6bae
+    layout_BN1S52:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 41
+        y: 249
+      dimensions:
+        width: 80
+        height: 100
+    layout_BY83SR:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 319
+        y: 169
+      dimensions:
+        width: 60
+        height: 219
+    layout_0EOF1A:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 5.32
+        y: 0.01
+      dimensions:
+        width: 54.68
+        height: 218.99
+    layout_X4VQV2:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0.44
+        y: 0
+      dimensions:
+        width: 54.24
+        height: 219.06
+    layout_MQ1JQD:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 7.47
+        y: 30.57
+      dimensions:
+        width: 44.82
+        height: 45.86
+    layout_MDD967:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 14.94
+        y: 0
+      dimensions:
+        width: 25.02
+        height: 28.9
+    layout_HCYQO0:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 19.68
+        y: 93.04
+      dimensions:
+        width: 30
+        height: 29.86
+    layout_8XS33N:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 22.41
+        y: 160.51
+      dimensions:
+        width: 22.41
+        height: 22.93
+    layout_8147R9:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 140
+        y: 249
+      dimensions:
+        width: 80
+        height: 99
+    layout_3NHCJB:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 239
+        y: 249
+      dimensions:
+        width: 80
+        height: 100
+    fill_NJECUX:
+      - type: IMAGE
+        imageRef: ae98d8ec174dc6c811eacf88cc4824843a5f9442
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.9759036302566528
+              - 0
+              - 0.012048192322254181
+            - - 0
+              - 0.8333333730697632
+              - 0.0833333358168602
+          filenameSuffix: '494742'
+    layout_PU5SG2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 20
+        y: 19
+      dimensions:
+        width: 350
+        height: 50
+    layout_LFLGQC:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 1
+        y: 59
+      dimensions:
+        width: 398
+        height: 30
+    layout_MZFVHQ:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 398
+        height: 30
+    layout_IJ7M8U:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 398
+        height: 30
+    layout_84TCKA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 160
+        y: 64
+      dimensions:
+        width: 80
+        height: 20
+    layout_N2I5ZS:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 100.47
+        y: 198.52
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_ZILJYP:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_LTCZI4:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 20
+        height: 20
+    layout_NE3ZLW:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 4.72
+        y: 4.99
+      dimensions:
+        width: 9.93
+        height: 9.98
+    layout_JRG4LA:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 100.47
+        y: 328.21
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_VLC823:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 100.47
+        y: 457.9
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_ZV4Z8F:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 200.02
+        y: 328.21
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_MQJT0H:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 4.47
+        y: 4.99
+      dimensions:
+        width: 9.93
+        height: 9.98
+    layout_EYESGL:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 200.02
+        y: 457.9
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_UAIF65:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 299.58
+        y: 457.9
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_FA9275:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 4.22
+        y: 4.99
+      dimensions:
+        width: 9.93
+        height: 9.98
+    layout_6M89WD:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 299.58
+        y: 328.21
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_VPWM2T:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 200.02
+        y: 198.52
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_EWZN2E:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 299.58
+        y: 198.52
+      dimensions:
+        width: 19.91
+        height: 19.95
+    layout_ZQ5ON8:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 230
+        y: 498
+      dimensions:
+        width: 189
+        height: 69
+    style_CTTZW6:
+      fontFamily: Montserrat
+      fontWeight: 500
+      fontSize: 20
+      lineHeight: 1.2189999580383302em
+      textAlignHorizontal: CENTER
+      textAlignVertical: TOP
+    layout_PE14CU:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 20
+        y: 567
+      dimensions:
+        width: 110
+        height: 110
+    layout_T0L4PL:
+      mode: none
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      position: absolute
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 110
+        height: 110
+    layout_CZNXBK:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 110
+        height: 110
+    layout_652CP4:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 144
+        y: 567
+      dimensions:
+        width: 110
+        height: 110
+    layout_3I41XA:
+      mode: row
+      justifyContent: center
+      alignItems: center
+      gap: 4px
+      padding: 6px 20px
+      sizing:
+        horizontal: fixed
+        vertical: fixed
+      locationRelativeToParent:
+        x: 276
+        y: 567
+      dimensions:
+        width: 110
+        height: 110
+    layout_KKMVF5:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 281
+        y: 572
+      dimensions:
+        width: 99
+        height: 99
+    fill_3FSPFB:
+      - type: IMAGE
+        imageRef: 25ea102483a83ad7bba77c150b514ad09f0c3c9c
+        scaleMode: FILL
+        objectFit: cover
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: false
+          requiresImageDimensions: false
+    layout_G61QE2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 18
+        y: 567
+      dimensions:
+        width: 110
+        height: 110
+    fill_5CAMAI:
+      - type: IMAGE
+        imageRef: 31c1c89d6925c0a73def83766f153bbed469eba6
+        scaleMode: FILL
+        objectFit: cover
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: false
+          requiresImageDimensions: false
+    layout_OS5D9C:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 145
+        y: 567
+      dimensions:
+        width: 109
+        height: 110
+    fill_VAXIUK:
+      - type: IMAGE
+        imageRef: 77b3a8d9dd8d1f8a67ddb3d49ec71d18f5aaa63d
+        scaleMode: FILL
+        objectFit: cover
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: false
+          requiresImageDimensions: false
+    layout_QYOT6J:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1
+        y: 3
+      dimensions:
+        width: 399
+        height: 705
+    fill_XU44PR:
+      - rgba(0, 0, 0, 0.44)
+    layout_W5VBXC:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 110
+        y: 119
+      dimensions:
+        width: 179
+        height: 360
+    fill_61QB6A:
+      - type: IMAGE
+        imageRef: b8345a9582ee27e4c947d47b2092008f21a20e6a
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.5679471492767334
+              - 0
+              - 0.0801696628332138
+            - - 0
+              - 0.7777777910232544
+              - 0.10453852266073227
+          filenameSuffix: 42195b
+    layout_UPS3B2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 299
+        y: 119
+      dimensions:
+        width: 100
+        height: 360
+    fill_UU1ZCP:
+      - type: IMAGE
+        imageRef: b0af1bdd8f31341805c777786f65b27ab2399ceb
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.41583138704299927
+              - 0
+              - 0.29208430647850037
+            - - 0
+              - 0.9946619868278503
+              - 0.005338022019714117
+          filenameSuffix: 5a2026
+    layout_3E1TAY:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 119
+      dimensions:
+        width: 100
+        height: 360
+    fill_W7CH9B:
+      - type: IMAGE
+        imageRef: b208a824b2472493c7c476a4e3b791a37654b191
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.41797587275505066
+              - 0
+              - 0.33298802375793457
+            - - 0
+              - 0.9944652318954468
+              - -0.0009345068247057498
+          filenameSuffix: '597431'
+    layout_APL9KP:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 170
+        y: 498
+      dimensions:
+        width: 50
+        height: 10
+    layout_V6IS4H:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 0
+        y: 0
+      dimensions:
+        width: 10
+        height: 10
+    layout_0UIZC2:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 20
+        y: 0
+      dimensions:
+        width: 9
+        height: 10
+    layout_WF60P0:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 41
+        y: 0
+      dimensions:
+        width: 9
+        height: 10
+    layout_105VU3:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 356
+        y: 104
+      dimensions:
+        width: 40
+        height: 39
+    layout_53C9Z5:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 366
+        y: 114
+      dimensions:
+        width: 20
+        height: 19
+    layout_NF4AW5:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 1
+        y: -3
+      dimensions:
+        width: 399
+        height: 705
+    layout_XEF269:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 110
+        y: 119
+      dimensions:
+        width: 169
+        height: 359
+    fill_IXBSG5:
+      - type: IMAGE
+        imageRef: c2a0c3b07718f6f8f64834839f0bdfef1f91c6ce
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.6931014060974121
+              - 0
+              - 0.15950076282024384
+            - - 0
+              - 0.9672181010246277
+              - 0.025453107431530952
+          filenameSuffix: 5eb517
+    layout_6VIED0:
+      mode: none
+      sizing: {}
+      locationRelativeToParent:
+        x: 300
+        y: 119
+      dimensions:
+        width: 99
+        height: 359
+    fill_YKKSGX:
+      - type: IMAGE
+        imageRef: ae98d8ec174dc6c811eacf88cc4824843a5f9442
+        scaleMode: STRETCH
+        objectFit: fill
+        isBackground: false
+        imageDownloadArguments:
+          needsCropping: true
+          requiresImageDimensions: false
+          cropTransform:
+            - - 0.4038221836090088
+              - 0
+              - 0.012048192322254181
+            - - 0
+              - 0.8333333730697632
+              - 0.0833333358168602
