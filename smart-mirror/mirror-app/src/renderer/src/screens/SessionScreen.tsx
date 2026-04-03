@@ -87,7 +87,8 @@ export function SessionScreen(): JSX.Element {
   }
 
   const handleCapture = async (): Promise<void> => {
-    if (!seance || capturing) return
+    if (!seance) { console.error('[Session] No seance - cannot capture. seance:', seance); return }
+    if (capturing) return
     setCapturing(true)
     const snapshot = await window.mirrorApi.captureMicroscopeSnapshot()
     if (!snapshot.success || !snapshot.imageBase64) {
