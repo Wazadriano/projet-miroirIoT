@@ -33,7 +33,32 @@ export class CrmSyncService {
   private get crmHeaders(): Record<string, string> {
     return {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.config.getCrmToken()}`
+      'Accept': 'application/json',
+      'Authorization': `Bearer ${this.crmBearerToken || this.config.getCrmToken()}`
+    }
+  }
+
+  // CRM auth: exchange MAC + device_token for a Bearer token
+  private crmBearerToken = ''
+
+  async authenticate(): Promise<boolean> {
+    if (!this.crmUrl) return false
+    try {
+      const response = await fetch(`${this.crmUrl}/miroir/auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          adresse_mac: this.config.getMacAddress(),
+          token_device: this.config.getCrmToken()
+        }),
+        signal: AbortSignal.timeout(10000)
+      })
+      if (!response.ok) return false
+      const result = await response.json()
+      this.crmBearerToken = result.data?.token || result.token || ''
+      return Boolean(this.crmBearerToken)
+    } catch {
+      return false
     }
   }
 
@@ -45,12 +70,23 @@ export class CrmSyncService {
       return false
     }
     try {
+      // Authenticate if we don't have a bearer token yet
+      if (!this.crmBearerToken) {
+        const authed = await this.authenticate()
+        if (!authed) { this.online = false; return false }
+      }
       const response = await fetch(`${this.crmUrl}/miroir/heartbeat`, {
         method: 'POST',
         headers: this.crmHeaders,
         body: JSON.stringify({}),
         signal: AbortSignal.timeout(5000)
       })
+      if (response.status === 401) {
+        // Token expired, re-auth
+        this.crmBearerToken = ''
+        this.online = false
+        return false
+      }
       this.online = response.ok
     } catch {
       this.online = false
@@ -230,7 +266,10 @@ export class CrmSyncService {
 
     const response = await fetch(`${this.crmUrl}/miroir/photos`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${this.config.getCrmToken()}` },
+      headers: {
+        'Authorization': `Bearer ${this.crmBearerToken || this.config.getCrmToken()}`,
+        'Accept': 'application/json'
+      },
       body: formData,
       signal: AbortSignal.timeout(30000)
     })
