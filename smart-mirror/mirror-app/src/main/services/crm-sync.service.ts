@@ -109,11 +109,12 @@ export class CrmSyncService {
     if (!this.crmUrl) return []
     const response = await fetch(
       `${this.crmUrl}/miroir/clientes?search=${encodeURIComponent(query)}`,
-      { headers: this.crmHeaders, signal: AbortSignal.timeout(5000) }
+      { headers: this.crmHeaders, signal: AbortSignal.timeout(10000) }
     )
     if (!response.ok) return []
     const result = await response.json()
-    return result.data || []
+    // CRM may return array directly or wrapped in {data: [...]}
+    return Array.isArray(result) ? result : (result.data || [])
   }
 
   // --- Sync pipeline ---
