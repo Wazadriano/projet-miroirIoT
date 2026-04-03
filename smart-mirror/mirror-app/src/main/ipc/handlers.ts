@@ -85,29 +85,33 @@ export function registerIpcHandlers(services: Services): void {
   safeHandle('clientes:search', async (_event, ...args) => {
     const query = args[0] as string
 
-    // Local search (may fail if Docker not running)
-    let localResults: Array<{ id: string; [k: string]: unknown }> = []
-    try {
-      localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
-      if (!Array.isArray(localResults)) localResults = []
-    } catch { /* local backend unavailable */ }
-
-    // CRM search when online (cross-mirror client lookup)
+    // CRM first (source of truth, cross-mirror clients)
     if (crmSync.isOnline()) {
       try {
         const crmResults = await crmSync.searchClientesCrm(query) as Array<{ id: string; [k: string]: unknown }>
-        if (Array.isArray(crmResults) && crmResults.length > 0) {
-          const localIds = new Set(localResults.map(c => c.id))
-          for (const crmClient of crmResults) {
-            if (!localIds.has(crmClient.id)) {
-              localResults.push(crmClient)
+        if (Array.isArray(crmResults) && crmResults.length >= 0) {
+          // Merge with local unsynced clients
+          try {
+            const localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
+            if (Array.isArray(localResults)) {
+              const crmIds = new Set(crmResults.map(c => c.id))
+              for (const local of localResults) {
+                if (!crmIds.has(local.id)) crmResults.push(local)
+              }
             }
-          }
+          } catch { /* local unavailable, CRM results are enough */ }
+          return crmResults
         }
-      } catch { /* CRM unavailable */ }
+      } catch { /* CRM failed, fall through to local */ }
     }
 
-    return localResults
+    // Fallback: local only
+    try {
+      const localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
+      if (Array.isArray(localResults)) return localResults
+    } catch { /* local also unavailable */ }
+
+    return []
   })
 
   safeHandle('clientes:create', async (_event, ...args) => {
