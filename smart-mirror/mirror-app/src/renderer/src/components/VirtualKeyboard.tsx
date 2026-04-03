@@ -4,8 +4,10 @@ import 'react-simple-keyboard/build/css/index.css'
 
 interface VirtualKeyboardProps {
   visible: boolean
+  minimized: boolean
   onInput: (key: string) => void
   onClose: () => void
+  onToggleMinimize: () => void
   layout?: 'default' | 'numeric'
 }
 
@@ -17,8 +19,7 @@ const SIZES: Record<KbSize, { width: string; btnH: string; fontSize: string; gap
   large:  { width: '85vw', btnH: '7vw',   fontSize: '3.5vw', gap: '0.7vw' }
 }
 
-export function VirtualKeyboard({ visible, onInput, onClose, layout = 'default' }: VirtualKeyboardProps): JSX.Element | null {
-  const [minimized, setMinimized] = useState(false)
+export function VirtualKeyboard({ visible, minimized, onInput, onClose, onToggleMinimize, layout = 'default' }: VirtualKeyboardProps): JSX.Element | null {
   const [size, setSize] = useState<KbSize>('medium')
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null)
   const isDragging = useRef(false)
@@ -76,15 +77,13 @@ export function VirtualKeyboard({ visible, onInput, onClose, layout = 'default' 
         position: 'fixed', bottom: '2vh', left: '50%', transform: 'translateX(-50%)',
         zIndex: 200, display: 'flex', gap: '2vw'
       }}>
-        <button className="glass-btn" onClick={() => setMinimized(false)}
+        <button className="glass-btn" onClick={onToggleMinimize}
           style={{ fontSize: 'var(--fs-body-sm)', padding: '1.5vw 4vw', minHeight: '6vw' }}>
           Clavier
         </button>
       </div>
     )
   }
-
-  const left = pos ? pos.x : `calc(50vw - ${parseInt(s.width) / 2}vw)`
 
   return (
     <div className="keyboard-container" style={{
@@ -119,7 +118,7 @@ export function VirtualKeyboard({ visible, onInput, onClose, layout = 'default' 
             fontSize: '1.5vw', cursor: 'pointer', padding: '0.3vw 1.5vw', borderRadius: '1vw',
             minHeight: 'unset', minWidth: 'unset', fontFamily: 'Montserrat, sans-serif'
           }}>{size === 'small' ? 'S' : size === 'medium' ? 'M' : 'L'}</button>
-          <button onClick={() => setMinimized(true)} style={{
+          <button onClick={onToggleMinimize} style={{
             background: 'transparent', border: 'none', color: '#E8C9B5',
             fontSize: '2vw', cursor: 'pointer', padding: '0.5vw', minHeight: 'unset', minWidth: 'unset'
           }}>_</button>
@@ -135,7 +134,7 @@ export function VirtualKeyboard({ visible, onInput, onClose, layout = 'default' 
           layout={layouts}
           onKeyPress={handleKeyPress}
           theme="hg-theme-default kb-glass"
-          display={{ '{bksp}': '⌫', '{enter}': '↵', '{space}': ' ', '{shift}': '⇧' }}
+          display={{ '{bksp}': '&#9003;', '{enter}': '&#8629;', '{space}': ' ', '{shift}': '&#8679;' }}
         />
       </div>
 

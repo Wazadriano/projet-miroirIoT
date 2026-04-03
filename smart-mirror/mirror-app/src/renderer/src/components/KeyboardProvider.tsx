@@ -3,9 +3,11 @@ import { VirtualKeyboard } from './VirtualKeyboard'
 
 interface KeyboardContextType {
   showKeyboard: boolean
+  minimized: boolean
+  toggleMinimize: () => void
 }
 
-const KeyboardContext = createContext<KeyboardContextType>({ showKeyboard: false })
+const KeyboardContext = createContext<KeyboardContextType>({ showKeyboard: false, minimized: false, toggleMinimize: () => {} })
 
 export function useKeyboard(): KeyboardContextType {
   return useContext(KeyboardContext)
@@ -13,6 +15,7 @@ export function useKeyboard(): KeyboardContextType {
 
 export function KeyboardProvider({ children }: { children: ReactNode }): JSX.Element {
   const [showKeyboard, setShowKeyboard] = useState(false)
+  const [minimized, setMinimized] = useState(false)
   const activeInputRef = useRef<HTMLInputElement | HTMLTextAreaElement | null>(null)
   const [layout, setLayout] = useState<'default' | 'numeric'>('default')
 
@@ -21,7 +24,6 @@ export function KeyboardProvider({ children }: { children: ReactNode }): JSX.Ele
       const target = e.target as HTMLElement
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
         const input = target as HTMLInputElement | HTMLTextAreaElement
-        // Skip if inside keyboard container
         if (input.closest('.keyboard-container')) return
         activeInputRef.current = input
         setLayout(input.type === 'number' ? 'numeric' : 'default')
@@ -37,7 +39,6 @@ export function KeyboardProvider({ children }: { children: ReactNode }): JSX.Ele
     const input = activeInputRef.current
     if (!input) return
 
-    // Re-focus the input so React tracks it
     input.focus()
 
     const start = input.selectionStart ?? input.value.length
@@ -61,7 +62,6 @@ export function KeyboardProvider({ children }: { children: ReactNode }): JSX.Ele
       cursorPos = start + 1
     }
 
-    // Use the native setter to trigger React's onChange
     const nativeSetter = Object.getOwnPropertyDescriptor(
       input.tagName === 'TEXTAREA' ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype,
       'value'
@@ -73,11 +73,9 @@ export function KeyboardProvider({ children }: { children: ReactNode }): JSX.Ele
       input.value = newVal
     }
 
-    // Fire both input and change events for React to pick up
     input.dispatchEvent(new Event('input', { bubbles: true }))
     input.dispatchEvent(new Event('change', { bubbles: true }))
 
-    // Restore cursor position
     requestAnimationFrame(() => {
       input.setSelectionRange(cursorPos, cursorPos)
     })
@@ -85,16 +83,23 @@ export function KeyboardProvider({ children }: { children: ReactNode }): JSX.Ele
 
   const handleClose = useCallback(() => {
     setShowKeyboard(false)
+    setMinimized(false)
     activeInputRef.current = null
   }, [])
 
+  const toggleMinimize = useCallback(() => {
+    setMinimized(m => !m)
+  }, [])
+
   return (
-    <KeyboardContext.Provider value={{ showKeyboard }}>
+    <KeyboardContext.Provider value={{ showKeyboard, minimized, toggleMinimize }}>
       {children}
       <VirtualKeyboard
         visible={showKeyboard}
+        minimized={minimized}
         onInput={handleInput}
         onClose={handleClose}
+        onToggleMinimize={toggleMinimize}
         layout={layout}
       />
     </KeyboardContext.Provider>
