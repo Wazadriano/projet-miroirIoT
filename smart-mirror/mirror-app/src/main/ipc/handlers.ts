@@ -84,21 +84,27 @@ export function registerIpcHandlers(services: Services): void {
 
   safeHandle('clientes:search', async (_event, ...args) => {
     const query = args[0] as string
-    const localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
 
-    // Merge with CRM results when online (cross-mirror client lookup)
+    // Local search (may fail if Docker not running)
+    let localResults: Array<{ id: string; [k: string]: unknown }> = []
+    try {
+      localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
+      if (!Array.isArray(localResults)) localResults = []
+    } catch { /* local backend unavailable */ }
+
+    // CRM search when online (cross-mirror client lookup)
     if (crmSync.isOnline()) {
       try {
         const crmResults = await crmSync.searchClientesCrm(query) as Array<{ id: string; [k: string]: unknown }>
-        const localIds = new Set(localResults.map(c => c.id))
-        const merged = [...localResults]
-        for (const crmClient of crmResults) {
-          if (!localIds.has(crmClient.id)) {
-            merged.push(crmClient)
+        if (Array.isArray(crmResults) && crmResults.length > 0) {
+          const localIds = new Set(localResults.map(c => c.id))
+          for (const crmClient of crmResults) {
+            if (!localIds.has(crmClient.id)) {
+              localResults.push(crmClient)
+            }
           }
         }
-        return merged
-      } catch { /* CRM unavailable, local results are fine */ }
+      } catch { /* CRM unavailable */ }
     }
 
     return localResults
