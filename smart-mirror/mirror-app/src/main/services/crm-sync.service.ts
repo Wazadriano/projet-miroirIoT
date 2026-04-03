@@ -55,7 +55,8 @@ export class CrmSyncService {
       })
       if (!response.ok) return false
       const result = await response.json()
-      this.crmBearerToken = result.data?.token || result.token || ''
+      this.crmBearerToken = result.token || result.data?.token || ''
+      console.log(`[CrmSync] Authenticated with CRM, mirror: ${result.miroir?.nom || result.data?.miroir?.nom || 'unknown'}`)
       return Boolean(this.crmBearerToken)
     } catch {
       return false
