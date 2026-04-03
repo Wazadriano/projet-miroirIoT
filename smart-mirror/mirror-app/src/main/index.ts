@@ -149,7 +149,8 @@ app.whenReady().then(async () => {
     )
   })
 
-  // CRM sync: check online every 30s, sync every 60s
+  // CRM sync: check online immediately then every 30s
+  crmSync.checkOnline().then(online => console.log(`[CrmSync] Online: ${online}`))
   setInterval(() => crmSync.checkOnline(), 30_000)
   setInterval(async () => {
     if (crmSync.isOnline()) {
