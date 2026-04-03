@@ -5,7 +5,7 @@ import { Header } from '../components/Header'
 export function NewClientScreen(): JSX.Element {
   const { setScreen, setCliente } = useSessionStore()
   const [form, setForm] = useState({
-    nom: '', prenom: '', email: '', sexe: '', age: ''
+    nom: '', prenom: '', email: '', sexe: '', dateNaissance: ''
   })
   const [rgpd1, setRgpd1] = useState(false)
   const [rgpd2, setRgpd2] = useState(false)
@@ -22,11 +22,19 @@ export function NewClientScreen(): JSX.Element {
     }
     setError('')
     try {
+      // Convert JJ/MM/AAAA to YYYY-MM-DD for API
+      let date_de_naissance: string | undefined
+      if (form.dateNaissance) {
+        const parts = form.dateNaissance.split('/')
+        if (parts.length === 3) {
+          date_de_naissance = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
+        }
+      }
       const cliente = await window.mirrorApi.createCliente({
         prenom: form.prenom,
         nom: form.nom,
         email: form.email || undefined,
-        age: form.age ? parseInt(form.age) : undefined,
+        date_de_naissance,
         sexe: form.sexe || undefined
       })
       setCliente(cliente as Cliente)
@@ -88,20 +96,33 @@ export function NewClientScreen(): JSX.Element {
         </div>
 
         <div>
-          <label className="label">Age :</label>
+          <label className="label">Date de naissance (JJ/MM/AAAA) :</label>
           <input
             className="glass-input"
-            type="number"
-            min="0"
-            max="120"
-            value={form.age}
+            type="text"
+            inputMode="numeric"
+            placeholder="JJ/MM/AAAA"
+            value={form.dateNaissance}
             onChange={(e) => {
-              const val = e.target.value
-              if (val === '' || (parseInt(val) >= 0 && parseInt(val) <= 120)) {
-                setForm(p => ({ ...p, age: val }))
-              }
+              let val = e.target.value.replace(/[^0-9/]/g, '')
+              // Auto-insert slashes
+              if (val.length === 2 && !val.includes('/')) val += '/'
+              if (val.length === 5 && val.split('/').length === 2) val += '/'
+              if (val.length <= 10) setForm(p => ({ ...p, dateNaissance: val }))
             }}
           />
+          {form.dateNaissance.length === 10 && (() => {
+            const parts = form.dateNaissance.split('/')
+            if (parts.length === 3) {
+              const birth = new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]))
+              const today = new Date()
+              let age = today.getFullYear() - birth.getFullYear()
+              const m = today.getMonth() - birth.getMonth()
+              if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--
+              if (age >= 0 && age <= 120) return <p className="body-sm" style={{ marginTop: '1vw', opacity: 0.6 }}>{age} ans</p>
+            }
+            return null
+          })()}
         </div>
 
         {/* RGPD checkboxes */}

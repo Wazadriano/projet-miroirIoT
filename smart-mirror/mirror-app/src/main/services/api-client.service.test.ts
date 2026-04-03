@@ -66,10 +66,10 @@ describe('ApiClientService', () => {
   })
 
   describe('createCliente', () => {
-    it('should POST to /clientes with boutique_id included', async () => {
+    it('should POST to /clientes with boutique_id and date_de_naissance', async () => {
       mockFetchOk({ id: 'c2', prenom: 'Sophie', nom: 'Martin' })
 
-      await api.createCliente({ prenom: 'Sophie', nom: 'Martin', email: 's@test.com' })
+      await api.createCliente({ prenom: 'Sophie', nom: 'Martin', email: 's@test.com', date_de_naissance: '1990-05-15' })
 
       expect(fetch).toHaveBeenCalledWith(
         'http://localhost:8000/api/clientes',
@@ -79,6 +79,7 @@ describe('ApiClientService', () => {
             prenom: 'Sophie',
             nom: 'Martin',
             email: 's@test.com',
+            date_de_naissance: '1990-05-15',
             boutique_id: 'bout-001'
           })
         })
@@ -135,6 +136,22 @@ describe('ApiClientService', () => {
     })
   })
 
+  describe('updateSeance', () => {
+    it('should PATCH to /seances/:id with note_seance', async () => {
+      mockFetchOk({ id: 's1' })
+
+      await api.updateSeance('s1', { note_seance: 'Cuir chevelu sec' })
+
+      expect(fetch).toHaveBeenCalledWith(
+        'http://localhost:8000/api/seances/s1',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({ note_seance: 'Cuir chevelu sec' })
+        })
+      )
+    })
+  })
+
   describe('analyzePhoto', () => {
     it('should POST to IA proxy with X-Mirror-Token header', async () => {
       ;(fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
@@ -147,13 +164,44 @@ describe('ApiClientService', () => {
       await api.analyzePhoto('base64data')
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:3001/api/analyze',
+        'http://localhost:3002/api/analyze',
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
             'X-Mirror-Token': expect.any(String)
           }),
           body: JSON.stringify({ image: 'base64data' })
+        })
+      )
+    })
+  })
+
+  describe('getSyncPending', () => {
+    it('should GET /sync/pending', async () => {
+      mockFetchOk({ clientes: [], consentements: [], seances: [], photos: [] })
+
+      const result = await api.getSyncPending()
+
+      expect(fetch).toHaveBeenCalledWith(
+        'http://localhost:8000/api/sync/pending',
+        expect.any(Object)
+      )
+      expect(result).toHaveProperty('clientes')
+      expect(result).toHaveProperty('photos')
+    })
+  })
+
+  describe('confirmSynced', () => {
+    it('should PATCH /sync/confirm with table and ids', async () => {
+      mockFetchOk({ confirmed: 2 })
+
+      await api.confirmSynced('clientes', ['id1', 'id2'])
+
+      expect(fetch).toHaveBeenCalledWith(
+        'http://localhost:8000/api/sync/confirm',
+        expect.objectContaining({
+          method: 'PATCH',
+          body: JSON.stringify({ table: 'clientes', ids: ['id1', 'id2'] })
         })
       )
     })

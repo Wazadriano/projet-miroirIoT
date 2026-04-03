@@ -31,7 +31,7 @@ export class ApiClientService {
 
     if (!response.ok) {
       const body = await response.json().catch(() => ({}))
-      throw new Error(body.error || `HTTP ${response.status}`)
+      throw new Error(body.error || body.message || `HTTP ${response.status}`)
     }
 
     return response.json()
@@ -61,7 +61,7 @@ export class ApiClientService {
   }
 
   async createCliente(data: {
-    prenom: string; nom: string; email?: string; telephone?: string; age?: number; sexe?: string
+    prenom: string; nom: string; email?: string; telephone?: string; date_de_naissance?: string; sexe?: string
   }): Promise<unknown> {
     const res = await this.request<unknown>(`${this.baseUrl}/clientes`, {
       method: 'POST',
@@ -109,6 +109,14 @@ export class ApiClientService {
   async endSeance(seanceId: string): Promise<unknown> {
     const res = await this.request<unknown>(`${this.baseUrl}/seances/${seanceId}/end`, {
       method: 'POST'
+    })
+    return res.data
+  }
+
+  async updateSeance(seanceId: string, data: { note_seance?: string; bilan_ia?: unknown }): Promise<unknown> {
+    const res = await this.request<unknown>(`${this.baseUrl}/seances/${seanceId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data)
     })
     return res.data
   }
@@ -182,6 +190,28 @@ export class ApiClientService {
   async fetchAndUpdateConfig(mirrorId: string): Promise<unknown> {
     const res = await this.request<unknown>(`${this.baseUrl}/miroirs/${mirrorId}/config`)
     return res.data
+  }
+
+  // --- Sync (read local pending records) ---
+
+  async getSyncPending(): Promise<{
+    clientes: unknown[]; consentements: unknown[]; seances: unknown[]; photos: unknown[]
+  }> {
+    const res = await this.request<{
+      clientes: unknown[]; consentements: unknown[]; seances: unknown[]; photos: unknown[]
+    }>(`${this.baseUrl}/sync/pending`)
+    return res.data
+  }
+
+  async confirmSynced(table: string, ids: string[]): Promise<void> {
+    await this.request(`${this.baseUrl}/sync/confirm`, {
+      method: 'PATCH',
+      body: JSON.stringify({ table, ids })
+    })
+  }
+
+  async cleanupSynced(): Promise<void> {
+    await this.request(`${this.baseUrl}/sync/cleanup`, { method: 'DELETE' })
   }
 
   // --- Heartbeat ---

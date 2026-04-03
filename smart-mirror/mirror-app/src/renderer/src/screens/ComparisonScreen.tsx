@@ -10,6 +10,9 @@ export function ComparisonScreen(): JSX.Element {
   const handleNext = async (): Promise<void> => {
     if (seance) {
       try {
+        if (noteSeance.trim()) {
+          await window.mirrorApi.updateSeanceNotes({ seanceId: seance.id, noteSeance })
+        }
         await window.mirrorApi.endSeance(seance.id)
       } catch { /* offline */ }
     }

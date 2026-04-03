@@ -16,7 +16,7 @@ const api = {
   // Clientes
   searchClientes: (query: string): Promise<unknown[]> =>
     ipcRenderer.invoke('clientes:search', query),
-  createCliente: (data: { prenom: string; nom: string; email?: string; telephone?: string; age?: number; sexe?: string }): Promise<unknown> =>
+  createCliente: (data: { prenom: string; nom: string; email?: string; telephone?: string; date_de_naissance?: string; sexe?: string }): Promise<unknown> =>
     ipcRenderer.invoke('clientes:create', data),
 
   // Consentement
@@ -81,7 +81,11 @@ const api = {
 
   // Mirror config
   fetchMirrorConfig: (): Promise<unknown> =>
-    ipcRenderer.invoke('mirror:fetchConfig')
+    ipcRenderer.invoke('mirror:fetchConfig'),
+
+  // Seance notes
+  updateSeanceNotes: (data: { seanceId: string; noteSeance: string }): Promise<unknown> =>
+    ipcRenderer.invoke('seance:updateNotes', data)
 }
 
 contextBridge.exposeInMainWorld('mirrorApi', api)

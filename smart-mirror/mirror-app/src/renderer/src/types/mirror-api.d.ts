@@ -34,6 +34,7 @@ declare global {
     onWifiStatusChanged(callback: (status: { connected: boolean; ssid?: string }) => void): void
     getSyncQueueSize(): Promise<number>
     fetchMirrorConfig(): Promise<unknown>
+    updateSeanceNotes(data: { seanceId: string; noteSeance: string }): Promise<unknown>
   }
 
   interface DisplayConfig {
@@ -79,7 +80,7 @@ declare global {
     nom: string
     email: string | null
     telephone: string | null
-    age: number | null
+    date_de_naissance: string | null
     sexe: string | null
   }
 
@@ -88,7 +89,7 @@ declare global {
     nom: string
     email?: string
     telephone?: string
-    age?: number
+    date_de_naissance?: string
     sexe?: string
   }
 
