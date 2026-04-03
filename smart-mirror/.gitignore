@@ -20,5 +20,9 @@ pgdata/
 .DS_Store
 Thumbs.db
 snapshots/
+test-results/
 out/
 node_modules/
+
+# Figma exports
+figma-exports/

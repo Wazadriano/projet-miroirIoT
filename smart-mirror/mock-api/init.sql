@@ -19,10 +19,11 @@ CREATE TABLE clientes (
     nom TEXT NOT NULL,
     email TEXT,
     telephone TEXT,
-    age INTEGER,
+    date_de_naissance DATE,
     sexe TEXT CHECK (sexe IN ('F', 'M', 'autre')),
     note_praticien TEXT,
     shopify_customer_id TEXT,
+    synced_to_crm BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     UNIQUE (email, boutique_id)
@@ -34,7 +35,8 @@ CREATE TABLE consentements (
     cliente_id UUID NOT NULL REFERENCES clientes(id),
     texte_consent TEXT NOT NULL,
     date_consentement TIMESTAMP NOT NULL DEFAULT NOW(),
-    date_revocation TIMESTAMP
+    date_revocation TIMESTAMP,
+    synced_to_crm BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE miroirs (
@@ -61,7 +63,8 @@ CREATE TABLE seances (
     rapport_pdf_path TEXT,
     rapport_url TEXT,
     qr_scanne_at TIMESTAMP,
-    email_envoye BOOLEAN DEFAULT FALSE
+    email_envoye BOOLEAN DEFAULT FALSE,
+    synced_to_crm BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE photos (
@@ -74,7 +77,7 @@ CREATE TABLE photos (
     diagnostic_ia JSONB,
     modele_ia TEXT,
     latence_ms INTEGER,
-    synced BOOLEAN DEFAULT FALSE,
+    synced_to_crm BOOLEAN DEFAULT FALSE,
     supprime_local_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -127,8 +130,13 @@ CREATE INDEX idx_clientes_nom ON clientes(boutique_id, nom, prenom);
 CREATE INDEX idx_seances_boutique ON seances(boutique_id);
 CREATE INDEX idx_seances_cliente ON seances(cliente_id);
 CREATE INDEX idx_photos_seance ON photos(seance_id);
-CREATE INDEX idx_photos_synced ON photos(synced) WHERE synced = FALSE;
 CREATE INDEX idx_medias_boutique ON medias(boutique_id);
+
+-- Sync indexes (partial indexes for unsynced records)
+CREATE INDEX idx_clientes_unsynced ON clientes(synced_to_crm) WHERE synced_to_crm = FALSE;
+CREATE INDEX idx_seances_unsynced ON seances(synced_to_crm) WHERE synced_to_crm = FALSE;
+CREATE INDEX idx_consentements_unsynced ON consentements(synced_to_crm) WHERE synced_to_crm = FALSE;
+CREATE INDEX idx_photos_unsynced ON photos(synced_to_crm) WHERE synced_to_crm = FALSE;
 
 -- Seed data: 3 boutiques
 INSERT INTO boutiques (id, nom, email_contact) VALUES
@@ -149,10 +157,10 @@ INSERT INTO config_miroir (miroir_id) VALUES
     ('b1b2c3d4-0003-4000-8000-000000000003');
 
 -- Seed: quelques clientes de test
-INSERT INTO clientes (boutique_id, prenom, nom, email, age, sexe) VALUES
-    ('a1b2c3d4-0001-4000-8000-000000000001', 'Marie', 'Dupont', 'marie@test.fr', 34, 'F'),
-    ('a1b2c3d4-0001-4000-8000-000000000001', 'Sophie', 'Martin', 'sophie@test.fr', 28, 'F'),
-    ('a1b2c3d4-0002-4000-8000-000000000002', 'Julie', 'Bernard', 'julie@test.fr', 42, 'F');
+INSERT INTO clientes (boutique_id, prenom, nom, email, date_de_naissance, sexe, synced_to_crm) VALUES
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'Marie', 'Dupont', 'marie@test.fr', '1992-03-15', 'F', TRUE),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'Sophie', 'Martin', 'sophie@test.fr', '1998-07-22', 'F', TRUE),
+    ('a1b2c3d4-0002-4000-8000-000000000002', 'Julie', 'Bernard', 'julie@test.fr', '1984-11-08', 'F', TRUE);
 
 -- Seed: produits de test
 INSERT INTO produits (boutique_id, nom, description, prix, tags) VALUES

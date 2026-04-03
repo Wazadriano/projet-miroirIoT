@@ -92,16 +92,16 @@ api.get('/api/clientes', async (req, res) => {
 
 // Clients: create
 api.post('/api/clientes', async (req, res) => {
-  const { boutique_id, prenom, nom, email, telephone, age, sexe } = req.body;
+  const { boutique_id, prenom, nom, email, telephone, date_de_naissance, sexe } = req.body;
   if (!boutique_id || !prenom || !nom) {
     return res.status(422).json({ error: 'boutique_id, prenom, nom required' });
   }
 
   try {
     const result = await pool.query(
-      `INSERT INTO clientes (boutique_id, prenom, nom, email, telephone, age, sexe)
+      `INSERT INTO clientes (boutique_id, prenom, nom, email, telephone, date_de_naissance, sexe)
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [boutique_id, prenom, nom, email || null, telephone || null, age || null, sexe || null]
+      [boutique_id, prenom, nom, email || null, telephone || null, date_de_naissance || null, sexe || null]
     );
     res.status(201).json({ data: result.rows[0] });
   } catch (err) {
@@ -399,6 +399,91 @@ api.post('/api/seances/:id/send-to-crm', async (req, res) => {
     const reportUrl = `http://localhost:8000/api/rapports/${req.params.id}.pdf`;
     await pool.query('UPDATE seances SET rapport_url = $1 WHERE id = $2', [reportUrl, req.params.id]);
     res.json({ data: { sent: true, reportUrl } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Seances: update (note_seance, bilan_ia)
+api.patch('/api/seances/:id', async (req, res) => {
+  const { note_seance, bilan_ia } = req.body;
+  try {
+    const sets = [];
+    const params = [];
+    let i = 1;
+    if (note_seance !== undefined) { sets.push(`note_seance = $${i++}`); params.push(note_seance); }
+    if (bilan_ia !== undefined) { sets.push(`note_seance = COALESCE(note_seance, '') || $${i++}`); params.push(JSON.stringify(bilan_ia)); }
+    if (sets.length === 0) return res.status(422).json({ error: 'Nothing to update' });
+    params.push(req.params.id);
+    const result = await pool.query(
+      `UPDATE seances SET ${sets.join(', ')} WHERE id = $${i} RETURNING *`,
+      params
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Seance not found' });
+    res.json({ data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// --- Sync endpoints (for CRM sync service) ---
+
+// Get all unsynced records
+api.get('/api/sync/pending', async (_req, res) => {
+  try {
+    const clientes = await pool.query('SELECT * FROM clientes WHERE synced_to_crm = FALSE ORDER BY created_at');
+    const consentements = await pool.query('SELECT * FROM consentements WHERE synced_to_crm = FALSE ORDER BY date_consentement');
+    const seances = await pool.query('SELECT * FROM seances WHERE synced_to_crm = FALSE ORDER BY date_debut');
+    const photos = await pool.query('SELECT * FROM photos WHERE synced_to_crm = FALSE ORDER BY created_at');
+    res.json({
+      data: {
+        clientes: clientes.rows,
+        consentements: consentements.rows,
+        seances: seances.rows,
+        photos: photos.rows
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Mark records as synced
+api.patch('/api/sync/confirm', async (req, res) => {
+  const { table, ids } = req.body;
+  const allowed = ['clientes', 'consentements', 'seances', 'photos'];
+  if (!allowed.includes(table) || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(422).json({ error: 'table (clientes|consentements|seances|photos) and ids[] required' });
+  }
+  try {
+    const result = await pool.query(
+      `UPDATE ${table} SET synced_to_crm = TRUE WHERE id = ANY($1::uuid[]) RETURNING id`,
+      [ids]
+    );
+    res.json({ data: { confirmed: result.rowCount } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Cleanup synced records older than 30 days
+api.delete('/api/sync/cleanup', async (_req, res) => {
+  try {
+    const tables = [
+      { name: 'photos', dateCol: 'created_at' },
+      { name: 'seances', dateCol: 'date_debut' },
+      { name: 'consentements', dateCol: 'date_consentement' },
+      { name: 'clientes', dateCol: 'created_at' }
+    ];
+    const report = {};
+    for (const t of tables) {
+      // Skip tables with FK dependencies if child records still exist
+      const result = await pool.query(
+        `DELETE FROM ${t.name} WHERE synced_to_crm = TRUE AND ${t.dateCol} < NOW() - INTERVAL '30 days' RETURNING id`
+      ).catch(() => ({ rowCount: 0 }));
+      report[t.name] = result.rowCount || 0;
+    }
+    res.json({ data: report });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

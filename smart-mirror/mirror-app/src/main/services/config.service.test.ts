@@ -17,7 +17,12 @@ describe('ConfigService', () => {
   })
 
   it('should return default IA proxy URL', () => {
-    expect(service.getIaProxyUrl()).toBe('http://localhost:3001')
+    expect(service.getIaProxyUrl()).toBe('http://localhost:3002')
+  })
+
+  it('should auto-detect or fallback MAC address', () => {
+    const mac = service.getMacAddress()
+    expect(mac).toMatch(/^([0-9A-F]{2}:){5}[0-9A-F]{2}$/)
   })
 
   it('should return empty device ID by default', () => {

@@ -6,6 +6,7 @@ import { MicroscopeService } from '../services/microscope.service'
 import { SyncService } from '../services/sync.service'
 import { WifiService } from '../services/wifi.service'
 import { MediaCacheService } from '../services/media-cache.service'
+import { CrmSyncService } from '../services/crm-sync.service'
 
 interface Services {
   configService: ConfigService
@@ -14,6 +15,7 @@ interface Services {
   syncService: SyncService
   mediaCacheService: MediaCacheService
   wifiService: WifiService
+  crmSync: CrmSyncService
 }
 
 function safeHandle(
@@ -32,7 +34,7 @@ function safeHandle(
 }
 
 export function registerIpcHandlers(services: Services): void {
-  const { configService, apiClient, microscopeService, syncService, mediaCacheService, wifiService } = services
+  const { configService, apiClient, microscopeService, syncService, mediaCacheService, wifiService, crmSync } = services
 
   // --- Config (sync, no network) ---
 
@@ -82,12 +84,29 @@ export function registerIpcHandlers(services: Services): void {
 
   safeHandle('clientes:search', async (_event, ...args) => {
     const query = args[0] as string
-    return apiClient.searchClientes(query)
+    const localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
+
+    // Merge with CRM results when online (cross-mirror client lookup)
+    if (crmSync.isOnline()) {
+      try {
+        const crmResults = await crmSync.searchClientesCrm(query) as Array<{ id: string; [k: string]: unknown }>
+        const localIds = new Set(localResults.map(c => c.id))
+        const merged = [...localResults]
+        for (const crmClient of crmResults) {
+          if (!localIds.has(crmClient.id)) {
+            merged.push(crmClient)
+          }
+        }
+        return merged
+      } catch { /* CRM unavailable, local results are fine */ }
+    }
+
+    return localResults
   })
 
   safeHandle('clientes:create', async (_event, ...args) => {
     const data = args[0] as {
-      prenom: string; nom: string; email?: string; telephone?: string; age?: number; sexe?: string
+      prenom: string; nom: string; email?: string; telephone?: string; date_de_naissance?: string; sexe?: string
     }
     return apiClient.createCliente(data)
   })
@@ -126,6 +145,11 @@ export function registerIpcHandlers(services: Services): void {
     return apiClient.getQRCode(seanceId)
   })
 
+  safeHandle('seance:updateNotes', async (_event, ...args) => {
+    const data = args[0] as { seanceId: string; noteSeance: string }
+    return apiClient.updateSeance(data.seanceId, { note_seance: data.noteSeance })
+  })
+
   // --- Photos ---
 
   safeHandle('photo:save', async (_event, ...args) => {
@@ -135,7 +159,7 @@ export function registerIpcHandlers(services: Services): void {
     const buffer = Buffer.from(data.imageBase64, 'base64')
     const localPath = syncService.savePhotoLocally(buffer, data.seanceId, data.phase)
 
-    // Upload metadata (non-blocking: if API fails, photo is still local)
+    // Upload metadata to local backend (non-blocking)
     let photoId = ''
     try {
       const photoMeta = await apiClient.uploadPhotoMetadata({
@@ -158,7 +182,7 @@ export function registerIpcHandlers(services: Services): void {
     const result = await apiClient.analyzePhoto(data.imageBase64)
     const latence = Date.now() - start
 
-    // Update diagnostic in backend (non-critical if it fails)
+    // Update diagnostic in local backend (non-critical if it fails)
     apiClient.updatePhotoDiagnostic(data.photoId, {
       diagnostic_ia: result,
       modele_ia: result.modele,
@@ -227,7 +251,6 @@ export function registerIpcHandlers(services: Services): void {
   // --- Media Cache ---
 
   safeHandle('media:getPlaylist', async () => {
-    // Fetch config + playlist from API, update local cache
     const mirrorId = configService.getDeviceId()
     if (!mirrorId) return { playlist: [], produits: [] }
 
@@ -275,6 +298,14 @@ export function registerIpcHandlers(services: Services): void {
 
   safeHandle('sync:queueSize', () => {
     return syncService.getQueueSize()
+  })
+
+  safeHandle('sync:status', () => {
+    return {
+      online: crmSync.isOnline(),
+      queueSize: syncService.getQueueSize(),
+      lastSync: crmSync.getLastSyncTime()
+    }
   })
 
   // --- Mirror Config (remote) ---

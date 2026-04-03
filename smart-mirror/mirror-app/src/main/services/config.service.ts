@@ -1,15 +1,18 @@
 import Store from 'electron-store'
 import { safeStorage } from 'electron'
+import { networkInterfaces } from 'os'
 
 interface DeviceConfig {
   device: {
     id: string
     boutiqueId: string
     token: string
+    macAddress: string
   }
   api: {
     baseUrl: string
     iaProxyUrl: string
+    crmBaseUrl: string
   }
   microscope: {
     devicePath: string
@@ -31,11 +34,13 @@ const DEFAULTS: DeviceConfig = {
   device: {
     id: '',
     boutiqueId: '',
-    token: ''
+    token: '',
+    macAddress: ''
   },
   api: {
     baseUrl: process.env.API_BASE_URL || 'http://localhost:8000/api',
-    iaProxyUrl: process.env.IA_PROXY_URL || 'http://localhost:3001'
+    iaProxyUrl: process.env.IA_PROXY_URL || 'http://localhost:3002',
+    crmBaseUrl: process.env.CRM_BASE_URL || ''
   },
   microscope: {
     devicePath: '',
@@ -85,6 +90,10 @@ export class ConfigService {
     return this.store.get('api.iaProxyUrl')
   }
 
+  getCrmBaseUrl(): string {
+    return this.store.get('api.crmBaseUrl')
+  }
+
   getDeviceToken(): string {
     const encrypted = this.store.get('device.token')
     if (!encrypted) return ''
@@ -98,6 +107,25 @@ export class ConfigService {
       // Token was stored before safeStorage was available
       return encrypted as string
     }
+  }
+
+  getMacAddress(): string {
+    const stored = this.store.get('device.macAddress')
+    if (stored) return stored
+    // Auto-detect from first non-internal interface
+    const ifaces = networkInterfaces()
+    for (const name of Object.keys(ifaces)) {
+      for (const iface of ifaces[name] || []) {
+        if (!iface.internal && iface.mac && iface.mac !== '00:00:00:00:00:00') {
+          return iface.mac.toUpperCase()
+        }
+      }
+    }
+    return 'AA:BB:CC:DD:EE:FF'
+  }
+
+  setMacAddress(mac: string): void {
+    this.store.set('device.macAddress', mac)
   }
 
   getMicroscopeConfig(): { devicePath: string; resolution: string } {

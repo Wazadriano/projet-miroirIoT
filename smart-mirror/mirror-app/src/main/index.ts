@@ -23,12 +23,14 @@ import { SyncService } from './services/sync.service'
 import { MediaCacheService } from './services/media-cache.service'
 import { UpdaterService } from './services/updater.service'
 import { WifiService } from './services/wifi.service'
+import { CrmSyncService } from './services/crm-sync.service'
 
 let mainWindow: BrowserWindow | null = null
 
 const configService = new ConfigService()
 const apiClient = new ApiClientService(configService)
 const microscopeService = new MicroscopeService()
+const crmSync = new CrmSyncService(configService, apiClient)
 const syncService = new SyncService(configService, apiClient)
 const mediaCacheService = new MediaCacheService(configService, apiClient)
 const updaterService = new UpdaterService()
@@ -124,7 +126,8 @@ app.whenReady().then(async () => {
     microscopeService,
     syncService,
     mediaCacheService,
-    wifiService
+    wifiService,
+    crmSync
   })
 
   createWindow()
@@ -145,6 +148,18 @@ app.whenReady().then(async () => {
       w.webContents.send('wifi:status-changed', { connected: true, ssid: data?.ssid })
     )
   })
+
+  // CRM sync: check online every 30s, sync every 60s
+  setInterval(() => crmSync.checkOnline(), 30_000)
+  setInterval(async () => {
+    if (crmSync.isOnline()) {
+      const report = await crmSync.syncAll()
+      if (report.errors.length === 0) {
+        await crmSync.cleanupSynced()
+      }
+      console.log(`[CrmSync] synced: C${report.clientes.synced} S${report.seances.synced} P${report.photos.synced} | errors: ${report.errors.length}`)
+    }
+  }, 60_000)
 
   // Media cache sync (playlist checksum-based)
   if (configService.isProvisioned()) {
