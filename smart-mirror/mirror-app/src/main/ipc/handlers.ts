@@ -100,9 +100,10 @@ export function registerIpcHandlers(services: Services): void {
           const localIds = new Set(results.map(c => c.id))
           for (const client of crmResults) {
             if (!localIds.has(client.id)) {
-              // Upsert CRM client into local DB so seance/consent FK works
+              // Upsert CRM client into local DB with same ID so FK constraints work
               try {
                 await apiClient.createCliente({
+                  id: client.id,
                   prenom: String(client.prenom || ''),
                   nom: String(client.nom || ''),
                   email: client.email ? String(client.email) : undefined,

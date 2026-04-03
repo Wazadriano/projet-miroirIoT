@@ -7,7 +7,7 @@ function InstagramQR(): JSX.Element {
   const [qrSrc, setQrSrc] = useState<string | null>(null)
   useEffect(() => {
     // Generate QR via local API endpoint or use a static fallback
-    const url = 'https://www.instagram.com/bubble_hair_spa_nice/'
+    const url = 'https://www.instagram.com/koreancosmetics.fr/?hl=fr'
     import('qrcode').then(QRCode => {
       QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } })
         .then((dataUrl: string) => setQrSrc(dataUrl))

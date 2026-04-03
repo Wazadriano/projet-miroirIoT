@@ -19,12 +19,13 @@ else
   echo "[Smart Mirror] Docker not available -- running without local backend."
 fi
 
-# Start microscope proxy if not already running
+# Start microscope proxy if not already running (needs sudo for button capture via tcpdump)
 if ! curl -s http://localhost:9100/ > /dev/null 2>&1; then
-  echo "[Smart Mirror] Starting microscope proxy on :9100..."
+  echo "[Smart Mirror] Starting microscope proxy on :9100 (sudo for button capture)..."
   cd microscope-proxy
-  node proxy.js > /tmp/microscope-proxy.log 2>&1 &
+  sudo -n node proxy.js > /tmp/microscope-proxy.log 2>&1 &
   cd ..
+  sleep 1
   echo "[Smart Mirror] Microscope proxy started (log: /tmp/microscope-proxy.log)"
 else
   echo "[Smart Mirror] Microscope proxy already running."

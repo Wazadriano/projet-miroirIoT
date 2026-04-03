@@ -92,17 +92,26 @@ api.get('/api/clientes', async (req, res) => {
 
 // Clients: create
 api.post('/api/clientes', async (req, res) => {
-  const { boutique_id, prenom, nom, email, telephone, date_de_naissance, sexe } = req.body;
+  const { id: clientId, boutique_id, prenom, nom, email, telephone, date_de_naissance, sexe } = req.body;
   if (!boutique_id || !prenom || !nom) {
     return res.status(422).json({ error: 'boutique_id, prenom, nom required' });
   }
 
   try {
-    const result = await pool.query(
-      `INSERT INTO clientes (boutique_id, prenom, nom, email, telephone, date_de_naissance, sexe)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [boutique_id, prenom, nom, email || null, telephone || null, date_de_naissance || null, sexe || null]
-    );
+    // Allow specifying ID (for CRM client upsert) or auto-generate
+    const result = clientId
+      ? await pool.query(
+          `INSERT INTO clientes (id, boutique_id, prenom, nom, email, telephone, date_de_naissance, sexe)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+           ON CONFLICT (email, boutique_id) DO UPDATE SET prenom = EXCLUDED.prenom, nom = EXCLUDED.nom
+           RETURNING *`,
+          [clientId, boutique_id, prenom, nom, email || null, telephone || null, date_de_naissance || null, sexe || null]
+        )
+      : await pool.query(
+          `INSERT INTO clientes (boutique_id, prenom, nom, email, telephone, date_de_naissance, sexe)
+           VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+          [boutique_id, prenom, nom, email || null, telephone || null, date_de_naissance || null, sexe || null]
+        );
     res.status(201).json({ data: result.rows[0] });
   } catch (err) {
     if (err.code === '23505') {

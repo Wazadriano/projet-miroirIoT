@@ -61,7 +61,7 @@ export class ApiClientService {
   }
 
   async createCliente(data: {
-    prenom: string; nom: string; email?: string; telephone?: string; date_de_naissance?: string; sexe?: string
+    id?: string; prenom: string; nom: string; email?: string; telephone?: string; date_de_naissance?: string; sexe?: string
   }): Promise<unknown> {
     const res = await this.request<unknown>(`${this.baseUrl}/clientes`, {
       method: 'POST',
