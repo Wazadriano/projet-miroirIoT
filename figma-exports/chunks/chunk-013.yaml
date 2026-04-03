@@ -1,0 +1,800 @@
+                type: IMAGE-SVG
+                layout: layout_MQJT0H
+                fills: fill_QVXHTW
+          - id: 95:860
+            name: Group 26
+            type: GROUP
+            layout: layout_UAIF65
+            children:
+              - id: 95:861
+                name: Group 8
+                type: GROUP
+                layout: layout_ZILJYP
+                children:
+                  - id: 95:862
+                    name: Group 7
+                    type: GROUP
+                    layout: layout_ZILJYP
+                    children:
+                      - id: 95:863
+                        name: Group 5
+                        type: GROUP
+                        layout: layout_ZILJYP
+                        children:
+                          - id: 95:864
+                            name: Liquid Glass - Regular - Small
+                            type: INSTANCE
+                            layout: layout_ZILJYP
+                            componentId: 10:973
+                            componentProperties:
+                              - name: Mode
+                                value: Light
+                                type: VARIANT
+                              - name: State
+                                value: Default
+                                type: VARIANT
+                            children:
+                              - id: I95:864;6491:20172
+                                name: Fill + Shadow
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_PXPZ9C
+                                effects: effect_OGGT0N
+                                borderRadius: 296px
+                              - id: I95:864;6491:20173
+                                name: Glass Effect
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_S77YKB
+                                borderRadius: 296px
+              - id: 95:865
+                name: Vector
+                type: IMAGE-SVG
+                layout: layout_FA9275
+                fills: fill_QVXHTW
+          - id: 95:866
+            name: Group 23
+            type: GROUP
+            layout: layout_6M89WD
+            children:
+              - id: 95:867
+                name: Group 8
+                type: GROUP
+                layout: layout_ZILJYP
+                children:
+                  - id: 95:868
+                    name: Group 7
+                    type: GROUP
+                    layout: layout_ZILJYP
+                    children:
+                      - id: 95:869
+                        name: Group 5
+                        type: GROUP
+                        layout: layout_ZILJYP
+                        children:
+                          - id: 95:870
+                            name: Liquid Glass - Regular - Small
+                            type: INSTANCE
+                            layout: layout_ZILJYP
+                            componentId: 10:973
+                            componentProperties:
+                              - name: Mode
+                                value: Light
+                                type: VARIANT
+                              - name: State
+                                value: Default
+                                type: VARIANT
+                            children:
+                              - id: I95:870;6491:20172
+                                name: Fill + Shadow
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_PXPZ9C
+                                effects: effect_OGGT0N
+                                borderRadius: 296px
+                              - id: I95:870;6491:20173
+                                name: Glass Effect
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_S77YKB
+                                borderRadius: 296px
+              - id: 95:871
+                name: Vector
+                type: IMAGE-SVG
+                layout: layout_FA9275
+                fills: fill_QVXHTW
+          - id: 95:872
+            name: Group 19
+            type: GROUP
+            layout: layout_VPWM2T
+            children:
+              - id: 95:873
+                name: Group 8
+                type: GROUP
+                layout: layout_ZILJYP
+                children:
+                  - id: 95:874
+                    name: Group 7
+                    type: GROUP
+                    layout: layout_ZILJYP
+                    children:
+                      - id: 95:875
+                        name: Group 5
+                        type: GROUP
+                        layout: layout_ZILJYP
+                        children:
+                          - id: 95:876
+                            name: Liquid Glass - Regular - Small
+                            type: INSTANCE
+                            layout: layout_ZILJYP
+                            componentId: 10:973
+                            componentProperties:
+                              - name: Mode
+                                value: Light
+                                type: VARIANT
+                              - name: State
+                                value: Default
+                                type: VARIANT
+                            children:
+                              - id: I95:876;6491:20172
+                                name: Fill + Shadow
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_PXPZ9C
+                                effects: effect_OGGT0N
+                                borderRadius: 296px
+                              - id: I95:876;6491:20173
+                                name: Glass Effect
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_S77YKB
+                                borderRadius: 296px
+              - id: 95:877
+                name: Vector
+                type: IMAGE-SVG
+                layout: layout_MQJT0H
+                fills: fill_QVXHTW
+          - id: 95:878
+            name: Group 20
+            type: GROUP
+            layout: layout_EWZN2E
+            children:
+              - id: 95:879
+                name: Group 8
+                type: GROUP
+                layout: layout_ZILJYP
+                children:
+                  - id: 95:880
+                    name: Group 7
+                    type: GROUP
+                    layout: layout_ZILJYP
+                    children:
+                      - id: 95:881
+                        name: Group 5
+                        type: GROUP
+                        layout: layout_ZILJYP
+                        children:
+                          - id: 95:882
+                            name: Liquid Glass - Regular - Small
+                            type: INSTANCE
+                            layout: layout_ZILJYP
+                            componentId: 10:973
+                            componentProperties:
+                              - name: Mode
+                                value: Light
+                                type: VARIANT
+                              - name: State
+                                value: Default
+                                type: VARIANT
+                            children:
+                              - id: I95:882;6491:20172
+                                name: Fill + Shadow
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_PXPZ9C
+                                effects: effect_OGGT0N
+                                borderRadius: 296px
+                              - id: I95:882;6491:20173
+                                name: Glass Effect
+                                type: FRAME
+                                layout: layout_LTCZI4
+                                fills: fill_S77YKB
+                                borderRadius: 296px
+              - id: 95:883
+                name: Vector
+                type: IMAGE-SVG
+                layout: layout_FA9275
+                fills: fill_QVXHTW
+          - id: 95:884
+            name: Voir plus
+            type: TEXT
+            layout: layout_ZQ5ON8
+            text: 'Voir plus '
+            textStyle: style_CTTZW6
+            fills: fill_7GZMXH
+          - id: 95:891
+            name: Button - Liquid Glass - Text
+            type: INSTANCE
+            layout: layout_PE14CU
+            effects: effect_NOR0C7
+            borderRadius: 100px
+            componentId: 11:1112
+            componentProperties:
+              - name: Tinted
+                value: 'False'
+                type: VARIANT
+            children:
+              - id: I95:891;5583:24021
+                name: BG
+                type: INSTANCE
+                layout: layout_T0L4PL
+                componentId: 10:973
+                componentProperties:
+                  - name: Mode
+                    value: Light
+                    type: VARIANT
+                  - name: State
+                    value: Default
+                    type: VARIANT
+                children:
+                  - id: I95:891;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_CZNXBK
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I95:891;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_CZNXBK
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 95:892
+            name: Button - Liquid Glass - Text
+            type: INSTANCE
+            layout: layout_652CP4
+            effects: effect_NOR0C7
+            borderRadius: 100px
+            componentId: 11:1112
+            componentProperties:
+              - name: Tinted
+                value: 'False'
+                type: VARIANT
+            children:
+              - id: I95:892;5583:24021
+                name: BG
+                type: INSTANCE
+                layout: layout_T0L4PL
+                componentId: 10:973
+                componentProperties:
+                  - name: Mode
+                    value: Light
+                    type: VARIANT
+                  - name: State
+                    value: Default
+                    type: VARIANT
+                children:
+                  - id: I95:892;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_CZNXBK
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I95:892;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_CZNXBK
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 95:893
+            name: Button - Liquid Glass - Text
+            type: INSTANCE
+            layout: layout_3I41XA
+            effects: effect_NOR0C7
+            borderRadius: 100px
+            componentId: 11:1112
+            componentProperties:
+              - name: Tinted
+                value: 'False'
+                type: VARIANT
+            children:
+              - id: I95:893;5583:24021
+                name: BG
+                type: INSTANCE
+                layout: layout_T0L4PL
+                componentId: 10:973
+                componentProperties:
+                  - name: Mode
+                    value: Light
+                    type: VARIANT
+                  - name: State
+                    value: Default
+                    type: VARIANT
+                children:
+                  - id: I95:893;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_CZNXBK
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I95:893;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_CZNXBK
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 95:894
+            name: 1503.jpg-removebg-preview 1
+            type: RECTANGLE
+            layout: layout_KKMVF5
+            fills: fill_3FSPFB
+          - id: 95:895
+            name: 378.jpg-removebg-preview 1
+            type: RECTANGLE
+            layout: layout_G61QE2
+            fills: fill_5CAMAI
+            borderRadius: 55px
+          - id: 95:896
+            name: 671.jpg-removebg-preview 1
+            type: RECTANGLE
+            layout: layout_OS5D9C
+            fills: fill_VAXIUK
+          - id: 95:1079
+            name: Rectangle 86
+            type: RECTANGLE
+            layout: layout_NF4AW5
+            fills: fill_XU44PR
+          - id: 95:1076
+            name: ChatGPT Image 31 mars 2026 à 12_13_28 copie 2 2
+            type: RECTANGLE
+            layout: layout_XEF269
+            fills: fill_IXBSG5
+            borderRadius: 2px
+          - id: 95:1077
+            name: ChatGPT Image 31 mars 2026 à 12_13_28 copie 3 2
+            type: RECTANGLE
+            layout: layout_6VIED0
+            fills: fill_YKKSGX
+            borderRadius: 2px
+          - id: 95:1075
+            name: ChatGPT Image 31 mars 2026 à 12_13_28 6
+            type: RECTANGLE
+            layout: layout_ZW6KQQ
+            fills: fill_8OUBA6
+            borderRadius: 2px
+          - id: 95:1086
+            name: Group 35
+            type: IMAGE-SVG
+            layout: layout_APL9KP
+          - id: 151:3244
+            name: Liquid Glass - Regular - Small
+            type: INSTANCE
+            layout: layout_105VU3
+            componentId: 10:973
+            componentProperties:
+              - name: Mode
+                value: Light
+                type: VARIANT
+              - name: State
+                value: Default
+                type: VARIANT
+            children:
+              - id: I151:3244;6491:20172
+                name: Fill + Shadow
+                type: FRAME
+                layout: layout_37PDBV
+                fills: fill_PXPZ9C
+                effects: effect_OGGT0N
+                borderRadius: 296px
+              - id: I151:3244;6491:20173
+                name: Glass Effect
+                type: FRAME
+                layout: layout_37PDBV
+                fills: fill_S77YKB
+                borderRadius: 296px
+          - id: 151:3245
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_53C9Z5
+            fills: fill_F33GD0
+      - id: 68:2467
+        name: Historique
+        type: FRAME
+        layout: layout_15SCMV
+        fills: fill_7GZMXH
+        children:
+          - id: 128:1034
+            name: Gemini_Generated_Image_algmanalgmanalgm 3
+            type: RECTANGLE
+            layout: layout_JM5GHU
+            fills: fill_0N5AV4
+          - id: 68:2533
+            name: ChatGPT Image 31 mars 2026 à 12_02_47 4
+            type: RECTANGLE
+            layout: layout_O3XOX2
+            fills: fill_NCK94N
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2534
+            name: ChatGPT Image 31 mars 2026 à 12_02_47 copie 4
+            type: RECTANGLE
+            layout: layout_9YOBUZ
+            fills: fill_KBNWHK
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2535
+            name: ChatGPT Image 31 mars 2026 à 12_02_47 copie 2 1
+            type: RECTANGLE
+            layout: layout_STQ5JQ
+            fills: fill_FSYWVA
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2536
+            name: 12/03/2026
+            type: TEXT
+            layout: layout_TKLZOH
+            text: 12/03/2026
+            textStyle: style_UG1KFF
+            fills: fill_7GZMXH
+          - id: 68:2537
+            name: 12/01/2026
+            type: TEXT
+            layout: layout_GCQFSI
+            text: 12/01/2026
+            textStyle: style_UG1KFF
+            fills: fill_7GZMXH
+          - id: 68:2538
+            name: 12/11/2025
+            type: TEXT
+            layout: layout_O7CQS0
+            text: 12/11/2025
+            textStyle: style_UG1KFF
+            fills: fill_7GZMXH
+          - id: 68:2539
+            name: Voir plus
+            type: TEXT
+            layout: layout_XRYJLO
+            text: 'Voir plus '
+            textStyle: style_YZBF2J
+            fills: fill_7GZMXH
+          - id: 68:2540
+            name: ChatGPT Image 31 mars 2026 à 11_25_00 13
+            type: RECTANGLE
+            layout: layout_FFVGOG
+            fills: fill_DFOT5V
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2541
+            name: ChatGPT Image 31 mars 2026 à 11_25_00 copie 4
+            type: RECTANGLE
+            layout: layout_SRPOIX
+            fills: fill_DW2K1G
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2542
+            name: ChatGPT Image 31 mars 2026 à 11_25_00 copie 2 1
+            type: RECTANGLE
+            layout: layout_EFGN81
+            fills: fill_4RU6L9
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2543
+            name: ChatGPT Image 31 mars 2026 à 12_13_28 5
+            type: RECTANGLE
+            layout: layout_0Z3JHN
+            fills: fill_WI1XME
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2545
+            name: ChatGPT Image 31 mars 2026 à 12_13_28 copie 2 1
+            type: RECTANGLE
+            layout: layout_9T4Y4I
+            fills: fill_GSUIFW
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2546
+            name: ChatGPT Image 31 mars 2026 à 12_13_28 copie 3 1
+            type: RECTANGLE
+            layout: layout_8BZK2E
+            fills: fill_NJECUX
+            effects: effect_TK78W3
+            borderRadius: 25px
+          - id: 68:2547
+            name: KBEAUTY - BUBBLE HAIR SPA
+            type: TEXT
+            layout: layout_ZG00FP
+            text: KBEAUTY - BUBBLE HAIR SPA
+            textStyle: style_D3PRMB
+            fills: fill_7GZMXH
+          - id: 68:2548
+            name: Button - Liquid Glass - Text
+            type: INSTANCE
+            layout: layout_MFV9YD
+            effects: effect_NOR0C7
+            borderRadius: 1000px
+            componentId: 11:1112
+            componentProperties:
+              - name: Tinted
+                value: 'False'
+                type: VARIANT
+            children:
+              - id: I68:2548;5583:24021
+                name: BG
+                type: INSTANCE
+                layout: layout_MZFVHQ
+                componentId: 10:973
+                componentProperties:
+                  - name: Mode
+                    value: Light
+                    type: VARIANT
+                  - name: State
+                    value: Default
+                    type: VARIANT
+                children:
+                  - id: I68:2548;5583:24021;6491:20172
+                    name: Fill + Shadow
+                    type: FRAME
+                    layout: layout_IJ7M8U
+                    fills: fill_57DR1A
+                    effects: effect_OGGT0N
+                    borderRadius: 296px
+                  - id: I68:2548;5583:24021;6491:20173
+                    name: Glass Effect
+                    type: FRAME
+                    layout: layout_IJ7M8U
+                    fills: fill_S77YKB
+                    borderRadius: 296px
+          - id: 68:2549
+            name: Historique
+            type: TEXT
+            layout: layout_SAB33U
+            text: Historique
+            textStyle: style_WG5V6R
+            fills: fill_7GZMXH
+          - id: 68:2551
+            name: Group 8
+            type: GROUP
+            layout: layout_YUBL6A
+            children:
+              - id: 68:2552
+                name: Group 7
+                type: GROUP
+                layout: layout_0UV2O4
+                children:
+                  - id: 68:2553
+                    name: Group 5
+                    type: GROUP
+                    layout: layout_0UV2O4
+                    children:
+                      - id: 68:2554
+                        name: Liquid Glass - Regular - Small
+                        type: INSTANCE
+                        layout: layout_0UV2O4
+                        componentId: 10:973
+                        componentProperties:
+                          - name: Mode
+                            value: Light
+                            type: VARIANT
+                          - name: State
+                            value: Default
+                            type: VARIANT
+                        children:
+                          - id: I68:2554;6491:20172
+                            name: Fill + Shadow
+                            type: FRAME
+                            layout: layout_LTCZI4
+                            fills: fill_53G9VT
+                            effects: effect_OGGT0N
+                            borderRadius: 296px
+                          - id: I68:2554;6491:20173
+                            name: Glass Effect
+                            type: FRAME
+                            layout: layout_LTCZI4
+                            fills: fill_S77YKB
+                            borderRadius: 296px
+          - id: 68:2555
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_2NZTRO
+            fills: fill_F33GD0
+          - id: 68:2563
+            name: Group 8
+            type: GROUP
+            layout: layout_JMANGJ
+            children:
+              - id: 68:2564
+                name: Group 7
+                type: GROUP
+                layout: layout_0UV2O4
+                children:
+                  - id: 68:2565
+                    name: Group 5
+                    type: GROUP
+                    layout: layout_0UV2O4
+                    children:
+                      - id: 68:2566
+                        name: Liquid Glass - Regular - Small
+                        type: INSTANCE
+                        layout: layout_0UV2O4
+                        componentId: 10:973
+                        componentProperties:
+                          - name: Mode
+                            value: Light
+                            type: VARIANT
+                          - name: State
+                            value: Default
+                            type: VARIANT
+                        children:
+                          - id: I68:2566;6491:20172
+                            name: Fill + Shadow
+                            type: FRAME
+                            layout: layout_LTCZI4
+                            fills: fill_53G9VT
+                            effects: effect_OGGT0N
+                            borderRadius: 296px
+                          - id: I68:2566;6491:20173
+                            name: Glass Effect
+                            type: FRAME
+                            layout: layout_LTCZI4
+                            fills: fill_S77YKB
+                            borderRadius: 296px
+          - id: 68:2567
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_GYRGQS
+            fills: fill_F33GD0
+          - id: 89:828
+            name: Group 7
+            type: GROUP
+            layout: layout_GB9YDE
+            children:
+              - id: 89:829
+                name: Group 5
+                type: GROUP
+                layout: layout_0UV2O4
+                children:
+                  - id: 89:830
+                    name: Liquid Glass - Regular - Small
+                    type: INSTANCE
+                    layout: layout_0UV2O4
+                    componentId: 10:973
+                    componentProperties:
+                      - name: Mode
+                        value: Light
+                        type: VARIANT
+                      - name: State
+                        value: Default
+                        type: VARIANT
+                    children:
+                      - id: I89:830;6491:20172
+                        name: Fill + Shadow
+                        type: FRAME
+                        layout: layout_LTCZI4
+                        fills: fill_53G9VT
+                        effects: effect_OGGT0N
+                        borderRadius: 296px
+                      - id: I89:830;6491:20173
+                        name: Glass Effect
+                        type: FRAME
+                        layout: layout_LTCZI4
+                        fills: fill_S77YKB
+                        borderRadius: 296px
+          - id: 89:831
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_P2WMQY
+            fills: fill_F33GD0
+          - id: 89:801
+            name: Group 8
+            type: GROUP
+            layout: layout_TQ4X0L
+            children:
+              - id: 89:802
+                name: Group 7
+                type: GROUP
+                layout: layout_0UV2O4
+                children:
+                  - id: 89:803
+                    name: Group 5
+                    type: GROUP
+                    layout: layout_0UV2O4
+                    children:
+                      - id: 89:804
+                        name: Liquid Glass - Regular - Small
+                        type: INSTANCE
+                        layout: layout_0UV2O4
+                        componentId: 10:973
+                        componentProperties:
+                          - name: Mode
+                            value: Light
+                            type: VARIANT
+                          - name: State
+                            value: Default
+                            type: VARIANT
+                        children:
+                          - id: I89:804;6491:20172
+                            name: Fill + Shadow
+                            type: FRAME
+                            layout: layout_LTCZI4
+                            fills: fill_53G9VT
+                            effects: effect_OGGT0N
+                            borderRadius: 296px
+                          - id: I89:804;6491:20173
+                            name: Glass Effect
+                            type: FRAME
+                            layout: layout_LTCZI4
+                            fills: fill_S77YKB
+                            borderRadius: 296px
+          - id: 89:805
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_7T24PX
+            fills: fill_F33GD0
+          - id: 89:834
+            name: Group 7
+            type: GROUP
+            layout: layout_QD74GK
+            children:
+              - id: 89:835
+                name: Group 5
+                type: GROUP
+                layout: layout_0UV2O4
+                children:
+                  - id: 89:836
+                    name: Liquid Glass - Regular - Small
+                    type: INSTANCE
+                    layout: layout_0UV2O4
+                    componentId: 10:973
+                    componentProperties:
+                      - name: Mode
+                        value: Light
+                        type: VARIANT
+                      - name: State
+                        value: Default
+                        type: VARIANT
+                    children:
+                      - id: I89:836;6491:20172
+                        name: Fill + Shadow
+                        type: FRAME
+                        layout: layout_LTCZI4
+                        fills: fill_53G9VT
+                        effects: effect_OGGT0N
+                        borderRadius: 296px
+                      - id: I89:836;6491:20173
+                        name: Glass Effect
+                        type: FRAME
+                        layout: layout_LTCZI4
+                        fills: fill_S77YKB
+                        borderRadius: 296px
+          - id: 89:837
+            name: Vector
+            type: IMAGE-SVG
+            layout: layout_B0AZM7
+            fills: fill_F33GD0
+          - id: 89:809
+            name: Group 8
+            type: GROUP
+            layout: layout_BNMXH4
+            children:
+              - id: 89:810
+                name: Group 7
+                type: GROUP
+                layout: layout_0UV2O4
+                children:
+                  - id: 89:811
+                    name: Group 5
+                    type: GROUP
+                    layout: layout_0UV2O4
+                    children:
+                      - id: 89:812
+                        name: Liquid Glass - Regular - Small
+                        type: INSTANCE
+                        layout: layout_0UV2O4
+                        componentId: 10:973
+                        componentProperties:
+                          - name: Mode
+                            value: Light
+                            type: VARIANT

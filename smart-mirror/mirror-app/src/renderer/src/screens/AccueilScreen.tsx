@@ -1,40 +1,30 @@
+import { useState, useEffect } from 'react'
 import { useSessionStore } from '../stores/session.store'
 import { SideNav } from '../components/SideNav'
 
 function InstagramQR(): JSX.Element {
+  // QR code for Instagram - rendered as img from local backend at startup
+  const [qrSrc, setQrSrc] = useState<string | null>(null)
+  useEffect(() => {
+    // Generate QR via local API endpoint or use a static fallback
+    const url = 'https://www.instagram.com/bubble_hair_spa_nice/'
+    import('qrcode').then(QRCode => {
+      QRCode.toDataURL(url, { width: 200, margin: 1, color: { dark: '#000000', light: '#FFFFFF' } })
+        .then((dataUrl: string) => setQrSrc(dataUrl))
+        .catch(() => {})
+    }).catch(() => {})
+  }, [])
+
+  if (qrSrc) {
+    return <img src={qrSrc} alt="Instagram QR" style={{ width: '80%', height: '80%', objectFit: 'contain' }} />
+  }
+
+  // Fallback: Instagram icon
   return (
-    <svg viewBox="0 0 29 29" width="100%" height="100%" style={{ padding: '8%' }}>
-      <rect width="29" height="29" fill="white" rx="2"/>
-      <g fill="black">
-        <rect x="1" y="1" width="7" height="7"/><rect x="2" y="2" width="5" height="5" fill="white"/><rect x="3" y="3" width="3" height="3"/>
-        <rect x="21" y="1" width="7" height="7"/><rect x="22" y="2" width="5" height="5" fill="white"/><rect x="23" y="3" width="3" height="3"/>
-        <rect x="1" y="21" width="7" height="7"/><rect x="2" y="22" width="5" height="5" fill="white"/><rect x="3" y="23" width="3" height="3"/>
-        <rect x="9" y="1" width="1" height="1"/><rect x="11" y="1" width="1" height="1"/><rect x="13" y="1" width="1" height="1"/>
-        <rect x="9" y="3" width="1" height="1"/><rect x="11" y="3" width="3" height="1"/><rect x="15" y="2" width="1" height="1"/>
-        <rect x="9" y="5" width="3" height="1"/><rect x="13" y="5" width="1" height="1"/><rect x="17" y="5" width="1" height="1"/>
-        <rect x="9" y="7" width="1" height="1"/><rect x="12" y="7" width="1" height="1"/><rect x="15" y="7" width="2" height="1"/>
-        <rect x="1" y="9" width="1" height="1"/><rect x="3" y="9" width="2" height="1"/><rect x="7" y="9" width="1" height="1"/>
-        <rect x="10" y="9" width="1" height="1"/><rect x="13" y="9" width="1" height="1"/><rect x="16" y="9" width="1" height="1"/>
-        <rect x="19" y="9" width="2" height="1"/><rect x="22" y="9" width="1" height="1"/><rect x="25" y="9" width="1" height="1"/>
-        <rect x="1" y="11" width="2" height="1"/><rect x="5" y="11" width="1" height="1"/><rect x="9" y="11" width="1" height="1"/>
-        <rect x="12" y="11" width="3" height="1"/><rect x="17" y="11" width="1" height="1"/><rect x="20" y="11" width="2" height="1"/>
-        <rect x="2" y="13" width="1" height="1"/><rect x="5" y="13" width="2" height="1"/><rect x="9" y="13" width="2" height="1"/>
-        <rect x="13" y="13" width="3" height="3"/><rect x="18" y="13" width="1" height="1"/><rect x="21" y="13" width="1" height="1"/>
-        <rect x="1" y="15" width="1" height="1"/><rect x="4" y="15" width="1" height="1"/><rect x="7" y="15" width="1" height="1"/>
-        <rect x="10" y="15" width="1" height="1"/><rect x="18" y="15" width="2" height="1"/><rect x="22" y="15" width="1" height="1"/>
-        <rect x="2" y="17" width="2" height="1"/><rect x="6" y="17" width="1" height="1"/><rect x="9" y="17" width="1" height="1"/>
-        <rect x="12" y="17" width="1" height="1"/><rect x="15" y="17" width="2" height="1"/><rect x="19" y="17" width="1" height="1"/>
-        <rect x="1" y="19" width="1" height="1"/><rect x="4" y="19" width="2" height="1"/><rect x="8" y="19" width="1" height="1"/>
-        <rect x="11" y="19" width="1" height="1"/><rect x="14" y="19" width="1" height="1"/><rect x="17" y="19" width="2" height="1"/>
-        <rect x="9" y="21" width="2" height="1"/><rect x="13" y="21" width="1" height="1"/><rect x="16" y="21" width="1" height="1"/>
-        <rect x="19" y="21" width="2" height="1"/><rect x="23" y="21" width="1" height="1"/><rect x="26" y="21" width="1" height="1"/>
-        <rect x="9" y="23" width="1" height="1"/><rect x="12" y="23" width="2" height="1"/><rect x="16" y="23" width="1" height="1"/>
-        <rect x="20" y="23" width="1" height="1"/><rect x="24" y="23" width="2" height="1"/>
-        <rect x="9" y="25" width="2" height="1"/><rect x="14" y="25" width="1" height="1"/><rect x="18" y="25" width="1" height="1"/>
-        <rect x="21" y="25" width="2" height="1"/><rect x="25" y="25" width="1" height="1"/>
-        <rect x="10" y="27" width="1" height="1"/><rect x="13" y="27" width="2" height="1"/><rect x="17" y="27" width="1" height="1"/>
-        <rect x="20" y="27" width="3" height="1"/><rect x="25" y="27" width="2" height="1"/>
-      </g>
+    <svg viewBox="0 0 24 24" width="60%" height="60%" fill="none" stroke="#000" strokeWidth="1.5">
+      <rect x="2" y="2" width="20" height="20" rx="5"/>
+      <circle cx="12" cy="12" r="5"/>
+      <circle cx="17.5" cy="6.5" r="1.5" fill="#000" stroke="none"/>
     </svg>
   )
 }

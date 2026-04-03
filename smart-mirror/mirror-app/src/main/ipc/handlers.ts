@@ -85,33 +85,40 @@ export function registerIpcHandlers(services: Services): void {
   safeHandle('clientes:search', async (_event, ...args) => {
     const query = args[0] as string
 
-    // CRM first (source of truth, cross-mirror clients)
+    // Local search first (always available)
+    let results: Array<{ id: string; [k: string]: unknown }> = []
+    try {
+      const local = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
+      if (Array.isArray(local)) results = local
+    } catch { /* local unavailable */ }
+
+    // CRM search when online: merge + upsert CRM clients into local DB
     if (crmSync.isOnline()) {
       try {
-        const crmResults = await crmSync.searchClientesCrm(query) as Array<{ id: string; [k: string]: unknown }>
-        if (Array.isArray(crmResults) && crmResults.length >= 0) {
-          // Merge with local unsynced clients
-          try {
-            const localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
-            if (Array.isArray(localResults)) {
-              const crmIds = new Set(crmResults.map(c => c.id))
-              for (const local of localResults) {
-                if (!crmIds.has(local.id)) crmResults.push(local)
-              }
+        const crmResults = await crmSync.searchClientesCrm(query) as Array<{ id: string; prenom?: string; nom?: string; email?: string; telephone?: string; date_de_naissance?: string; sexe?: string; [k: string]: unknown }>
+        if (Array.isArray(crmResults)) {
+          const localIds = new Set(results.map(c => c.id))
+          for (const client of crmResults) {
+            if (!localIds.has(client.id)) {
+              // Upsert CRM client into local DB so seance/consent FK works
+              try {
+                await apiClient.createCliente({
+                  prenom: String(client.prenom || ''),
+                  nom: String(client.nom || ''),
+                  email: client.email ? String(client.email) : undefined,
+                  telephone: client.telephone ? String(client.telephone) : undefined,
+                  date_de_naissance: client.date_de_naissance ? String(client.date_de_naissance).split('T')[0] : undefined,
+                  sexe: client.sexe ? String(client.sexe) : undefined
+                })
+              } catch { /* already exists or insert failed, still show in results */ }
+              results.push(client)
             }
-          } catch { /* local unavailable, CRM results are enough */ }
-          return crmResults
+          }
         }
-      } catch { /* CRM failed, fall through to local */ }
+      } catch { /* CRM unavailable */ }
     }
 
-    // Fallback: local only
-    try {
-      const localResults = await apiClient.searchClientes(query) as Array<{ id: string; [k: string]: unknown }>
-      if (Array.isArray(localResults)) return localResults
-    } catch { /* local also unavailable */ }
-
-    return []
+    return results
   })
 
   safeHandle('clientes:create', async (_event, ...args) => {
@@ -252,13 +259,8 @@ export function registerIpcHandlers(services: Services): void {
 
   safeHandle('microscope:snapshot', async () => {
     const frame = await microscopeService.captureSnapshotAsync()
-    if (frame.length > 0) {
-      return { success: true, imageBase64: frame.toString('base64') }
-    }
-    // Demo mode: return a small placeholder when microscope is unavailable
-    // Generate a simple SVG converted to base64 JPEG-like data
-    console.log('[Microscope] No frame - using demo placeholder')
-    return { success: false, error: 'Microscope not connected' }
+    if (frame.length === 0) return { success: false, error: 'No frame available' }
+    return { success: true, imageBase64: frame.toString('base64') }
   })
 
   microscopeService.on('connected', (info) => {
