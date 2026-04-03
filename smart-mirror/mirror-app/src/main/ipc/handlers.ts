@@ -175,8 +175,27 @@ export function registerIpcHandlers(services: Services): void {
       } catch { /* CRM unavailable, fall back to local */ }
     }
 
-    // Fallback: local QR (localhost URL, only works on same network)
-    return apiClient.getQRCode(seanceId)
+    // Fallback: generate local PDF then QR with LAN IP
+    await apiClient.generateReport(seanceId)
+    const localResult = await apiClient.getQRCode(seanceId) as { qrcode?: string; reportUrl?: string }
+    if (localResult?.reportUrl) {
+      // Replace localhost with LAN IP so phones on same network can access
+      const { networkInterfaces } = await import('os')
+      const ifaces = networkInterfaces()
+      let lanIp = 'localhost'
+      for (const name of Object.keys(ifaces)) {
+        for (const iface of ifaces[name] || []) {
+          if (!iface.internal && iface.family === 'IPv4') { lanIp = iface.address; break }
+        }
+        if (lanIp !== 'localhost') break
+      }
+      const lanUrl = localResult.reportUrl.replace('localhost', lanIp)
+      // Regenerate QR with LAN URL
+      const QRCode = await import('qrcode')
+      const qrDataUrl = await QRCode.toDataURL(lanUrl, { width: 400, margin: 2 })
+      return { qrcode: qrDataUrl, reportUrl: lanUrl }
+    }
+    return localResult
   })
 
   safeHandle('seance:updateNotes', async (_event, ...args) => {

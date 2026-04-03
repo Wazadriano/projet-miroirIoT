@@ -105,13 +105,15 @@ export function VirtualKeyboard({ visible, minimized, onInput, onClose, onToggle
       <div
         style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0.8vw 2vw', cursor: 'grab', userSelect: 'none', touchAction: 'none'
+          padding: '0.8vw 2vw', userSelect: 'none', touchAction: 'none'
         }}
-        onPointerDown={onDragStart}
-        onPointerMove={onDragMove}
-        onPointerUp={onDragEnd}
       >
-        <div style={{ width: '8vw', height: '0.6vw', borderRadius: '1vw', background: 'rgba(212, 163, 142, 0.5)' }} />
+        <div
+          style={{ width: '8vw', height: '0.6vw', borderRadius: '1vw', background: 'rgba(212, 163, 142, 0.5)', cursor: 'grab' }}
+          onPointerDown={onDragStart}
+          onPointerMove={onDragMove}
+          onPointerUp={onDragEnd}
+        />
         <div style={{ display: 'flex', gap: '2vw', alignItems: 'center' }}>
           <button onClick={cycleSize} style={{
             background: 'transparent', border: '1px solid rgba(212, 163, 142, 0.3)', color: '#E8C9B5',
