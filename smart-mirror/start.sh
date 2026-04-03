@@ -2,7 +2,7 @@
 cd "$(dirname "$0")"
 
 # CRM config (change these for your deployment)
-export CRM_BASE_URL="${CRM_BASE_URL:-https://crm-kbeauty.a3n.fr/api}"
+export CRM_BASE_URL="${CRM_BASE_URL:-https://api-kbeauty.a3n.fr/api}"
 export CRM_TOKEN="${CRM_TOKEN:-CHANGEME_SET_VIA_ENV}"
 
 # Start local backend (PostgreSQL + mock-api on port 8100) if Docker is available

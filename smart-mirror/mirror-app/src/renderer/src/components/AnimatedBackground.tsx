@@ -1,5 +1,3 @@
-import backgroundImage from '../assets/background-golden-1874d7.png'
-
 interface AnimatedBackgroundProps {
   enabled: boolean
   theme: string
@@ -11,7 +9,11 @@ export function AnimatedBackground({ enabled, suspended }: AnimatedBackgroundPro
 
   return (
     <div className="bg-animated">
-      <img src={backgroundImage} alt="" className="bg-animate-img" />
+      <div className="bg-orb bg-orb-1" />
+      <div className="bg-orb bg-orb-2" />
+      <div className="bg-orb bg-orb-3" />
+      <div className="bg-orb bg-orb-4" />
+      <div className="bg-orb bg-orb-5" />
     </div>
   )
 }

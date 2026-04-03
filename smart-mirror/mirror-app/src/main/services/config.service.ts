@@ -41,7 +41,7 @@ const DEFAULTS: DeviceConfig = {
   api: {
     baseUrl: process.env.API_BASE_URL || 'http://localhost:8100/api',
     iaProxyUrl: process.env.IA_PROXY_URL || 'http://localhost:3001',
-    crmBaseUrl: process.env.CRM_BASE_URL || 'https://crm-kbeauty.a3n.fr/api',
+    crmBaseUrl: process.env.CRM_BASE_URL || 'https://api-kbeauty.a3n.fr/api',
     crmToken: process.env.CRM_TOKEN || ''
   },
   microscope: {
