@@ -38,6 +38,22 @@ Redis remplit trois roles : backing store pour les queues Laravel (generation PD
 
 L'architecture multi-tenant avec isolation par boutique est complexe a implementer sur Firebase/Supabase (Row Level Security limitee, pas de controle fin des policies). La generation PDF cote serveur via DomPDF necessite un backend PHP. L'integration N8N pour les workflows asynchrones requiert un backend auto-heberge. Enfin, les photos medicales/cosmetiques sensibles imposent un controle total sur l'hebergement des donnees.
 
+### Pourquoi un backend local sur le miroir ET un CRM distant ?
+
+Le miroir a son propre backend (Express + PostgreSQL) qui tourne directement sur le device. Toutes les ecritures (clients, seances, photos, diagnostics) vont dans cette base locale. Le CRM Laravel est la source de verite partagee entre tous les miroirs et boutiques. Un service de synchronisation (CrmSyncService) detecte quand le reseau est disponible, pousse les donnees non syncees vers le CRM, verifie la reception (reponse 200/201), marque les records comme synces localement, et nettoie les donnees locales confirmees apres 30 jours. Ce design garantit que la seance n'est jamais interrompue par un probleme reseau, et que les donnees finissent toujours dans le CRM central.
+
+### Pourquoi ne pas ecrire directement dans le CRM ?
+
+Si le CRM est la seule base, une coupure reseau pendant une seance bloque tout : impossible de sauvegarder un client, une photo, un diagnostic. Le backend local elimine cette dependance. De plus, les ecritures locales sont instantanees (latence < 1ms), alors qu'un appel API distant peut prendre 100-500ms. Pour une UX fluide sur un kiosque tactile, la reactivite est critique.
+
+### Comment garantissez-vous que les donnees arrivent bien dans le CRM ?
+
+Le pipeline de sync est verifie en 4 etapes : (1) lecture des records non synces via GET /api/sync/pending, (2) push vers le CRM avec verification du code HTTP 200/201, (3) confirmation locale via PATCH /api/sync/confirm qui marque synced_to_crm = TRUE, (4) nettoyage des records confirmes apres 30 jours via DELETE /api/sync/cleanup. Si une etape echoue, le record reste dans la file et sera retente au prochain cycle (toutes les 60 secondes).
+
+### Comment la recherche client fonctionne cross-miroir ?
+
+Quand le praticien cherche un client, l'app interroge d'abord la base locale, puis le CRM distant si le reseau est disponible. Les resultats sont fusionnes et dedupliques par identifiant. Cela permet de retrouver un client qui a fait un soin dans une autre boutique ou sur un autre miroir, tout en garantissant que la recherche fonctionne meme sans reseau.
+
 ---
 
 ## 2. Choix de Donnees
@@ -148,7 +164,11 @@ Les photos du cuir chevelu sont chiffrees localement via safeStorage, transmises
 
 ### Le WiFi tombe pendant une seance -- que se passe-t-il ?
 
-La seance continue normalement. Les captures microscopiques sont stockees localement, l'affichage est instantane. Le diagnostic IA est indisponible (un message l'indique), mais le praticien peut terminer la seance. Une file de synchronisation persistante enregistre toutes les actions et les rejoue automatiquement lorsque le reseau revient.
+Rien ne change pour l'utilisateur. Toutes les ecritures vont dans le backend local qui tourne sur le device -- pas de dependance reseau. Les photos sont sauvegardees localement, le diagnostic IA est disponible si le service IA tourne en local. Le CrmSyncService detecte la perte de connexion et met la sync en pause. Quand le WiFi revient, il reprend automatiquement : push des records non synces, verification, confirmation. Le praticien ne voit aucune interruption.
+
+### Que se passe-t-il si le CRM distant est en panne ?
+
+L'app continue de fonctionner normalement. Toutes les operations se font sur le backend local. Les donnees s'accumulent avec synced_to_crm = FALSE. Quand le CRM revient, le prochain cycle de sync (toutes les 60 secondes) pousse tout le backlog. Le pipeline est idempotent : si un push partiel a eu lieu, seuls les records non confirmes sont reessayes.
 
 ### Le microscope se deconnecte en pleine capture ?
 
