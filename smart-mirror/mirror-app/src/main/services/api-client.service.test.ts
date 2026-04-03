@@ -12,9 +12,10 @@ describe('ApiClientService', () => {
       deviceId: 'mirror-001',
       boutiqueId: 'bout-001',
       token: 'test-token',
-      apiBaseUrl: 'http://localhost:8000/api'
+      apiBaseUrl: 'http://localhost:8100/api'
     })
     api = new ApiClientService(config)
+
 
     vi.stubGlobal('fetch', vi.fn())
   })
@@ -41,7 +42,7 @@ describe('ApiClientService', () => {
       const result = await api.registerDevice('b1')
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/auth/mirror/register',
+        'http://localhost:8100/api/auth/mirror/register',
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ boutique_id: 'b1' })
@@ -59,7 +60,7 @@ describe('ApiClientService', () => {
       await api.searchClientes('Marie Dupont')
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/clientes?boutique_id=bout-001&q=Marie%20Dupont',
+        'http://localhost:8100/api/clientes?boutique_id=bout-001&q=Marie%20Dupont',
         expect.any(Object)
       )
     })
@@ -72,7 +73,7 @@ describe('ApiClientService', () => {
       await api.createCliente({ prenom: 'Sophie', nom: 'Martin', email: 's@test.com', date_de_naissance: '1990-05-15' })
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/clientes',
+        'http://localhost:8100/api/clientes',
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({
@@ -94,7 +95,7 @@ describe('ApiClientService', () => {
       await api.createConsentement('c1', 'Je consens au traitement')
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/consentements',
+        'http://localhost:8100/api/consentements',
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({
@@ -130,7 +131,7 @@ describe('ApiClientService', () => {
       await api.endSeance('s1')
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/seances/s1/end',
+        'http://localhost:8100/api/seances/s1/end',
         expect.objectContaining({ method: 'POST' })
       )
     })
@@ -143,7 +144,7 @@ describe('ApiClientService', () => {
       await api.updateSeance('s1', { note_seance: 'Cuir chevelu sec' })
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/seances/s1',
+        'http://localhost:8100/api/seances/s1',
         expect.objectContaining({
           method: 'PATCH',
           body: JSON.stringify({ note_seance: 'Cuir chevelu sec' })
@@ -164,7 +165,7 @@ describe('ApiClientService', () => {
       await api.analyzePhoto('base64data')
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:3002/api/analyze',
+        'http://localhost:3001/api/analyze',
         expect.objectContaining({
           method: 'POST',
           headers: expect.objectContaining({
@@ -183,7 +184,7 @@ describe('ApiClientService', () => {
       const result = await api.getSyncPending()
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/sync/pending',
+        'http://localhost:8100/api/sync/pending',
         expect.any(Object)
       )
       expect(result).toHaveProperty('clientes')
@@ -198,7 +199,7 @@ describe('ApiClientService', () => {
       await api.confirmSynced('clientes', ['id1', 'id2'])
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/sync/confirm',
+        'http://localhost:8100/api/sync/confirm',
         expect.objectContaining({
           method: 'PATCH',
           body: JSON.stringify({ table: 'clientes', ids: ['id1', 'id2'] })
@@ -232,7 +233,7 @@ describe('ApiClientService', () => {
       await api.sendHeartbeat()
 
       expect(fetch).toHaveBeenCalledWith(
-        'http://localhost:8000/api/miroirs/mirror-001/heartbeat',
+        'http://localhost:8100/api/miroirs/mirror-001/heartbeat',
         expect.objectContaining({ method: 'POST' })
       )
     })

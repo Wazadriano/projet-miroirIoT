@@ -21,7 +21,7 @@ services:
       context: ./mock-api
       dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8100:8100"
       - "3001:3001"
     environment:
       DB_HOST: postgres
@@ -29,7 +29,7 @@ services:
       DB_NAME: smartmirror
       DB_USER: smartmirror
       DB_PASSWORD: smartmirror_dev
-      MOCK_API_PORT: 8000
+      MOCK_API_PORT: 8100
       MOCK_IA_PORT: 3001
     depends_on:
       postgres:

@@ -13,6 +13,7 @@ interface DeviceConfig {
     baseUrl: string
     iaProxyUrl: string
     crmBaseUrl: string
+    crmToken: string
   }
   microscope: {
     devicePath: string
@@ -38,9 +39,10 @@ const DEFAULTS: DeviceConfig = {
     macAddress: ''
   },
   api: {
-    baseUrl: process.env.API_BASE_URL || 'http://localhost:8000/api',
-    iaProxyUrl: process.env.IA_PROXY_URL || 'http://localhost:3002',
-    crmBaseUrl: process.env.CRM_BASE_URL || ''
+    baseUrl: process.env.API_BASE_URL || 'http://localhost:8100/api',
+    iaProxyUrl: process.env.IA_PROXY_URL || 'http://localhost:3001',
+    crmBaseUrl: process.env.CRM_BASE_URL || 'https://crm-kbeauty.a3n.fr/api',
+    crmToken: process.env.CRM_TOKEN || ''
   },
   microscope: {
     devicePath: '',
@@ -92,6 +94,10 @@ export class ConfigService {
 
   getCrmBaseUrl(): string {
     return this.store.get('api.crmBaseUrl')
+  }
+
+  getCrmToken(): string {
+    return this.store.get('api.crmToken')
   }
 
   getDeviceToken(): string {

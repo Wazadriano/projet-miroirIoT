@@ -297,7 +297,7 @@ api.post('/api/seances/:id/report', async (req, res) => {
     const photos = photosResult.rows;
 
     const pdfPath = path.join(RAPPORTS_DIR, `${req.params.id}.pdf`);
-    const reportUrl = `http://localhost:8000/api/rapports/${req.params.id}.pdf`;
+    const reportUrl = `http://localhost:8100/api/rapports/${req.params.id}.pdf`;
 
     const doc = new PDFDocument({ size: 'A4', margin: 50 });
     const stream = fs.createWriteStream(pdfPath);
@@ -385,7 +385,7 @@ api.post('/api/seances/:id/report', async (req, res) => {
 // QR Code: generate QR pointing to the PDF report
 api.get('/api/seances/:id/qrcode', async (req, res) => {
   try {
-    const reportUrl = `http://localhost:8000/api/rapports/${req.params.id}.pdf`;
+    const reportUrl = `http://localhost:8100/api/rapports/${req.params.id}.pdf`;
     const qrDataUrl = await QRCode.toDataURL(reportUrl, { width: 400, margin: 2 });
     res.json({ data: { qrcode: qrDataUrl, reportUrl } });
   } catch (err) {
@@ -396,7 +396,7 @@ api.get('/api/seances/:id/qrcode', async (req, res) => {
 // Send report to CRM (mock: updates seance record)
 api.post('/api/seances/:id/send-to-crm', async (req, res) => {
   try {
-    const reportUrl = `http://localhost:8000/api/rapports/${req.params.id}.pdf`;
+    const reportUrl = `http://localhost:8100/api/rapports/${req.params.id}.pdf`;
     await pool.query('UPDATE seances SET rapport_url = $1 WHERE id = $2', [reportUrl, req.params.id]);
     res.json({ data: { sent: true, reportUrl } });
   } catch (err) {
