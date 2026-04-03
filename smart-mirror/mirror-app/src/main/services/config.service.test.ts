@@ -13,11 +13,11 @@ describe('ConfigService', () => {
   })
 
   it('should return default API base URL', () => {
-    expect(service.getApiBaseUrl()).toBe('http://localhost:8000/api')
+    expect(service.getApiBaseUrl()).toBe('http://localhost:8100/api')
   })
 
   it('should return default IA proxy URL', () => {
-    expect(service.getIaProxyUrl()).toBe('http://localhost:3002')
+    expect(service.getIaProxyUrl()).toBe('http://localhost:3001')
   })
 
   it('should auto-detect or fallback MAC address', () => {

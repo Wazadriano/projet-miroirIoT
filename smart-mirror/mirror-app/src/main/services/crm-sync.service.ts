@@ -33,7 +33,7 @@ export class CrmSyncService {
   private get crmHeaders(): Record<string, string> {
     return {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${this.config.getDeviceToken()}`
+      'Authorization': `Bearer ${this.config.getCrmToken()}`
     }
   }
 
@@ -230,7 +230,7 @@ export class CrmSyncService {
 
     const response = await fetch(`${this.crmUrl}/miroir/photos`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${this.config.getDeviceToken()}` },
+      headers: { 'Authorization': `Bearer ${this.config.getCrmToken()}` },
       body: formData,
       signal: AbortSignal.timeout(30000)
     })

@@ -1,20 +1,25 @@
 #!/bin/bash
-set -e
-
 cd "$(dirname "$0")"
 
-echo "[Smart Mirror] Starting local services (PostgreSQL + API)..."
-docker compose up -d --wait 2>/dev/null || docker-compose up -d 2>/dev/null
+# CRM config (change these for your deployment)
+export CRM_BASE_URL="${CRM_BASE_URL:-https://crm-kbeauty.a3n.fr/api}"
+export CRM_TOKEN="${CRM_TOKEN:-CHANGEME_SET_VIA_ENV}"
 
-echo "[Smart Mirror] Waiting for API health check..."
-for i in $(seq 1 15); do
-  if curl -s http://localhost:8000/api/health > /dev/null 2>&1; then
-    echo "[Smart Mirror] Local API ready."
-    break
-  fi
-  sleep 1
-done
+# Start local backend (PostgreSQL + mock-api on port 8100) if Docker is available
+if command -v docker &> /dev/null && docker info &> /dev/null; then
+  echo "[Smart Mirror] Starting local services (PostgreSQL + API on :8100)..."
+  docker compose up -d --wait 2>/dev/null || docker-compose up -d 2>/dev/null || true
 
+  echo "[Smart Mirror] Waiting for local API..."
+  for i in $(seq 1 10); do
+    curl -s http://localhost:8100/api/health > /dev/null 2>&1 && break
+    sleep 1
+  done
+else
+  echo "[Smart Mirror] Docker not available -- running without local backend."
+fi
+
+echo "[Smart Mirror] CRM: $CRM_BASE_URL"
 echo "[Smart Mirror] Starting mirror app..."
 cd mirror-app
 exec npx electron-vite dev
