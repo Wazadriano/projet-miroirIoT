@@ -240,6 +240,78 @@ export class CrmSyncService {
     }
   }
 
+  // --- Report from CRM (PDF accessible publicly) ---
+
+  async getReportFromCrm(seanceId: string): Promise<{ rapport_url: string; qr_svg: string; ready: boolean } | null> {
+    if (!this.crmUrl) return null
+    try {
+      const response = await fetch(`${this.crmUrl}/miroir/seances/${seanceId}/rapport`, {
+        headers: this.crmHeaders,
+        signal: AbortSignal.timeout(10000)
+      })
+      if (!response.ok) return null
+      const result = await response.json()
+      return result.data
+    } catch {
+      return null
+    }
+  }
+
+  // Force sync a specific session + its dependencies right now
+  async syncSessionNow(seanceId: string): Promise<void> {
+    if (!this.crmUrl) return
+    try {
+      const pending = await this.localApi.getSyncPending()
+
+      // Find this session's client and consent, sync them first
+      const seance = (pending.seances as Array<Record<string, unknown>>).find(s => s.id === seanceId)
+      if (!seance) return
+
+      const client = (pending.clientes as Array<Record<string, unknown>>).find(c => c.id === seance.cliente_id)
+      if (client) {
+        const ok = await this.pushTocrm('/miroir/clientes', {
+          prenom: client.prenom, nom: client.nom, email: client.email,
+          telephone: client.telephone, date_de_naissance: client.date_de_naissance, sexe: client.sexe
+        })
+        if (ok) await this.localApi.confirmSynced('clientes', [client.id as string])
+      }
+
+      const consent = (pending.consentements as Array<Record<string, unknown>>).find(c => c.id === seance.consentement_id)
+      if (consent) {
+        const ok = await this.pushTocrm('/miroir/consentements', {
+          cliente_id: consent.cliente_id, texte_consent: consent.texte_consent
+        })
+        if (ok) await this.localApi.confirmSynced('consentements', [consent.id as string])
+      }
+
+      // Sync the session itself
+      const ok = await this.pushTocrm('/miroir/seances', {
+        cliente_id: seance.cliente_id, consentement_id: seance.consentement_id
+      })
+      if (ok) {
+        if (seance.date_fin) await this.pushTocrm(`/miroir/seances/${seanceId}/fin`, {})
+        if (seance.note_seance) {
+          await fetch(`${this.crmUrl}/miroir/seances/${seanceId}`, {
+            method: 'PATCH', headers: this.crmHeaders,
+            body: JSON.stringify({ note_seance: seance.note_seance })
+          }).catch(() => {})
+        }
+        await this.localApi.confirmSynced('seances', [seanceId])
+      }
+
+      // Sync photos for this session
+      const photos = (pending.photos as Array<Record<string, unknown>>).filter(p => p.seance_id === seanceId)
+      for (const photo of photos) {
+        try {
+          await this.pushPhotoCrm(photo)
+          await this.localApi.confirmSynced('photos', [photo.id as string])
+        } catch { /* will retry in background */ }
+      }
+    } catch (err) {
+      console.error('[CrmSync] syncSessionNow failed:', err instanceof Error ? err.message : err)
+    }
+  }
+
   // --- Cleanup ---
 
   async cleanupSynced(): Promise<void> {

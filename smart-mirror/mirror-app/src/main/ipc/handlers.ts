@@ -142,6 +142,22 @@ export function registerIpcHandlers(services: Services): void {
 
   safeHandle('seance:getQRCode', async (_event, ...args) => {
     const seanceId = args[0] as string
+
+    // Try CRM first: sync session, get report with public URL
+    if (crmSync.isOnline()) {
+      try {
+        await crmSync.syncSessionNow(seanceId)
+        const crmReport = await crmSync.getReportFromCrm(seanceId)
+        if (crmReport?.rapport_url) {
+          const qrDataUrl = crmReport.qr_svg
+            ? `data:image/svg+xml;base64,${Buffer.from(crmReport.qr_svg).toString('base64')}`
+            : ''
+          return { qrcode: qrDataUrl, reportUrl: crmReport.rapport_url }
+        }
+      } catch { /* CRM unavailable, fall back to local */ }
+    }
+
+    // Fallback: local QR (localhost URL, only works on same network)
     return apiClient.getQRCode(seanceId)
   })
 
