@@ -24,7 +24,10 @@ export class CrmSyncService {
   constructor(
     private config: ConfigService,
     private localApi: ApiClientService
-  ) {}
+  ) {
+    // Load persisted bearer token from previous session
+    this.crmBearerToken = this.config.getCrmBearerToken()
+  }
 
   private get crmUrl(): string {
     return this.config.getCrmBaseUrl()
@@ -39,7 +42,12 @@ export class CrmSyncService {
   }
 
   // CRM auth: exchange MAC + device_token for a Bearer token
+  // Persisted via config so we don't need to re-auth on every restart
   private crmBearerToken = ''
+
+  get bearerToken(): string {
+    return this.crmBearerToken
+  }
 
   async authenticate(): Promise<boolean> {
     if (!this.crmUrl) return false
@@ -56,6 +64,9 @@ export class CrmSyncService {
       if (!response.ok) return false
       const result = await response.json()
       this.crmBearerToken = result.token || result.data?.token || ''
+      if (this.crmBearerToken) {
+        this.config.setCrmBearerToken(this.crmBearerToken)
+      }
       console.log(`[CrmSync] Authenticated with CRM, mirror: ${result.miroir?.nom || result.data?.miroir?.nom || 'unknown'}`)
       return Boolean(this.crmBearerToken)
     } catch {
@@ -71,24 +82,24 @@ export class CrmSyncService {
       return false
     }
     try {
-      // Authenticate if we don't have a bearer token yet
-      if (!this.crmBearerToken) {
-        const authed = await this.authenticate()
-        if (!authed) { this.online = false; return false }
-      }
+      // Try heartbeat with current token (fast check)
       const response = await fetch(`${this.crmUrl}/miroir/heartbeat`, {
         method: 'POST',
         headers: this.crmHeaders,
         body: JSON.stringify({}),
         signal: AbortSignal.timeout(5000)
       })
-      if (response.status === 401) {
-        // Token expired, re-auth
-        this.crmBearerToken = ''
-        this.online = false
-        return false
+      if (response.ok) {
+        this.online = true
+        return true
       }
-      this.online = response.ok
+      if (response.status === 401) {
+        // Token expired or missing, try to authenticate
+        const authed = await this.authenticate()
+        this.online = authed
+        return authed
+      }
+      this.online = false
     } catch {
       this.online = false
     }
