@@ -6,44 +6,92 @@
 
 ## 1. Hardware du Miroir
 
-### 1.1 Éléments fixes
+### 1.0 Architecture physique (scenario 2 — compute deporte)
 
-| Composant | Spécification |
-|-----------|--------------|
-| Cadre miroir | Sur mesure — cadre aluminium/bois avec verre sans-tain (two-way mirror, 25–35% transmission) |
-| Écran | 32" IPS/VA, Full HD (1920×1080), **minimum 400 nits** (passage miroir sans-tain), montage VESA, sans pied |
-| Microscope | USB (UVC class) — plug-and-play Linux sans driver propriétaire, grossissement 50×–200×, 5MP min, LEDs UV + blanc intégrées |
+Le miroir Shineworld integre un ecran tactile 32" avec Android embarque.
+L'Android est **bypasse** : l'ecran fonctionne en mode moniteur HDMI, pilote par un
+Raspberry Pi 5 dans un boitier externe fixe au dos du cadre.
 
-> **Contrainte critique :** L'écran doit être suffisamment lumineux pour passer à travers le verre. En dessous de 400 nits, le rendu est trop sombre en conditions d'éclairage salon.
+```
+┌─────────────────────────────────────────────┐
+│            Miroir Shineworld                │
+│  ┌───────────────────────────────────────┐  │
+│  │   Ecran 32" tactile (mode HDMI)      │  │
+│  │   Verre sans-tain par-dessus         │  │
+│  └───────────────────────────────────────┘  │
+│         │ HDMI         ▲ USB (touch HID)    │
+│         └──────┬───────┘                    │
+│                │ cables sortie arriere      │
+└────────────────┼────────────────────────────┘
+                 │
+    ┌────────────┴────────────────┐
+    │   Boitier Pi 5 (PETG)      │
+    │   Fixe VESA au dos cadre   │
+    │   ┌─────────────────────┐  │
+    │   │ Raspberry Pi 5 8GB  │  │
+    │   │ Active Cooler       │  │
+    │   │ (opt) M.2 HAT+ NVMe│  │
+    │   └─────────────────────┘  │
+    │   Ports : USB-C alim       │
+    │           micro-HDMI → ecran│
+    │           USB-A ← touch    │
+    │           USB-A → microscope│
+    │           WiFi (internet)  │
+    └─────────────────────────────┘
+```
 
-### 1.2 Compute — Cible de développement
+### 1.1 Miroir (fourni par Shineworld — sur mesure)
 
-L'environnement de dev/staging tourne sur **Raspberry Pi 5 (8GB)** — c'est la contrainte plancher.
+| Composant | Specification demandee au fournisseur |
+|-----------|--------------------------------------|
+| Ecran | 32" IPS/VA, Full HD (1920x1080), **minimum 400 nits**, tactile capacitif 10 points |
+| Verre | Sans-tain (two-way mirror, 25-35% transmission lumiere) |
+| Cadre | Aluminium noir mat, profondeur minimale |
+| Entree video | **HDMI 2.0 Type A femelle** — le Pi envoie via micro-HDMI + adaptateur |
+| Retour tactile | **USB (protocole HID standard)** — plug-and-play Linux, pas de driver proprietaire |
+| Android embarque | **Desactive ou non inclus** — mode moniteur HDMI uniquement |
+| Alimentation ecran | Interne au cadre, cable secteur IEC C13 ou C7 |
+| Passage cables | HDMI + USB en sortie arriere ou partie basse du cadre |
+| Fixation boitier | VESA 75x75 ou 100x100 au dos du cadre |
+| Deploiement | 2 unites par boutique — 6 miroirs total |
+
+> **Contrainte critique :** L'ecran doit depasser 400 nits car 65-75% de la luminosite est absorbee par le verre sans-tain. En dessous, le rendu est trop sombre en eclairage salon.
+
+### 1.2 Boitier compute (externe — fixe au dos du miroir)
+
+Le compute tourne sur **Raspberry Pi 5 (8GB)** dans un boitier imprime 3D (PETG), fixe au dos du cadre miroir via VESA. Voir `device-setup/enclosure/` pour le modele OpenSCAD et les specs detaillees (`SPECS.md`).
 
 ```
 OS       : Raspberry Pi OS Lite 64-bit (Debian 12 Bookworm)
-GPU      : VideoCore VII — accélération H.264/MJPEG hardware disponible
+GPU      : VideoCore VII — acceleration H.264/MJPEG hardware disponible
 RAM      : 8 GB LPDDR4X
-Stockage : microSD 64GB Class 10 minimum (SSD USB-C recommandé pour prod)
-WiFi     : 802.11ac dual-band intégré
-USB      : 2× USB 3.0 pour microscope + périphériques
+Stockage : microSD 64GB Class 10 minimum (SSD NVMe via M.2 HAT+ recommande pour prod)
+WiFi     : 802.11ac dual-band integre
+USB      : 2x USB 3.0 (microscope + touch ecran), 2x USB 2.0 (peripheriques)
+HDMI     : 2x micro-HDMI 2.0 (1 utilise pour l'ecran miroir)
 ```
 
-**Recommandation production** (à valider selon budget) :
+**Cables requis entre boitier et miroir :**
+- Micro-HDMI → HDMI 2.0 (adaptateur ou cable, 30-50 cm)
+- USB-A → USB (retour tactile ecran, 30-50 cm)
+
+**Recommandation production** (a valider selon budget) :
 
 | Option | CPU | RAM | Prix | Note |
 |--------|-----|-----|------|------|
 | Raspberry Pi 5 8GB | ARM Cortex-A76 4c | 8 GB | ~80€ | Dev OK, prod limite |
-| Orange Pi 5 Plus | RK3588 8c | 16 GB | ~120€ | Meilleure perf ARM, même form factor |
-| Beelink SER5 MAX | Ryzen 5 5700U 8c | 16 GB | ~180€ | Recommandé prod — x86, DDR4, NVMe |
+| Orange Pi 5 Plus | RK3588 8c | 16 GB | ~120€ | Meilleure perf ARM, meme form factor |
+| Beelink SER5 MAX | Ryzen 5 5700U 8c | 16 GB | ~180€ | Recommande prod — x86, DDR4, NVMe |
 
-Le code doit rester compatible ARM64 **et** x86-64 (pas de dépendances x86-only).
+Le code doit rester compatible ARM64 **et** x86-64 (pas de dependances x86-only).
 
-### 1.3 Connectivité
+### 1.3 Connectivite
 
-- **WiFi** : connexion au réseau boutique (WPA2/WPA3), configuration au provisioning
+- **HDMI** : micro-HDMI (Pi) → adaptateur → HDMI 2.0 (miroir) — sortie video vers ecran
+- **USB touch** : USB-A (Pi) ← USB (miroir) — retour tactile HID standard
+- **WiFi** : connexion au reseau boutique (WPA2/WPA3), configuration au provisioning
 - **Ethernet** : RJ45 disponible pour l'installation initiale / debug
-- **Microscope** : USB 3.0, device exposé en `/dev/video*` (classe UVC)
+- **Microscope** : USB 3.0, device expose en `/dev/video*` (classe UVC)
 - **Pas de Bluetooth** en scope V1
 
 ---

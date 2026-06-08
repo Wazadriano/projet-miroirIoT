@@ -639,14 +639,34 @@ n8n est l'outil de workflow du no-codeur. Il ne touche JAMAIS directement à Pos
 
 # **10\. Application miroir**
 
-## **10.1 Matériel cible**
+## **10.1 Architecture materielle (scenario 2 — compute deporte)**
+
+Le miroir Shineworld integre un ecran tactile 32" avec Android embarque. L'Android est bypasse : l'ecran est utilise en mode moniteur HDMI, et le compute est assure par un Raspberry Pi 5 dans un boitier externe fixe au dos du cadre. Cette separation permet de maitriser l'OS, les mises a jour, et le hardware de maniere independante.
+
+### Miroir (fourni par Shineworld — sur mesure)
+
+| Élément | Spec demandee | Notes |
+| :---- | :---- | :---- |
+| Ecran | 32" IPS, 1920x1080, 400+ nits, tactile capacitif 10 points | Luminosite critique pour passage verre sans-tain |
+| Verre | Sans-tain (25-35% transmission) | Cadre aluminium noir mat |
+| Entree video | HDMI 2.0 Type A femelle | Pi envoie via micro-HDMI → adaptateur HDMI |
+| Retour tactile | USB (protocole HID standard, pas de driver proprietaire) | Plug-and-play sur Debian 12 |
+| Android embarque | Desactive ou non inclus | On bypasse — mode moniteur HDMI uniquement |
+| Alimentation | Interne, cable secteur IEC C13/C7 | L'ecran s'alimente independamment du Pi |
+| Passage cables | HDMI \+ USB sortie arriere ou partie basse du cadre | Pour connexion au boitier Pi |
+| Fixation boitier | VESA 75x75 ou 100x100 au dos du cadre | Accueille le boitier Pi |
+| Deploiement | 2 par boutique — 6 miroirs total (Nice, Lyon, Cannes) | |
+
+### Boitier compute (externe — fixe au dos du miroir)
 
 | Élément | Matériel | Notes |
 | :---- | :---- | :---- |
-| Boîtier | Shineworld (sur mesure) | OS libre — Debian 12 installé dessus |
-| Ordinateur embarqué | Raspberry Pi 5 (8 Go RAM) | ARM64. Alternative Beelink SER5 à valider (PO-01) |
-| Microscope | Jiusion 4K WiFi (Amazon B0CPVH11Z6, \~45€) | Sans fil obligatoire. Protocole à confirmer à réception (PO-02) |
-| Connectivité | Double WiFi | WiFi interne \= hotspot microscope. Dongle USB WiFi (\~15€) \= internet boutique |
+| Ordinateur | Raspberry Pi 5 (8 Go RAM) | ARM64. Alternative Beelink SER5 a valider (PO-01) |
+| Boitier | Imprime 3D PETG, profil slim, logo K Beauty | Fixation VESA au dos du miroir. Voir `device-setup/enclosure/` |
+| Connexion ecran | Micro-HDMI (Pi) → adaptateur → HDMI 2.0 (miroir) | Cable court 30-50 cm |
+| Connexion tactile | USB-A (Pi) ← USB (miroir) | Retour touch HID standard |
+| Microscope | Jiusion 4K WiFi (Amazon B0CPVH11Z6, \~45€) OU Ninyoon USB UVC | Protocole a confirmer a reception (PO-02) |
+| Connectivite | WiFi interne Pi \+ dongle USB WiFi si microscope WiFi | WiFi interne \= internet boutique OU hotspot microscope |
 
 ## **10.2 Système et démarrage**
 
@@ -826,12 +846,14 @@ Le workflow n8n de fallback email nécessite un service SMTP configuré. Deux op
 
 | Poste | Estimation | Notes |
 | :---- | :---- | :---- |
-| Boîtier Shineworld (sur mesure) | À chiffrer | Selon fabricant — à budgéter avec le client |
+| Miroir Shineworld (sur mesure, ecran 32" tactile HDMI) | A chiffrer | Selon fabricant — a budgeter avec le client |
 | Raspberry Pi 5 (8 Go RAM) | \~90 EUR | Prix indicatif mars 2026 |
-| Microscope Jiusion 4K WiFi | \~45 EUR | Amazon réf. B0CPVH11Z6 |
-| Dongle WiFi USB | \~15 EUR | Pour la connexion internet boutique |
-| Carte microSD (128 Go) | \~15 EUR | OS \+ app \+ cache médias |
-| Total matériel par miroir (hors boîtier) | \~165 EUR | Sans compter le boîtier Shineworld |
+| Boitier Pi imprime 3D (PETG) | \~5 EUR | Impression FDM, materiau PETG |
+| Adaptateur micro-HDMI → HDMI | \~10 EUR | Cable court 30-50 cm |
+| Microscope Jiusion 4K WiFi | \~45 EUR | Amazon ref. B0CPVH11Z6 |
+| Dongle WiFi USB | \~15 EUR | Si microscope WiFi (pour internet parallele) |
+| Carte microSD (128 Go) | \~15 EUR | OS \+ app \+ cache medias |
+| Total materiel par miroir (hors miroir Shineworld) | \~180 EUR | Boitier Pi \+ peripheriques |
 
 ## **14.3 Coûts de développement**
 
