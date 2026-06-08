@@ -84,7 +84,7 @@ Le client souhaite un ensemble composé de deux briques :
 
 ## **3.1 Système d’exploitation**
 
-Le miroir fonctionne sous Linux (Debian/Ubuntu ARM). Le miroir Shineworld étant fabriqué sur mesure, le choix de l’OS est libre. Linux est retenu pour les raisons suivantes :
+Le miroir Shineworld fournit un ecran tactile avec Android embarque. Cet Android est bypasse : on utilise l’ecran en mode moniteur HDMI, pilote par un Raspberry Pi 5 externe (boitier fixe au dos du cadre). Le Pi tourne sous Linux. Linux est retenu pour les raisons suivantes :
 
 * Gestion native de deux interfaces WiFi simultanées (nécessaire pour le microscope sans fil \+ la connexion cloud)
 
@@ -98,13 +98,13 @@ Le miroir fonctionne sous Linux (Debian/Ubuntu ARM). Le miroir Shineworld étant
 
 ## **3.2 Connectivité réseau (double WiFi)**
 
-Le microscope sans fil crée son propre réseau WiFi. Quand le miroir s’y connecte, il perd internet. Solution retenue :
+Le microscope sans fil cree son propre reseau WiFi. Quand le Pi s’y connecte, il perd internet. Solution retenue :
 
-* WiFi interne du miroir → connecté au hotspot du microscope (flux vidéo)
+* WiFi interne du Pi 5 → connecte au hotspot du microscope (flux video) OU au reseau boutique (si microscope USB)
 
-* Dongle WiFi USB (\~10-15 €) branché sur le miroir → connecté à la box internet de la boutique (cloud \+ API IA)
+* Dongle WiFi USB (\~10-15 €) branche sur le Pi → connecte a la box internet de la boutique (cloud \+ API IA) — necessaire uniquement si le microscope est WiFi
 
-Les deux interfaces fonctionnent simultanément sous Linux. Le miroir reçoit la vidéo ET communique avec le cloud en parallèle.
+Les deux interfaces fonctionnent simultanement sous Linux. Le Pi recoit la video ET communique avec le cloud en parallele. L’ecran du miroir Shineworld est connecte au Pi via HDMI, le retour tactile via USB.
 
 ## **3.3 Accès**
 
@@ -344,12 +344,34 @@ Si le volume augmente ou si l’on souhaite supprimer la dépendance aux API ext
 
 ## **7.1 Miroir connecté**
 
-| Caractéristique | Détail |
+Le miroir Shineworld est un cadre sur mesure integrant un ecran tactile. Le fabricant propose un Android embarque, mais il est bypasse : l'ecran est utilise en mode moniteur HDMI, et le compute est deporte dans un boitier Raspberry Pi 5 fixe au dos du cadre. Cette architecture (scenario 2) permet de maitriser l'OS, les mises a jour et la connectique.
+
+### 7.1.1 Cadre miroir (fourni par Shineworld)
+
+| Caractéristique | Spec demandee au fournisseur |
 | :---- | :---- |
 | **Fabricant** | Dongguan Shineworld Innovations Technology Co., Ltd. — sur mesure |
-| **Système** | Linux (Debian/Ubuntu ARM) |
-| **Écran** | Tactile capacitif |
-| **Connectivité** | WiFi interne (microscope) \+ dongle WiFi USB (internet) |
+| **Ecran** | 32" IPS, 1920x1080, minimum 400 nits, tactile capacitif 10 points |
+| **Verre** | Sans-tain (two-way mirror, 25-35% transmission lumiere) |
+| **Cadre** | Aluminium noir mat, profondeur minimale |
+| **Entree video** | HDMI 2.0 Type A femelle (le Pi envoie l'image via micro-HDMI → adaptateur → HDMI) |
+| **Retour tactile** | USB-A ou USB-B (protocole HID standard, pas de driver proprietaire) — plug-and-play Linux |
+| **Android embarque** | Desactive ou non inclus — on utilise le miroir en mode moniteur HDMI uniquement |
+| **Alimentation ecran** | Interne au cadre, cable secteur IEC C13 ou C7 (l'ecran s'alimente seul) |
+| **Sortie cables** | Passage HDMI \+ USB en partie basse ou arriere du cadre |
+| **Fixation** | VESA 75x75 ou 100x100 au dos du cadre (pour fixer le boitier Pi) |
+| **Deploiement** | 2 unites par boutique, 6 miroirs au total (Nice, Lyon, Cannes) |
+
+### 7.1.2 Boitier compute (externe, fixe au dos du miroir)
+
+| Caractéristique | Détail |
+| :---- | :---- |
+| **Ordinateur** | Raspberry Pi 5 (8 Go RAM) — ARM64. Alternative Beelink SER5 a valider (PO-01) |
+| **OS** | Debian 12 Bookworm (Raspberry Pi OS Lite 64-bit) |
+| **Connexion ecran** | Micro-HDMI (Pi) → adaptateur → HDMI 2.0 (miroir) |
+| **Connexion tactile** | USB-A (Pi) ← USB (miroir) — retour touch HID |
+| **Connectivité** | WiFi interne (microscope ou internet) \+ dongle WiFi USB si microscope WiFi |
+| **Boitier** | Imprime 3D PETG, profil slim, logo K Beauty, fixation VESA au dos du miroir |
 | **Application** | Electron (React/TypeScript) en mode kiosque |
 
 ## **7.2 Microscope**
@@ -610,7 +632,7 @@ Le Smart Mirror est un produit marketing autant qu’un outil technique. Il cré
 
 Le Smart Mirror est commercialisé auprès d’autres instituts. K Beauty se positionne en premier opérateur. DreamTech assure le développement et le déploiement.
 
-| Package de base | Miroir (\~800€) \+ microscope (\~45€) \+ dongle WiFi (\~15€) \+ installation \+ formation |
+| Package de base | Miroir Shineworld (\~800€) \+ boitier Pi 5 (\~165€) \+ microscope (\~45€) \+ dongle WiFi (\~15€) \+ adaptateur HDMI (\~10€) \+ installation \+ formation |
 | :---- | :---- |
 | **Logiciel** | Intégré au package — pas d’abonnement standalone |
 | **Modèle franchise** | Brique du package franchise K Beauty — fourni aux franchisés |
