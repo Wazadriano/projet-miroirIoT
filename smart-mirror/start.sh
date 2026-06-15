@@ -1,9 +1,18 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-# CRM config
+# Load local secrets if present. .env is gitignored and MUST NOT be committed.
+# Copy .env.example to .env and fill in the rotated CRM token. See .env.example.
+if [ -f .env ]; then
+  set -a
+  . ./.env
+  set +a
+fi
+
+# CRM config. CRM_TOKEN must come from the environment or .env, never hardcoded.
 export CRM_BASE_URL="${CRM_BASE_URL:-https://api-kbeauty.a3n.fr/api}"
-export CRM_TOKEN="${CRM_TOKEN:-CHANGEME_SET_VIA_ENV}"
+: "${CRM_TOKEN:?CRM_TOKEN is required. Copy .env.example to .env and set the rotated CRM token, or export CRM_TOKEN.}"
+export CRM_TOKEN
 
 # Start local backend if Docker is available
 if command -v docker &> /dev/null && docker info &> /dev/null; then
