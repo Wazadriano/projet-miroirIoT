@@ -1,6 +1,6 @@
 import Store from 'electron-store'
-import { safeStorage } from 'electron'
 import { networkInterfaces } from 'os'
+import { cryptoVault } from './crypto-vault.service'
 
 interface DeviceConfig {
   device: {
@@ -65,11 +65,55 @@ const DEFAULTS: DeviceConfig = {
 export class ConfigService {
   private store: Store<DeviceConfig>
 
+  // Secrets persistes au repos sous forme chiffree (AES-256-GCM via cryptoVault).
+  private static readonly SECRET_KEYS = ['device.token', 'api.crmToken', 'api.crmBearerToken'] as const
+
   constructor() {
     this.store = new Store<DeviceConfig>({
       name: 'smart-mirror-config',
       defaults: DEFAULTS
     })
+    this.migrateSecretsAtRest()
+  }
+
+  private looksEncrypted(value: string): boolean {
+    if (!value) return false
+    try {
+      return cryptoVault.isEncrypted(Buffer.from(value, 'base64'))
+    } catch {
+      return false
+    }
+  }
+
+  // Re-chiffre au repos les secrets herites en clair, notamment crmToken injecte
+  // depuis l'environnement via les valeurs par defaut d'electron-store.
+  private migrateSecretsAtRest(): void {
+    for (const key of ConfigService.SECRET_KEYS) {
+      const raw = this.store.get(key) as string
+      if (raw && !this.looksEncrypted(raw)) {
+        try {
+          this.store.set(key, cryptoVault.encryptString(raw))
+        } catch {
+          // Cle maitre indisponible : ne pas degrader, laisser tel quel.
+        }
+      }
+    }
+  }
+
+  private storeSecret(key: string, value: string): void {
+    this.store.set(key, value ? cryptoVault.encryptString(value) : '')
+  }
+
+  private readSecret(key: string): string {
+    const raw = this.store.get(key) as string
+    if (!raw) return ''
+    if (!this.looksEncrypted(raw)) return raw // valeur heritee en clair
+    try {
+      return cryptoVault.decryptString(raw)
+    } catch {
+      // Chiffre avec une autre cle ou corrompu : ne pas renvoyer de secret errone.
+      return ''
+    }
   }
 
   isProvisioned(): boolean {
@@ -99,30 +143,19 @@ export class ConfigService {
   }
 
   getCrmToken(): string {
-    return this.store.get('api.crmToken')
+    return this.readSecret('api.crmToken')
   }
 
   getCrmBearerToken(): string {
-    return this.store.get('api.crmBearerToken')
+    return this.readSecret('api.crmBearerToken')
   }
 
   setCrmBearerToken(token: string): void {
-    this.store.set('api.crmBearerToken', token)
+    this.storeSecret('api.crmBearerToken', token)
   }
 
   getDeviceToken(): string {
-    const encrypted = this.store.get('device.token')
-    if (!encrypted) return ''
-    if (!safeStorage.isEncryptionAvailable()) {
-      // Dev/VM env without keyring: token stored as plaintext
-      return encrypted as string
-    }
-    try {
-      return safeStorage.decryptString(Buffer.from(encrypted as string, 'base64'))
-    } catch {
-      // Token was stored before safeStorage was available
-      return encrypted as string
-    }
+    return this.readSecret('device.token')
   }
 
   getMacAddress(): string {
@@ -163,14 +196,7 @@ export class ConfigService {
     this.store.set('device.id', data.deviceId)
     this.store.set('device.boutiqueId', data.boutiqueId)
     this.store.set('api.baseUrl', data.apiBaseUrl)
-
-    if (safeStorage.isEncryptionAvailable()) {
-      const encrypted = safeStorage.encryptString(data.token).toString('base64')
-      this.store.set('device.token', encrypted)
-    } else {
-      console.warn('[ConfigService] safeStorage unavailable - storing token without encryption (dev only)')
-      this.store.set('device.token', data.token)
-    }
+    this.storeSecret('device.token', data.token)
   }
 
   updateDisplayConfig(config: Partial<DeviceConfig['display']>): void {

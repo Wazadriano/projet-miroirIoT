@@ -2,6 +2,7 @@ import { readFileSync } from 'fs'
 import { basename } from 'path'
 import { ConfigService } from './config.service'
 import { ApiClientService } from './api-client.service'
+import { cryptoVault } from './crypto-vault.service'
 
 interface SyncTableReport {
   synced: number
@@ -255,14 +256,17 @@ export class CrmSyncService {
 
     let fileBuffer: Buffer
     try {
-      fileBuffer = readFileSync(localPath)
+      const raw = readFileSync(localPath)
+      // Les captures sont chiffrees au repos : on dechiffre avant l'envoi au CRM.
+      fileBuffer = cryptoVault.isEncrypted(raw) ? cryptoVault.decryptBuffer(raw) : raw
     } catch {
       // File already cleaned up locally, mark as synced anyway
       return
     }
 
+    const uploadName = basename(localPath).replace(/\.enc$/, '')
     const formData = new FormData()
-    formData.append('image', new Blob([fileBuffer], { type: 'image/jpeg' }), basename(localPath))
+    formData.append('image', new Blob([fileBuffer], { type: 'image/jpeg' }), uploadName)
     formData.append('seance_id', photo.seance_id as string)
     formData.append('phase', photo.phase as string)
     formData.append('zone', 'cuir_chevelu')

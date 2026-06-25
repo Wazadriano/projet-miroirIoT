@@ -62,7 +62,7 @@ describe('ConfigService', () => {
       expect(service.getApiBaseUrl()).toBe('http://api.test.com/api')
     })
 
-    it('should return token as plaintext when safeStorage unavailable', () => {
+    it('should encrypt the device token at rest and restore it on read', () => {
       service.provision({
         deviceId: 'dev-123',
         boutiqueId: 'bout-456',
@@ -70,9 +70,18 @@ describe('ConfigService', () => {
         apiBaseUrl: 'http://localhost:8000/api'
       })
 
-      // safeStorage mock returns isEncryptionAvailable = false
-      // getDeviceToken returns token as-is (dev/VM env without keyring)
+      // Le token est chiffre au repos (AES-256-GCM) : le store ne contient pas le clair
+      expect(service.getAll().device.token).not.toBe('plain-token')
+      expect(service.getAll().device.token.length).toBeGreaterThan(0)
+      // mais getDeviceToken le restitue dechiffre
       expect(service.getDeviceToken()).toBe('plain-token')
+    })
+
+    it('should encrypt the CRM bearer token at rest', () => {
+      service.setCrmBearerToken('bearer-secret-123')
+
+      expect(service.getAll().api.crmBearerToken).not.toBe('bearer-secret-123')
+      expect(service.getCrmBearerToken()).toBe('bearer-secret-123')
     })
   })
 

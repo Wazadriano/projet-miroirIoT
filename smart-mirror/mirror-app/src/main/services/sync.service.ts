@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, unlinkSync,
 import { join } from 'path'
 import { ConfigService } from './config.service'
 import { ApiClientService } from './api-client.service'
+import { cryptoVault } from './crypto-vault.service'
 
 const PHOTOS_DIR = '/var/smart-mirror/photos'
 const QUEUE_FILE = '/var/smart-mirror/sync-queue.json'
@@ -54,18 +55,21 @@ export class SyncService {
   }
 
   savePhotoLocally(photoData: Buffer, seanceId: string, phase: 'avant' | 'apres'): string {
-    const filename = `${Date.now()}-${phase}.jpg`
+    // Donnee personnelle potentiellement de sante : chiffree au repos (AES-256-GCM).
+    // L'extension .jpg.enc signale le format chiffre (cf. cleanupExpiredPhotos / pushPhotoCrm).
+    const filename = `${Date.now()}-${phase}.jpg.enc`
     const localPath = join(PHOTOS_DIR, filename)
+    const encrypted = cryptoVault.encryptBuffer(photoData)
 
     try {
-      writeFileSync(localPath, photoData)
+      writeFileSync(localPath, encrypted)
     } catch {
       // Fallback for dev environment
       try {
         const devDir = join(process.cwd(), '.smart-mirror-photos')
         mkdirSync(devDir, { recursive: true })
         const devPath = join(devDir, filename)
-        writeFileSync(devPath, photoData)
+        writeFileSync(devPath, encrypted)
         this.addToQueue({ localPath: devPath, seanceId, phase, createdAt: new Date().toISOString() })
         return devPath
       } catch (err) {
@@ -84,10 +88,20 @@ export class SyncService {
     this.saveQueue(queue)
   }
 
+  // La file contient des chemins disque et des identifiants de seance : chiffree
+  // au repos (defense en profondeur), avec lecture retrocompatible de l'ancien JSON clair.
+  private parseQueue(raw: Buffer | string): SyncQueueItem[] {
+    const buf = typeof raw === 'string' ? Buffer.from(raw) : raw
+    const text = cryptoVault.isEncrypted(buf)
+      ? cryptoVault.decryptBuffer(buf).toString('utf-8')
+      : buf.toString('utf-8')
+    return JSON.parse(text)
+  }
+
   private getQueue(): SyncQueueItem[] {
     try {
       if (existsSync(QUEUE_FILE)) {
-        return JSON.parse(readFileSync(QUEUE_FILE, 'utf-8'))
+        return this.parseQueue(readFileSync(QUEUE_FILE))
       }
     } catch {
       // Corrupted queue file - start fresh
@@ -96,12 +110,13 @@ export class SyncService {
   }
 
   private saveQueue(queue: SyncQueueItem[]): void {
+    const payload = cryptoVault.encryptBuffer(Buffer.from(JSON.stringify(queue)))
     try {
-      writeFileSync(QUEUE_FILE, JSON.stringify(queue, null, 2))
+      writeFileSync(QUEUE_FILE, payload)
     } catch {
       // Dev env fallback
       const devQueue = join(process.cwd(), '.smart-mirror-sync-queue.json')
-      writeFileSync(devQueue, JSON.stringify(queue, null, 2))
+      writeFileSync(devQueue, payload)
     }
   }
 
@@ -142,7 +157,7 @@ export class SyncService {
     for (const dir of dirs) {
       try {
         if (!existsSync(dir)) continue
-        const files = readdirSync(dir).filter(f => f.endsWith('.jpg'))
+        const files = readdirSync(dir).filter(f => f.endsWith('.jpg.enc') || f.endsWith('.jpg'))
 
         for (const file of files) {
           const filePath = join(dir, file)
