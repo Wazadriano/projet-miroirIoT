@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  mirror-app:
+    name: Lint, typecheck, tests, build, audit, SBOM
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: smart-mirror/mirror-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: smart-mirror/mirror-app/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint (ESLint flat config)
+        run: npm run lint
+
+      - name: Unit tests + coverage
+        run: npm run test:coverage
+
+      - name: Build (electron-vite)
+        run: npm run build
+
+      - name: Dependency audit (SCA)
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: SBOM (CycloneDX - exigence CRA)
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.json
+        continue-on-error: true
+
+      - name: Upload coverage + SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: mirror-app-reports
+          path: |
+            smart-mirror/mirror-app/coverage
+            smart-mirror/mirror-app/sbom.json
+          if-no-files-found: ignore
+
+  semgrep:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - name: Semgrep scan
+        run: semgrep scan --config p/default --config p/secrets --config p/typescript --error
+        continue-on-error: true

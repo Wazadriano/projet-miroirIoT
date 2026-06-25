@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell } from 'electron'
+import { app, BrowserWindow, shell, session } from 'electron'
 
 // Enable CDP remote debugging for Playwright testing
 if (process.env.REMOTE_DEBUG === '1') {
@@ -48,7 +48,7 @@ function createWindow(): void {
     autoHideMenuBar: true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
-      sandbox: false,
+      sandbox: true,
       contextIsolation: true,
       nodeIntegration: false
     }
@@ -114,6 +114,34 @@ process.on('uncaughtException', (err) => {
 
 app.whenReady().then(async () => {
   electronApp.setAppUserModelId('com.dreamtech.smartmirror')
+
+  // Content-Security-Policy (kiosk de production). Le mode dev est ignore pour
+  // preserver le HMR de Vite. ATTENTION: a tester sur le device (VM/Pi) avant la
+  // demo - une directive trop stricte peut blanchir l'ecran du kiosk.
+  if (!is.dev) {
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+      callback({
+        responseHeaders: {
+          ...details.responseHeaders,
+          'Content-Security-Policy': [
+            [
+              "default-src 'self'",
+              "script-src 'self'",
+              "style-src 'self' 'unsafe-inline'",
+              // flux MJPEG live + snapshots servis par le proxy microscope local
+              "img-src 'self' data: blob: http://localhost:9100",
+              "media-src 'self' blob: data:",
+              "font-src 'self' data:",
+              "connect-src 'self' http://localhost:9100",
+              "object-src 'none'",
+              "frame-src 'none'",
+              "base-uri 'self'"
+            ].join('; ')
+          ]
+        }
+      })
+    })
+  }
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

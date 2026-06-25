@@ -5,7 +5,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/main/**/*.test.ts']
+    include: ['src/main/**/*.test.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      include: ['src/main/services/**/*.ts'],
+      exclude: ['**/*.test.ts', 'src/__mocks__/**']
+    }
   },
   resolve: {
     alias: {
