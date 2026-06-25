@@ -1,4 +1,5 @@
-import { execSync, exec } from 'child_process'
+import { execSync, execFile, execFileSync } from 'child_process'
+import { randomBytes } from 'crypto'
 import { EventEmitter } from 'events'
 
 interface WifiNetwork {
@@ -67,8 +68,11 @@ export class WifiService extends EventEmitter {
 
   async connect(ssid: string, password: string): Promise<boolean> {
     return new Promise((resolve) => {
-      exec(
-        `nmcli device wifi connect "${ssid}" password "${password}" 2>&1`,
+      // execFile (sans shell) : ni ssid ni password ne sont interpoles dans une
+      // ligne de commande, ce qui elimine le risque d'injection shell.
+      execFile(
+        'nmcli',
+        ['device', 'wifi', 'connect', ssid, 'password', password],
         { timeout: 30000 },
         (error, stdout) => {
           if (error) {
@@ -86,13 +90,20 @@ export class WifiService extends EventEmitter {
   startHotspot(deviceId: string): boolean {
     const suffix = deviceId.slice(-4).toUpperCase()
     const ssid = `SmartMirror-Setup-${suffix}`
+    // Mot de passe aleatoire par appareil : plus de secret partage en dur.
+    // Diffuse via 'hotspot-started' pour affichage a l'ecran de provisioning.
+    const password = randomBytes(6).toString('hex')
 
     try {
-      execSync('nmcli device wifi hotspot con-name smart-mirror-setup ' +
-        `ssid "${ssid}" band bg channel 6 password "smartmirror" 2>/dev/null`, {
-        timeout: 10000
-      })
-      this.emit('hotspot-started', { ssid })
+      execFileSync('nmcli', [
+        'device', 'wifi', 'hotspot',
+        'con-name', 'smart-mirror-setup',
+        'ssid', ssid,
+        'band', 'bg',
+        'channel', '6',
+        'password', password
+      ], { timeout: 10000 })
+      this.emit('hotspot-started', { ssid, password })
       return true
     } catch {
       return false
