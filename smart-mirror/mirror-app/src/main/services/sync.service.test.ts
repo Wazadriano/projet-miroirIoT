@@ -56,8 +56,8 @@ describe('SyncService', () => {
   })
 
   describe('savePhotoLocally', () => {
-    it('should write file and add to sync queue', () => {
-      const photoData = Buffer.from('fake-jpg-data')
+    it('should encrypt the photo at rest and add to sync queue', () => {
+      const photoData = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0x01, 0x02]) // magic bytes JPEG
 
       ;(existsSync as ReturnType<typeof vi.fn>).mockReturnValue(false)
       ;(writeFileSync as ReturnType<typeof vi.fn>).mockImplementation(() => {})
@@ -65,8 +65,14 @@ describe('SyncService', () => {
 
       const path = syncService.savePhotoLocally(photoData, 'seance-1', 'avant')
 
-      expect(path).toMatch(/avant\.jpg$/)
+      expect(path).toMatch(/avant\.jpg\.enc$/)
       expect(writeFileSync).toHaveBeenCalled()
+
+      // Le contenu ecrit sur disque ne doit PAS etre le JPEG en clair
+      const written = (writeFileSync as ReturnType<typeof vi.fn>).mock.calls[0][1] as Buffer
+      expect(Buffer.isBuffer(written)).toBe(true)
+      expect(written.subarray(0, 2).equals(Buffer.from([0xff, 0xd8]))).toBe(false)
+      expect(written.equals(photoData)).toBe(false)
     })
 
     it('should fallback to dev directory on permission error', () => {
@@ -81,7 +87,7 @@ describe('SyncService', () => {
       const path = syncService.savePhotoLocally(photoData, 'seance-1', 'apres')
 
       expect(path).toContain('.smart-mirror-photos')
-      expect(path).toMatch(/apres\.jpg$/)
+      expect(path).toMatch(/apres\.jpg\.enc$/)
     })
   })
 
