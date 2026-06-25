@@ -36,7 +36,15 @@ jobs:
       - name: Build (electron-vite)
         run: npm run build
 
-      - name: Dependency audit (SCA)
+      # Bloquant : aucune vulnerabilite CRITICAL toleree dans les dependances de
+      # production. Passe aujourd'hui (0 critical prod) et echoue si une est introduite.
+      - name: Dependency audit - production critical (blocking)
+        run: npm audit --omit=dev --audit-level=critical
+
+      # Informatif : vue large (dev incluse). Les advisories Electron high relevent
+      # de la veille CVE (upgrade Electron teste, cf. docs/SECURITE-CVE-ET-LANCEMENT.md),
+      # pas d'un audit fix automatique.
+      - name: Dependency audit - full report (informative)
         run: npm audit --audit-level=high
         continue-on-error: true
 
@@ -52,6 +60,18 @@ jobs:
             smart-mirror/mirror-app/coverage
             smart-mirror/mirror-app/sbom.json
           if-no-files-found: ignore
+
+  secrets-scan:
+    name: Secret scanning (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # Bloquant : aucun secret dans l'arbre courant. --no-git evite de buter sur le
+      # token CRM historiquement leake puis revoque (cf. smart-mirror/.env.example).
+      - name: gitleaks (working tree)
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect \
+            --source /repo --no-git --redact --no-banner
 
   semgrep:
     name: SAST (Semgrep)
