@@ -502,7 +502,11 @@ api.delete('/api/sync/cleanup', async (_req, res) => {
 api.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'mock-laravel-api' }));
 
 const apiPort = parseInt(process.env.MOCK_API_PORT || '8000');
-api.listen(apiPort, () => console.log(`Mock Laravel API on :${apiPort}`));
+// On ne demarre les serveurs que lorsque ce fichier est lance directement.
+// Importe depuis un test, on exporte `api`/`pool` sans binder de port ni de DB.
+if (require.main === module) {
+  api.listen(apiPort, () => console.log(`Mock Laravel API on :${apiPort}`));
+}
 
 
 // --- Mock Express IA Proxy (port 3001) ---
@@ -547,4 +551,10 @@ ia.post('/api/analyze', (req, res) => {
 ia.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'mock-ia-proxy' }));
 
 const iaPort = parseInt(process.env.MOCK_IA_PORT || '3001');
-ia.listen(iaPort, () => console.log(`Mock IA Proxy on :${iaPort}`));
+if (require.main === module) {
+  ia.listen(iaPort, () => console.log(`Mock IA Proxy on :${iaPort}`));
+}
+
+// Export pour les tests d integration : permet d injecter un faux `pool` et de
+// monter `api` sur un port ephemere sans dependance a PostgreSQL.
+module.exports = { api, ia, pool };
