@@ -8,7 +8,7 @@ Document de preparation aux questions du jury. Chaque reponse est directe, argum
 
 ### Pourquoi Electron et pas une webapp ?
 
-Le miroir doit acceder a un microscope USB (protocole UVC/V4L2), ce qui est impossible depuis un navigateur web standard. Electron permet egalement le mode kiosque natif (plein ecran sans barre d'adresse), le stockage securise des tokens via safeStorage (keychain OS), et le fonctionnement offline-first avec persistance locale. Une webapp necessite un navigateur ouvert, une connexion permanente, et n'a pas acces aux peripheriques USB.
+Le miroir s'appuie sur un microscope capillaire en WiFi/TCP (192.168.34.1:8080, protocole proprietaire JHCMD), dont le flux H.264 est transcode par ffmpeg en MJPEG sur localhost:9100 (proxy.js). Le pipeline a besoin de spawner ffmpeg et d'ouvrir un socket TCP local vers le microscope, ce qu'un navigateur web standard ne permet pas. Electron offre egalement le mode kiosque natif (plein ecran sans barre d'adresse), le stockage chiffre des tokens au repos via un coffre applicatif AES-256-GCM (cryptoVault, independant du trousseau OS, donc fiable sur Pi headless) et le fonctionnement offline-first avec persistance locale. Une webapp necessiterait un navigateur ouvert, une connexion permanente, et n'aurait acces ni a ffmpeg ni au socket TCP local du microscope. (Note : on trouve dans le depot des vestiges UVC/V4L2 morts, non utilises par le pipeline reel.)
 
 ### Pourquoi React et pas Vue ou Angular ?
 
@@ -22,21 +22,21 @@ Le flux de l'application est lineaire (ecran par ecran, une seule seance active 
 
 Le projet comprend quatre composants (Electron, mock-API, proxy microscope, service IA) qui partagent des interfaces de donnees (clients, seances, diagnostics). TypeScript garantit la coherence des types aux frontieres entre composants et detecte les erreurs de contrat a la compilation, pas en production. Sur un projet multi-brique, le type safety n'est pas optionnel.
 
-### Pourquoi Laravel et pas Node.js/Express pour le backend ?
+### Pourquoi Laravel et pas Node.js/Express pour le backend ? [CIBLE ROADMAP - non implemente]
 
-Laravel fournit nativement tout ce dont le CRM a besoin : Eloquent (ORM avec relations complexes multi-tenant), Sanctum (authentification par tokens revocables), DomPDF (generation PDF cote serveur), queues Redis, et un systeme de migrations robuste. Construire ces fonctionnalites from scratch en Express aurait represente des semaines de developpement supplementaires sans valeur ajoutee.
+A clarifier d'emblee : aujourd'hui le backend REALISE est un mock Express (server.js, API metier sur le port 8100, IA mock sur le port 3001) avec PostgreSQL 15-alpine et du SQL brut via le client pg ; il n'y a ni composer.json ni artisan. Laravel 13 / PHP 8.4 est la CIBLE roadmap. Le choix de Laravel pour la bascule est motive par ce qu'il fournit nativement et que le mock n'offre pas : Eloquent (ORM avec relations et migrations versionnees), Sanctum (tokens revocables par device), generation PDF cote serveur, et un systeme de queues. Le mock Express a d'abord servi a figer le contrat d'API ; la migration se fera en strangler-fig, endpoint par endpoint, sans big-bang. Redis (queues) est lui aussi une cible roadmap, voir plus bas.
 
 ### Pourquoi PostgreSQL et pas MySQL ?
 
 PostgreSQL supporte nativement les UUID (type uuid, generation uuid_generate_v4), indispensables pour la synchronisation offline sans collision d'identifiants. Le type JSONB permet de stocker les diagnostics IA a structure variable avec indexation et requetes. La fonction unaccent() simplifie la recherche client tolerante aux accents. MySQL ne propose aucune de ces fonctionnalites nativement.
 
-### Pourquoi Redis ?
+### Pourquoi Redis ? [CIBLE ROADMAP - non implemente]
 
-Redis remplit trois roles : backing store pour les queues Laravel (generation PDF asynchrone, synchronisation), cache applicatif (configurations boutique, sessions), et backend pour Laravel Reverb (WebSocket temps reel). Un seul service couvre trois besoins au lieu de trois outils separes.
+Honnetement : Redis est absent du code aujourd'hui (aucune dependance, aucun conteneur dans le docker-compose). La file de synchronisation REALISEE est un simple fichier JSON local (/var/smart-mirror/sync-queue.json) interroge toutes les 30 secondes, avec un heartbeat a 60s (sync.service.ts). Redis est une CIBLE roadmap, justifiee par 8 jobs asynchrones reels identifies dans le code (generation PDF synchrone qui bloque la requete, push CRM dont le flag syncing ne survit pas a un crash, IA mockee a brancher sur OpenRouter, purge RGPD, etc.). Un seul service Redis 7 couvrirait alors quatre besoins : backing store des queues Laravel (Queue/Horizon), cache applicatif, rate-limiting et locks de synchronisation. Tant que Laravel n'est pas en place, ajouter Redis n'aurait aucun sens.
 
 ### Pourquoi pas Firebase ou Supabase ?
 
-L'architecture multi-tenant avec isolation par boutique est complexe a implementer sur Firebase/Supabase (Row Level Security limitee, pas de controle fin des policies). La generation PDF cote serveur via DomPDF necessite un backend PHP. L'integration N8N pour les workflows asynchrones requiert un backend auto-heberge. Enfin, les photos medicales/cosmetiques sensibles imposent un controle total sur l'hebergement des donnees.
+L'architecture multi-tenant avec isolation par boutique est complexe a implementer sur Firebase/Supabase (Row Level Security limitee, pas de controle fin des policies). La generation PDF de seance est aujourd'hui faite cote serveur par le mock Express (pdfkit, server.js:308-388) ; la cible Laravel la deportera vers un job asynchrone. L'integration n8n pour les workflows asynchrones (CIBLE roadmap) requiert un backend auto-heberge. Enfin, les photos cosmetiques potentiellement sensibles imposent un controle total sur l'hebergement des donnees (et, en CIBLE, un hebergement HDS UE/EEE). Le code conserve d'ailleurs un commentaire "In production, this triggers n8n webhook" (server.js:198) alors que la generation reste synchrone in-process : c'est un marqueur de cible, pas une fonctionnalite en place.
 
 ### Pourquoi un backend local sur le miroir ET un CRM distant ?
 
@@ -64,7 +64,7 @@ Le miroir fonctionne offline-first : il cree des clients et des seances sans con
 
 ### Pourquoi JSONB pour les diagnostics IA ?
 
-La structure du diagnostic varie selon le modele IA utilise (Llama, Phi, GPT-4o mini), le nombre de zones capturees, et les recommandations generees. Un schema relationnel rigide obligerait a modifier la base a chaque evolution du prompt IA. JSONB permet de stocker une structure flexible tout en offrant l'indexation et les requetes SQL sur les champs specifiques.
+La structure du diagnostic varie selon le nombre de zones capturees, les recommandations generees, et le modele de vision qui sera branche en cible (OpenRouter). Aujourd'hui l'IA est MOCKEE : les scores sont produits par Math.random (server.js:514-545), aucun appel reseau a un vrai modele n'est fait. Le format JSONB est neanmoins le bon choix structurel : un schema relationnel rigide obligerait a modifier la base a chaque evolution du prompt ou du modele. JSONB permet de stocker une structure flexible tout en offrant l'indexation et les requetes SQL sur les champs specifiques.
 
 ### Pourquoi les photos sont stockees a la fois en local et sur le serveur ?
 
@@ -94,25 +94,25 @@ Le RGPD (article 7) exige un consentement libre, specifique et eclaire pour chaq
 
 Merise apporte une modelisation rigoureuse des donnees (MCD) et des traitements (MCT) qui force a penser le schema avant de coder. L'iteration agile (sprints, user stories) permet d'enrichir le modele incrementalement. Cette combinaison evite les deux ecueils : le code sans reflexion prealable (agile pur) et la paralysie d'analyse (Merise classique).
 
-### Pourquoi le TDD avec 65+ tests ?
+### Pourquoi le TDD et combien de tests ?
 
-Les tests ont deja prouve leur valeur concrete : lors de la migration mock-API vers CRM reel, les 65+ tests (Vitest + Playwright) ont detecte des regressions que l'inspection visuelle aurait manquees. Sur un projet a quatre composants, les tests sont le filet de securite qui permet de refactorer et evoluer sans casser l'existant.
+Le chiffre exact est 178 cas : 42 tests unitaires Vitest et 136 cas e2e Playwright (4 fichiers). Je le dis precisement car certaines anciennes versions annonçaient a tort "65+ tests". Le nouveau fichier crypto-vault.service.test.ts (7 tests) verrouille le chantier chiffrement : il prouve notamment que le JPEG ecrit sur disque ne commence pas par FF D8 et que le store ne contient pas le token en clair. Je reste transparent sur le plus gros trou de couverture : crm-sync.service.ts (372 lignes, chemin critique de synchronisation) est aujourd'hui a 0 test, et seuls 4 services main sur 9 sont couverts en unitaire. C'est precisement le chantier que je renforce en BC04 (tests crm-sync, integration backend verrouillant la regle RGPD, et CI rendue bloquante apres npm audit fix).
 
-### Pourquoi un microscope USB et pas la camera d'un telephone ?
+### Pourquoi un microscope dedie (WiFi) et pas la camera d'un telephone ?
 
-L'analyse capillaire necessite un grossissement x50 a x200 pour observer la structure du cuir chevelu et des follicules. La camera d'un telephone offre au mieux un zoom numerique qui degrade la resolution. Le microscope Ninyoon 4K fournit un grossissement optique reel en 4K, indispensable pour que l'IA produise un diagnostic exploitable.
+L'analyse capillaire necessite un grossissement optique pour observer la structure du cuir chevelu et des follicules. La camera d'un telephone offre au mieux un zoom numerique qui degrade la resolution. Le microscope capillaire fournit un grossissement optique reel, indispensable pour que l'IA produise un diagnostic exploitable. Precision technique : ce microscope se connecte en WiFi/TCP (192.168.34.1:8080, protocole JHCMD), pas en USB ; son flux H.264 est transcode par ffmpeg en MJPEG sur localhost:9100.
 
 ### Pourquoi MJPEG et pas WebRTC ?
 
 Le flux microscopique circule exclusivement en local (localhost:9100), entre le proxy et l'application Electron sur la meme machine. WebRTC est concu pour la communication pair-a-pair sur Internet avec signaling, ICE, STUN/TURN -- une complexite inutile pour du localhost. MJPEG est une succession d'images JPEG sur HTTP, trivial a implementer et a consommer dans un tag img.
 
-### Pourquoi N8N pour les workflows ?
+### Pourquoi n8n pour les workflows ? [CIBLE ROADMAP - non implemente]
 
-N8N decouple les traitements asynchrones (generation PDF, envoi d'email, notifications) du code applicatif. Ajouter un nouveau workflow (ex: notification SMS, alerte stock produit) se fait visuellement dans N8N sans deployer une nouvelle version du backend. Cette separation reduit le risque de regression et accelere les evolutions post-MVP.
+n8n est une CIBLE roadmap : aujourd'hui la generation PDF est synchrone in-process (pdfkit), et le code porte un commentaire "In production, this triggers n8n webhook" (server.js:198) qui n'est pas branche. En cible, n8n decouplera les traitements asynchrones (generation PDF, envoi d'email, notifications) du code applicatif : ajouter un nouveau workflow (notification SMS, alerte stock) se ferait visuellement sans deployer une nouvelle version du backend. Cette separation reduira le risque de regression et accelerera les evolutions post-MVP, en s'appuyant sur Laravel Queue et Redis (eux aussi en cible).
 
 ### Pourquoi une mock API separee du backend ?
 
-La mock API a permis a l'equipe frontend de developper les 9 ecrans sans attendre que le backend Laravel soit pret. Les contrats d'API (endpoints, formats de reponse) ont ete definis en amont, puis la mock API a ete remplacee par le vrai backend sans modifier le code frontend. Ce decoupage a permis un developpement parallele et a reduit le chemin critique.
+La mock API a permis de developper les 9 ecrans en figeant tot le contrat d'API (endpoints, formats de reponse). A ce jour, ce mock Express EST le backend du MVP : il n'a pas encore ete remplace par Laravel, qui reste la cible. Justement parce que le contrat est fige, la bascule vers Laravel se fera en strangler-fig, endpoint par endpoint, sans toucher au code frontend. Ce decoupage permet un developpement parallele et reduit le chemin critique de la future migration.
 
 ---
 
@@ -146,17 +146,17 @@ Le miroir est un dispositif partage entre clients successifs. Sans timeout, l'ec
 
 Le miroir est un dispositif physique fixe, installe dans un salon specifique. L'adresse MAC identifie de maniere unique chaque appareil sans necessiter de login/mot de passe sur un kiosque sans clavier. Lors du provisioning, le miroir transmet son MAC au CRM qui lui delivre un token d'acces lie a la boutique.
 
-### Pourquoi Electron safeStorage ?
+### Pourquoi un coffre applicatif AES-256-GCM plutot que safeStorage seul ?
 
-safeStorage utilise le keychain natif du systeme d'exploitation (libsecret sur Linux, Keychain sur macOS) pour chiffrer les donnees sensibles. Le token d'authentification n'est jamais stocke en clair sur le disque. Meme si le disque du miroir est compromis physiquement, le token reste chiffre par une cle geree par l'OS.
+Au depart les secrets passaient par Electron safeStorage, qui s'appuie sur le trousseau natif de l'OS (libsecret sur Linux, Keychain sur macOS). Limite reelle : sur un Pi 5 en kiosque headless, sans session de bureau (pas de gnome-keyring/kwallet, pas de Secret Service deverrouille), safeStorage retombe sur le backend basic_text, qui n'est que de l'obfuscation, et le code retombait alors sur une ecriture en clair du token. J'ai donc supprime safeStorage et la branche plaintext au profit d'un coffre applicatif AES-256-GCM independant du trousseau (cryptoVault, crypto-vault.service.ts). Aujourd'hui device.token, crmToken et crmBearerToken sont persistes chiffres au repos (config.service.ts), avec migration des secrets herites en clair. La cle maitre est resolue par priorite : env -> systemd-creds (lie au TPM en prod Pi) -> keyfile -> fallback dev, avec un THROW explicite en production si aucune cle n'est disponible (jamais de degrade silencieux). Le meme coffre couvre les buffers JPEG et la file de synchronisation.
 
-### Pourquoi Sanctum et pas JWT ?
+### Pourquoi Sanctum et pas JWT ? [CIBLE ROADMAP - non implemente]
 
-Sanctum est natif a Laravel, sans dependance externe. Les tokens Sanctum sont stockes en base de donnees et revocables instantanement : si un miroir est vole, son token est desactive en une requete. Les JWT sont irrevocables par nature (valides jusqu'a expiration), ce qui est un risque de securite inacceptable pour un dispositif physique deploye en salon.
+Sanctum est une CIBLE liee a la bascule Laravel. Aujourd'hui, l'authentification REALISEE est un echange artisanal MAC + token_device produisant un Bearer (crm-sync.service.ts) ; ce token n'est pas revocable proprement. En cible, Sanctum (natif Laravel, sans dependance externe) stockera les tokens en base et permettra une revocation instantanee : si un miroir est vole, son token serait desactive en une requete, avec des abilities/scopes par miroir. Les JWT sont ecartes car irrevocables par nature (valides jusqu'a expiration), ce qui est inacceptable pour un parc de dispositifs physiques exposes au vol.
 
-### Comment les photos sensibles sont-elles protegees ?
+### Comment les photos sensibles sont-elles protegees ? (etat reel et reste a faire)
 
-Les photos du cuir chevelu sont chiffrees localement via safeStorage, transmises exclusivement en TLS (HTTPS) vers le serveur, stockees avec acces restreint par tenant cote serveur, et automatiquement supprimees apres 30 jours. L'API d'anonymisation permet une suppression sur demande. A aucun moment les photos ne transitent en clair sur un reseau non securise.
+Sur le device, c'est desormais REALISE : les photos de cuir chevelu sont ecrites chiffrees au repos en AES-256-GCM (extension .jpg.enc), via cryptoVault appele dans sync.service.ts (savePhotoLocally). Le chiffrement est authentifie (IV aleatoire par photo, tag d'integrite GCM), la cle maitre vient en priorite de systemd-creds (liee au TPM en prod Pi) avec fallback keyfile root 0600, et il n'existe plus aucune ecriture en clair ni de degrade silencieux (THROW explicite en production sans cle). La file de synchronisation est elle aussi chiffree au repos (lecture retrocompatible de l'ancien JSON clair), et la photo n'est dechiffree qu'au moment du push CRM (crm-sync.service.ts, pushPhotoCrm). C'etait l'ecart le plus grave que j'avais identifie (art. 32 RGPD), d'autant qu'une photo de cuir chevelu analysee peut etre requalifiee en donnee de sante (art. 9) : il est traite. Sont aussi en place la retention courte (purge a 30 jours, cleanupExpiredPhotos) et le consentement obligatoire avant seance. Ce qui RESTE A FAIRE : securiser le backend mock (PDF de seance encore servi sans protection, secrets en dur, device_token non hache), ajouter pgcrypto sur les colonnes sensibles, rendre l'audit deps CI bloquant, puis l'object storage chiffre et l'hebergement HDS avant mise en production.
 
 ---
 
@@ -172,23 +172,23 @@ L'app continue de fonctionner normalement. Toutes les operations se font sur le 
 
 ### Le microscope se deconnecte en pleine capture ?
 
-La StatusBar en haut de l'ecran affiche en temps reel l'etat du microscope. En cas de deconnexion USB, un indicateur visuel alerte immediatement le praticien. Le proxy tente une reconnexion automatique. Les captures deja realisees sont conservees localement, la seance n'est pas perdue.
+La StatusBar en haut de l'ecran affiche en temps reel l'etat du microscope. La deconnexion est detectee au niveau du lien WiFi/TCP (perte de la socket vers 192.168.34.1:8080) ou de la sante du flux MJPEG local (localhost:9100), pas d'un branchement USB : un indicateur visuel alerte alors immediatement le praticien. Le proxy (proxy.js) tente une reconnexion automatique et relance le transcodage ffmpeg. Les captures deja realisees sont conservees localement, la seance n'est pas perdue.
 
 ### Quelle est la fiabilite de l'IA ?
 
-Le diagnostic IA retourne systematiquement un niveau de confiance (ok, a_confirmer, non_concluant). Lorsque le modele est incertain, il le signale explicitement. Le praticien est forme a interpreter ces niveaux et conserve toujours le dernier mot. L'IA est un outil d'aide, pas un substitut au jugement professionnel.
+A ce stade, l'IA est MOCKEE : les scores sont generes par Math.random (server.js:514-545), aucun vrai modele de vision n'est appele. Le mock valide le flux de bout en bout et le contrat d'API (le diagnostic retourne deja un niveau de confiance : ok, a_confirmer, non_concluant). En cible (OpenRouter, LLM vision reel), le modele signalera explicitement son incertitude et persistera modele_ia/latence_ms. Dans tous les cas, le praticien est forme a interpreter ces niveaux et conserve le dernier mot : l'IA est un outil d'aide cosmetique, pas un substitut au jugement professionnel ni un diagnostic medical.
 
 ### Comment scaler a 100 salons ?
 
-L'architecture est deja multi-tenant : chaque boutique est isolee au niveau des donnees. Chaque miroir est autonome (offline-first) et ne sollicite le serveur que pour la synchronisation. L'API est stateless et horizontalement scalable derriere un load balancer. Les taches lourdes (PDF, sync) sont gerees par des queues Redis, ce qui absorbe les pics de charge.
+L'architecture est deja multi-tenant : chaque boutique est isolee au niveau des donnees. Chaque miroir est autonome (offline-first) et ne sollicite le serveur que pour la synchronisation, ce qui limite intrinsequement la charge centrale. En cible, l'API Laravel stateless sera horizontalement scalable derriere un load balancer, et les taches lourdes (PDF, sync, IA) seront deportees vers des queues Redis (CIBLE roadmap) pour absorber les pics. Aujourd'hui, ces taches sont synchrones ou gerees par une file JSON locale poll a 30s ; le passage a Redis/Horizon est precisement le levier de scalabilite identifie pour ce palier.
 
 ### Pourquoi pas une application mobile ?
 
-Le miroir est un outil professionnel fixe dans un salon, pas un gadget personnel. L'experience kiosque guidee (ecran par ecran, gros boutons tactiles) est concue pour etre utilisee par le praticien pendant le service, avec le client assis face au miroir. Une application mobile ne peut pas acceder au microscope USB, ne controle pas l'environnement d'affichage, et ne garantit pas le mode kiosque securise.
+Le miroir est un outil professionnel fixe dans un salon, pas un gadget personnel. L'experience kiosque guidee (ecran par ecran, gros boutons tactiles) est concue pour etre utilisee par le praticien pendant le service, avec le client assis face au miroir. Une application mobile s'integrerait mal au pipeline microscope (socket WiFi/TCP vers 192.168.34.1:8080 + transcodage ffmpeg local), ne controle pas l'environnement d'affichage, et ne garantit pas le mode kiosque securise.
 
 ### Le RGPD est-il vraiment respecte ?
 
-Oui, par conception : consentement explicite avant chaque seance (article 7), retention limitee a 30 jours (minimisation), API d'anonymisation (droit a l'effacement), export des donnees (droit a la portabilite), chiffrement en transit et au repos, pas de tracking ni de cookies tiers, pas de partage de photos avec des tiers non declares. Chaque point est implementable et verifiable techniquement.
+Le RGPD est respecte sur plusieurs points DEJA en place, et il reste des exigences a tenir avant la mise en production. En place et verifiable : le consentement explicite avant chaque seance (article 7), verrouille en base par la FK consentement_id NOT NULL et refuse cote serveur (server.js:166-177) ; la retention limitee a 30 jours (minimisation, cleanupExpiredPhotos) ; l'absence de tracking et de cookies tiers ; et desormais le chiffrement AU REPOS des photos sur le device (AES-256-GCM applicatif via cryptoVault, ecriture .jpg.enc dans sync.service.ts), de la file de synchronisation et des tokens. Ce qui reste a tenir : la securisation du backend mock (PDF de seance sans protection, secrets en dur, device_token non hache), pgcrypto sur les colonnes sensibles, le chiffrement en transit (TLS), l'anonymisation/effacement et l'encadrement du transfert hors UE (OpenRouter cible : Zero Data Retention, EU in-region, SCC). Je presente donc la conformite comme une trajectoire maitrisee, avec le chiffrement au repos du device deja acquis, pas comme un acquis total.
 
 ### Que faire si l'IA se trompe ?
 
@@ -196,12 +196,58 @@ Le praticien a toujours le dernier mot. L'IA ne pose pas de diagnostic medical, 
 
 ### Pourquoi ne pas utiliser ChatGPT directement ?
 
-Trois raisons. Premierement, la confidentialite : les photos de cuir chevelu sont des donnees personnelles sensibles, les envoyer a l'API OpenAI grand public pose un probleme RGPD. Deuxiemement, la specialisation : nos prompts sont optimises pour l'analyse cosmetique capillaire avec des modeles de vision specifiques. Troisiemement, la resilience : le fallback a trois modeles (Llama, Phi, GPT-4o mini) garantit la disponibilite meme si un fournisseur est en panne.
+D'abord, rappel d'honnetete : l'IA est aujourd'hui mockee (Math.random, server.js:514-545) ; ces raisons motivent le choix de la CIBLE OpenRouter plutot qu'un appel direct a ChatGPT. Premierement, la confidentialite : les photos de cuir chevelu sont potentiellement sensibles ; les envoyer a une API grand public hors UE poserait un probleme RGPD (transfert hors UE a encadrer : Zero Data Retention, EU in-region, SCC). Deuxiemement, la specialisation : les prompts seront optimises pour l'analyse cosmetique capillaire. Troisiemement, la resilience : OpenRouter permet une strategie multi-modeles avec fallback (par exemple Gemini Flash en defaut, puis GPT-4o mini, puis Claude 3.5 Haiku) garantissant la disponibilite si un fournisseur est en panne. Ce fallback est une cible d'architecture, pas une fonctionnalite deja codee.
 
 ### Comment gerez-vous la concurrence sur le marche ?
 
-Le positionnement est B2B salon, pas grand public. Les solutions concurrentes sont soit des applications mobiles (pas de microscope, pas d'integration CRM), soit des dispositifs medicaux hors de prix. DreamTech se positionne sur le creneau intermediaire : un outil professionnel abordable avec CRM integre, IA cosmetique, et conformite RGPD native, specifiquement concu pour les salons K-Beauty.
+Le marche n'est pas vide : il faut le dire clairement, il existe des concurrents identifies. Sur l'analyse capillaire/cuir chevelu professionnelle, on trouve par exemple K-Scan, FotoFinder, ARAMO (analyseurs capillaires de salon/clinique), et sur le miroir connecte beaute, des acteurs comme BECON/Samsung, CareOS ou HiMirror. Notre differenciation n'est donc pas un "first-mover" illusoire mais l'integration verticale : un outil professionnel B2B salon, a cout maitrise, combinant capture microscope WiFi, diagnostic cosmetique (IA en cible), CRM/synchronisation offline-first et conformite RGPD pensee des la conception, specifiquement pour les salons K-Beauty. Le positionnement vise le creneau intermediaire entre l'application mobile grand public (sans microscope ni CRM) et le dispositif medical/clinique haut de gamme.
 
 ### Quel est le modele economique ?
 
-SaaS B2B par boutique : abonnement mensuel couvrant le miroir (hardware + logiciel), le CRM multi-tenant, et le service IA. Le cout est previsible pour le salon, et le modele recurrent assure la perennite du service. Des options additionnelles (synchronisation Shopify, workflows N8N personnalises, analytics avancees) constituent des leviers d'upsell.
+SaaS B2B par boutique : abonnement mensuel couvrant le miroir (hardware + logiciel), le CRM multi-tenant, et le service IA. Le cout est previsible pour le salon, et le modele recurrent assure la perennite du service. Des options additionnelles (synchronisation Shopify, workflows n8n personnalises, analytics avancees) constituent des leviers d'upsell. Note d'honnetete : Shopify et n8n sont des cibles roadmap, pas des integrations deja livrees.
+
+---
+
+## 7. Banque de reponses honnetes (REALISE vs CIBLE)
+
+Reponses pre-redigees, opposables a un jury qui lit le code. Chaque reponse distingue ce qui est REALISE et verifiable de ce qui est CIBLE roadmap.
+
+### Votre IA fonctionne-t-elle reellement ?
+
+Non, elle est mockee aujourd'hui (server.js:514-545, scores Math.random). OpenRouter est la cible roadmap. Le mock suffit a valider le flux de bout en bout et le contrat d'API ; brancher un vrai LLM vision est un job asynchrone identifie.
+
+### Le microscope est-il en USB ?
+
+Non, il est en WiFi/TCP (192.168.34.1:8080, protocole JHCMD) : le flux H.264 est transcode par ffmpeg en MJPEG servi sur localhost:9100 (proxy.js). La doc qui disait USB/UVC etait une erreur que j'ai corrigee ; il subsiste des vestiges UVC/V4L2 morts dans le repo, sans effet sur le pipeline reel.
+
+### Avez-vous des queues Redis ?
+
+Pas encore. La file actuelle est un simple fichier JSON poll a 30s (sync.service.ts). Je sais exactement quels 8 jobs y migreront (PDF, QR, push CRM, IA, sync catch-up, upload photos, notifications, purge RGPD) et pourquoi : chacun a un point de douleur synchrone ou fragile dans le code. Redis arrivera avec Laravel.
+
+### Les photos de cuir chevelu sont-elles chiffrees ?
+
+Oui, au repos sur le device : sync.service.ts (savePhotoLocally) ecrit un .jpg.enc chiffre AES-256-GCM via cryptoVault (crypto-vault.service.ts), la file de sync est chiffree, et la photo n'est dechiffree qu'avant le push CRM (crm-sync.service.ts, pushPhotoCrm). La cle maitre vient de systemd-creds (liee au TPM) en prod, avec THROW explicite sans cle. Un test dedie prouve que le JPEG sur disque ne commence pas par FF D8. Reste a faire : securiser le backend mock, pgcrypto en base, object storage chiffre et HDS (donnee potentiellement de sante, art. 9).
+
+### Combien de tests ?
+
+42 tests unitaires Vitest et 136 cas e2e Playwright, soit 178 cas, et non 65. Le nouveau crypto-vault.service.test.ts (7 tests) verrouille le chiffrement (JPEG sur disque sans FF D8, store sans token en clair). Le service crm-sync.service.ts (372 lignes) est encore a 0 test : c'est le plus gros trou que je renforce en BC04, avec l'audit deps CI a rendre bloquant.
+
+### Tournez-vous Laravel ?
+
+Non, le backend realise est un mock Express + PostgreSQL 15 (server.js, docker-compose), sans composer.json ni artisan. Laravel 13/PHP 8.4 est la cible roadmap. J'ai fige le contrat d'API avec le mock pour pouvoir basculer en strangler-fig endpoint par endpoint, sans big-bang.
+
+### Le sandbox Electron et la CSP sont-ils en place ?
+
+Oui : sandbox:true (index.ts:51) et CSP appliquee en production (index.ts:121-143, garde if !is.dev). La CI GitHub Actions (ci.yml), l'ESLint flat config et la playwright.config existent aussi. Certains de mes anciens livrables les listaient encore comme gaps : c'est corrige.
+
+### La regle RGPD du consentement est-elle verrouillee ?
+
+Oui, cote schema (init.sql, FK consentement_id NOT NULL) et cote serveur (server.js:166-177 refuse une seance sans consentement valide). Je la verrouille en plus par un test d'integration backend dont la mutation (retirer le garde-fou) ferait passer un test au rouge.
+
+### Vos donnees IA sortent-elles de l'UE ?
+
+En cible, oui : OpenRouter peut router vers des fournisseurs US. C'est un transfert hors UE d'une donnee potentiellement sensible, que j'encadre (Zero Data Retention, routage EU in-region, garanties contractuelles/SCC) ou que je minimise (recadrage, transmission de features plutot que l'image brute). Si les photos sont qualifiees donnees de sante, un hebergement certifie HDS UE/EEE est requis.
+
+### Avez-vous des concurrents ?
+
+Oui, le marche n'est pas vide. En analyse capillaire professionnelle : K-Scan, FotoFinder, ARAMO. En miroir connecte beaute : BECON/Samsung, CareOS, HiMirror. Je ne revendique aucun "first-mover" ; ma differenciation est l'integration verticale (capture microscope WiFi, diagnostic cosmetique en cible, CRM offline-first, RGPD by design) pour le creneau B2B salon K-Beauty a cout maitrise.

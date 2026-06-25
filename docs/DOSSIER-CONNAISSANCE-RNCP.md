@@ -107,7 +107,7 @@
 
 ### (b) Ce qui manque
 - **Aucun decoupage en sprints dates, aucun backlog chiffre (story points), aucun jalon calendaire, aucune affectation de personnes physiques.** Les "agents BYAN" ne sont **pas une vraie equipe** — c'est de l'outillage IA. Confirme par `[Contexte-MVP]` §4-5.
-- **Contradiction de preuve** : `[Audit-secu]` F8 signalait "commit unique, aucun historique" contredisant le recit des 65+ tests. **[git verifie]** : il y a **36 commits** apres reecriture d'historique — donc l'historique existe bel et bien aujourd'hui. **A jour, F8 est partiellement obsolete** (mais l'historique a ete *reecrit*, donc les dates ne refletent plus le developpement reel — soyez transparent la-dessus).
+- **Contradiction de preuve** : `[Audit-secu]` F8 signalait "commit unique, aucun historique" contredisant le recit des tests (chiffre reel = 178 cas, jamais "65+"). **[git verifie]** : l'historique existe bel et bien aujourd'hui. **A jour, F8 est partiellement obsolete** (mais l'historique a ete *reecrit*, donc les dates ne refletent plus le developpement reel — soyez transparent la-dessus).
 
 ### (c) Recommandations examinateur
 - **Justifiez Merise Agile, mais anticipez la contre-attaque.** Un jury demandera : *"Merise c'est du cycle en V, pas de l'agile — comment conciliez-vous ?"* Reponse modele : *"Merise pour la rigueur du modele de donnees (MCD/MCT), iteration agile pour l'enrichir sprint par sprint ; Sprint 0 = MCD squelettique, enrichi ensuite."* C'est exactement votre narratif `[Contexte-MVP]` §2 — tenez-le.
@@ -130,11 +130,11 @@
 - Electron vs Chromium kiosk (Chromium economise 300-500 Mo RAM) ; Electron vs Tauri (Tauri superieur 2-10 Mo footprint mais risque UI glassmorphism sur WebKitGTK -> Electron retenu, gate RAM, migration documentee) ; Laravel vs Node ; PostgreSQL vs MySQL/SQLite ; Scaleway vs Hetzner (RGPD) ; modeles IA (Gemini Flash 1.5 / GPT-4o mini / Claude 3.5 Haiku) ; codecs (H.264 preview vs JPEG/MJPEG analyse, AV1/H.266 rejetes).
 
 **Securite (etat reel)** — `[Code-device]` §5, `[Audit-secu]` :
-- **BON** : `contextIsolation: true`, `nodeIntegration: false`, contextBridge propre, `setWindowOpenHandler` deny, durcissement kiosk, safeStorage pour device token, requetes SQL parametrees.
-- **GAPS** : `sandbox: false` (F6), **CSP absente** (F2, **[git verifie]** : confirme), `crmBearerToken` en clair (F3/C3), **photos JPEG ecrites en clair** (C1, contredit le claim "chiffrees"), transfert hors UE via OpenRouter (C2), 2 CVE hautes (Electron + fast-uri, F1), remote debug CDP 9222 sur 0.0.0.0 si flag.
+- **BON** : `contextIsolation: true`, `nodeIntegration: false`, contextBridge propre, `setWindowOpenHandler` deny, durcissement kiosk, **chiffrement au repos AES-256-GCM via cryptoVault des photos (`.jpg.enc`), de la file de sync et des tokens (device.token, crmToken, crmBearerToken)** — plus de safeStorage ni de branche plaintext, requetes SQL parametrees.
+- **GAPS RESTANTS** : backend mock a securiser (PDF de seance servi sans protection, secrets en dur, device_token non hache), audit deps CI non bloquant (`ci.yml` `continue-on-error`) a rendre bloquant apres `npm audit fix`, pgcrypto sur colonnes sensibles (cible), transfert hors UE via OpenRouter (C2, cible), 2 CVE hautes (Electron + fast-uri, F1), remote debug CDP 9222 sur 0.0.0.0 si flag.
 
 **Tests** — `[Tests-CI]` :
-- Unitaires : Vitest 2, **~35 cas / 3 services testes sur 9** (config, api-client, sync). Non testes : crm-sync (le plus gros), media-cache, microscope, updater, wifi, + 0% renderer/ipc/preload.
+- Unitaires : Vitest 2, **42 cas / 4 services testes sur 9** (config, api-client, sync, crypto-vault). Le nouveau `crypto-vault.service.test.ts` (7 tests) prouve notamment que le JPEG ecrit sur disque ne commence pas par FF D8 et que le store ne contient pas le token en clair. Non testes : crm-sync (le plus gros), media-cache, microscope, updater, wifi, + 0% renderer/ipc/preload.
 - E2E : Playwright 1.59, 4 specs (~50+ cas dans qa-complete), dont 2 via CDP sur VM Debian 12.
 - 6 tests critiques TC-01 a TC-06 (isolation tenant, consentement 422, sync offline, auth, IA malformee, fallback email).
 
@@ -155,7 +155,7 @@
 - **SemGrep + CI : le quick-win le plus rentable.** Un seul workflow GitHub Actions (typecheck + `vitest --coverage` + `npm audit` + job Semgrep + build arm64) transforme 4 gaps en 1 preuve BC04/BC05. Faisable en 1 jour. **Faites-le, meme minimal.**
 - **CSP** : ajoutez `session.defaultSession.webRequest.onHeadersReceived` avec `default-src 'self'` + sources explicites du flux microscope/medias. C'est 10 lignes, ferme F2.
 - **Reconciliez les divergences de specs** (Laravel 11/PHP 8.3/PG15 du YAML vs Laravel 13/PHP 8.4/PG16 du README ; port IA 3001 vs 3002 ; Jiusion vs Ninyoon ; stack Bun/Supabase obsolete du complement). **Le jury lira vos docs** : un seul chiffre faux et il tire le fil. Declarez `[CDCT]` v5.0 comme autoritaire et marquez le complement "obsolete".
-- **Piege classique** : *"Vous annoncez 65+ tests, j'en compte ~35 unitaires."* Reponse : *"35 unitaires + 50+ scenarios E2E Playwright = 85+, mais 3 services sur 9 seulement en unitaire ; je connais ma dette et voici le plan."* L'honnetete sur la couverture (~30%, non mesuree faute de `--coverage`) vaut mieux qu'un chiffre gonfle.
+- **Piege classique** : *"Vous annoncez 65+ tests, j'en compte ~42 unitaires."* Reponse (chiffres reels) : *"42 unitaires Vitest + 136 e2e Playwright = 178 cas, mais seulement 4 services sur 9 couverts en unitaire et `crm-sync.service.ts` (372 l) a 0 test ; je connais ma dette et voici le plan."* L'honnetete sur la couverture (non mesuree faute de `--coverage`) vaut mieux qu'un chiffre gonfle. Ne JAMAIS annoncer "65+".
 
 ---
 
@@ -164,7 +164,7 @@
 ### (a) Ce qui existe deja
 - **Backlog d'ameliorations chiffre et priorise** : P0-P3 dans `[Audit-secu]` §6 (chiffrer photos+token, npm audit fix+CSP, CV on-device, SBOM+CI, proxy Rust, spike Tauri, CNN Hailo, VLM AI HAT+2).
 - **Hors-scope post-MVP documente** : workflows n8n etendus, Redis/Horizon, temps reel Reverb, scaling load-balancer, multi-region, monitoring par tenant (`[Contexte-MVP]`).
-- **Recommandations ingenieur hardware** : supprimer `stream.py` redondant, consolider button-listener dans le proxy, reconcilier microscope USB/WiFi, valider SPACER_HEIGHT par mesure IR (`[Hardware]` §6).
+- **Recommandations ingenieur hardware** : supprimer `stream.py` redondant, consolider button-listener dans le proxy, purger les vestiges USB/UVC morts (le microscope reel est en WiFi/TCP JHCMD), valider SPACER_HEIGHT par mesure IR (`[Hardware]` §6).
 
 ### (b) Ce qui manque
 - **Bilan personnel** (ce que vous avez appris, difficultes, montee en competence) : **absent** — c'est intrinsequement a vous.
@@ -187,9 +187,9 @@
 | Bloc | Preuves concretes a montrer | Manques a combler |
 |---|---|---|
 | **BC01 — Specifier / cadrer** | CDCF complet (problematique, besoins exhaustifs 3-6, contraintes, 3 cibles, parcours seance) ; finalite **cosmetique** explicite (hors MDR) ; 10 regles de gestion RG-001..010 ; cadre RGPD. Source `[CDCF]`, `[Contexte-MVP]`. | SWOT, PESTEL, veille concurrentielle (Parties 1-2). Personas detailles. |
-| **BC02 — Concevoir l'architecture** | Architecture 4 briques ; **MCD 9 tables** (`[Backend-DB]`) ; choix techno justifies + benchmarks (`[CDCT]` §3) ; offline-first/local-first ; multi-tenant RLS ; anticipation RGPD (chiffrement LUKS, retention, HDS debattu) ; double WiFi. | **Diagrammes UML** (cas d'usage/sequence/deploiement). Decision finale cloud vs on-device (contradiction A/B). |
-| **BC03 — Developper** | Code device structure (8 services main, IPC typee, contextBridge) ; backend Express+PG ; pipeline microscope ffmpeg ; QR+PDF (qrcode, pdfkit) ; boitier 3D PETG parametrique (OpenSCAD) ; **versioning Git 36 commits [git verifie]** ; migrations versionnees. | Couverture reelle des services (3/9). Code propre mais CSP/sandbox a durcir. |
-| **BC04 — Tester / mettre en prod** | 65+ tests (Vitest+Playwright), 6 TC critiques bloquants, systemd durci (`ProtectSystem=strict`, `NoNewPrivileges`), kiosk durci, electron-builder cross-arch, OTA avec rollback. **Remediation secrets = test de securite vecu.** | **CI/CD, SemGrep, SBOM, tests de penetration, playwright.config, ESLint flat config.** CSP, sandbox, chiffrement photos. |
+| **BC02 — Concevoir l'architecture** | Architecture 4 briques ; **MCD 9 tables** (`[Backend-DB]`) ; choix techno justifies + benchmarks (`[CDCT]` §3) ; offline-first/local-first ; multi-tenant RLS ; anticipation RGPD (chiffrement LUKS, retention, HDS debattu) ; microscope WiFi/TCP JHCMD (double-WiFi non automatise en V1, `wifi.service.ts` ne gere que `wlan0`). | **Diagrammes UML** (cas d'usage/sequence/deploiement). Decision finale cloud vs on-device (contradiction A/B). |
+| **BC03 — Developper** | Code device structure (9 services main, IPC typee, contextBridge) ; backend mock Express+PG15 ; pipeline microscope WiFi/TCP JHCMD -> ffmpeg MJPEG ; QR+PDF (qrcode, pdfkit) ; boitier 3D PETG parametrique (OpenSCAD) ; **versioning Git [git verifie]** ; sandbox actif (`index.ts:51`) et CSP en production (`index.ts:121-143`) ; **chiffrement au repos AES-256-GCM (cryptoVault) des photos, de la file de sync et des tokens** deja en place. | Couverture unitaire partielle (4/9 services, `crm-sync` 372 l a 0 test). Reste a faire : securiser le backend mock, pgcrypto, audit deps CI bloquant. |
+| **BC04 — Tester / mettre en prod** | 178 cas reels (42 unitaires Vitest dont `crypto-vault.service.test.ts` = 7 tests + 136 e2e Playwright), 6 TC critiques bloquants, systemd durci (`ProtectSystem=strict`, `NoNewPrivileges`), kiosk durci, electron-builder cross-arch, OTA avec rollback ; **CI GitHub Actions (`ci.yml`), `playwright.config` et ESLint flat config deja en place** ; sandbox actif (`index.ts:51`), CSP en production (`index.ts:121-143`) ; **chiffrement au repos AES-256-GCM verrouille par tests d'anti-regression**. **Remediation secrets = test de securite vecu.** | SemGrep, SBOM, tests de penetration, audit deps CI bloquant (apres `npm audit fix`), couverture `crm-sync`, securisation du backend mock, pgcrypto. |
 | **BC05 — Maintenir / faire evoluer** | Veille CVE (2 CVE hautes identifiees) ; roadmap P0-P3 chiffree ; OTA electron-updater ; **incident secrets -> process de revocation/rotation** ; cadre CRA (SBOM a venir). | SBOM CycloneDX, Dependabot/npm audit en CI, CVE-IDs formels, DPA OpenRouter signe. |
 | **BC06 — Piloter** | Methodo Merise Agile + TDD justifiee ; 5 phases ; **gestion d'incident securite documentee (backup, filter-repo, force-push)** ; priorisation P0-P3 ; hygiene repo. | Backlog date/chiffre, sprints, jalons. Nettoyage `_byan/`+`.claude/` du repo produit (F9). |
 
@@ -197,8 +197,8 @@
 
 **Etat reel verifie dans le code** :
 - **Isolation Electron** : `contextIsolation:true`, `nodeIntegration:false`, contextBridge propre, window.open deny. **Mais `sandbox:false`** (F6) et **CSP absente** (`[git verifie]` : confirme, aucune meta ni header). `[Code-device]` §5.
-- **Secrets / chiffrement** : device token chiffre via safeStorage (bon) ; **mais `crmBearerToken` et photos JPEG en clair** (C1/C3). `[Audit-secu]`.
-- **RGPD** : consentement obligatoire cote API (422 sans `consentement_id`), retention 30j, vocabulaire medical banni, multi-tenant RLS. **Faille de tracabilite** : claim "photos chiffrees" / "pas de partage tiers" **faux** car OpenRouter (US) est dans la boucle (C1/C2).
+- **Secrets / chiffrement** : **photos JPEG (`.jpg.enc`), file de sync et tokens (device.token, `crmToken`, `crmBearerToken`) chiffres au repos en AES-256-GCM via cryptoVault** ; safeStorage et la branche plaintext supprimes ; cle maitre env -> systemd-creds (TPM) -> keyfile -> fallback dev, THROW en prod sans cle. **Reste a faire** : securiser le backend mock (PDF de seance, secrets en dur, device_token non hache) et pgcrypto en base. `[Audit-secu]`.
+- **RGPD** : consentement obligatoire cote API (422 sans `consentement_id`), retention 30j, vocabulaire medical banni, multi-tenant RLS, **chiffrement au repos des photos desormais reel sur le device**. **Point de vigilance restant** : le claim "pas de partage tiers" reste a nuancer car OpenRouter (US) sera dans la boucle en cible (C2).
 - **CVE** : 2 hautes (Electron window.open + injection switch ; fast-uri path traversal), **sans CVE-ID** -> a numeroter. `[Audit-secu]` F1.
 
 **L'INCIDENT DE FUITE DE SECRETS — votre meilleur atout oral** (verifie par moi) :
@@ -247,7 +247,7 @@ C'est exactement la nuance qui separe un junior d'un chef de projet IoT senior. 
  -> *"Le flux video live reste 100% local. Seuls des snapshots JPEG partent vers OpenRouter pour analyse — c'est un transfert hors UE que j'encadre par DPA + consentement explicite. La suppression totale du transfert passe par le CV on-device (OpenCV), que j'ai documente en roadmap P1."*
 
 2. **"Vous affirmez que les photos sont chiffrees localement. Montrez la ligne de code."**
- -> *"Soyons exacts : le device token est chiffre via safeStorage, mais les photos sont aujourd'hui ecrites en clair (writeFileSync) et le crmBearerToken aussi. C'est un finding que j'ai identifie moi-meme dans mon audit ; le correctif P0 est de leur appliquer le meme pattern safeStorage/LUKS."*
+ -> *"Oui : `sync.service.ts` `savePhotoLocally` ecrit un `.jpg.enc` produit par `cryptoVault.encryptBuffer` (AES-256-GCM, `crypto-vault.service.ts`), et `config.service.ts` chiffre de la meme facon device.token, crmToken et crmBearerToken. J'avais identifie l'ecriture en clair dans mon propre audit ; je l'ai corrigee, supprime safeStorage et la branche plaintext, et verrouille avec un test prouvant que le fichier sur disque ne commence pas par FF D8. Ce qui reste a faire est cote backend mock et pgcrypto."*
 
 3. **"C'est un diagnostic capillaire : donc un dispositif medical ?"**
  -> *"Non. Finalite strictement cosmetique, aucune allegation therapeutique, vocabulaire medical banni cote code (RG-010 : alopecie/inflammation/pathologie interdits), seuil 'non concluant' si confiance <60%. On reste hors MDR et hors RGPD art.9."*
@@ -259,10 +259,10 @@ C'est exactement la nuance qui separe un junior d'un chef de projet IoT senior. 
  -> *"Tauri 2 est meilleur sur le footprint (2-10 Mo vs centaines) et la RAM. Mais Rust + WebKitGTK pose un risque sur le glassmorphism (backdrop-filter) et sur le delai. J'ai retenu Electron avec une gate RAM non negociable (<6 Go sur Pi5) et documente Tauri comme voie de migration mesuree au Sprint 1."*
 
 6. **"Vous annoncez 65+ tests : votre couverture reelle ?"**
- -> *"~35 unitaires sur 3 services parmi 9, plus 50+ scenarios E2E Playwright. La couverture unitaire est donc partielle (~30%, non mesuree faute de --coverage). Je connais cette dette : crm-sync, microscope, wifi et updater ne sont pas couverts. Mon plan : --coverage avec seuil en CI."*
+ -> *"Le chiffre exact est 178 cas : 42 unitaires Vitest + 136 e2e Playwright. La couverture unitaire est partielle : 4 services sur 9 seulement, et `crm-sync.service.ts` (372 l) est a 0 test. Le nouveau `crypto-vault.service.test.ts` (7 tests) verrouille le chiffrement. Je ne dis JAMAIS 65+ ; c'etait une erreur d'un ancien livrable. Mon plan : --coverage avec seuil en CI."*
 
-7. **"Pas de CI/CD, pas de SemGrep : comment garantissez-vous la qualite avant merge ?"**
- -> *"Aujourd'hui c'est 100% manuel — c'est ma plus grosse dette d'industrialisation. Quick-win planifie : un workflow GitHub Actions unique (typecheck + vitest --coverage + npm audit + Semgrep + build arm64) qui ferme d'un coup 4 gaps : CI, SAST, SCA et build cross-arch."*
+7. **"Comment industrialisez-vous la qualite avant merge ?"**
+ -> *"La CI GitHub Actions est deja en place (`ci.yml`), avec `playwright.config` et ESLint flat config. L'audit deps n'est pas encore bloquant (`continue-on-error`) : je le rends bloquant apres `npm audit fix`. Reste a ajouter Semgrep et un SBOM CycloneDX (CRA), ainsi qu'un seuil de couverture."*
 
 8. **"Que se passe-t-il si le WiFi ou le CRM tombe en pleine seance ?"**
  -> *"L'architecture est offline-first. La photo est ecrite sur disque immediatement, la seance bufferisee avec synced=false, et une file rejoue l'upload toutes les 30s, la sync CRM toutes les 60s. Le miroir parle a un backend Laravel local, jamais directement a la DB distante. La seance se termine meme totalement hors ligne."*
@@ -303,10 +303,10 @@ C'est exactement la nuance qui separe un junior d'un chef de projet IoT senior. 
 1. **Cloud (code) vs on-device (audit)** : narratifs incompatibles — choisir.
 2. **OHADJA absent** du depot — entreprise a presenter par vous seul.
 3. **SWOT, PESTEL, veille, devis J/H, UML, planning sprints** : **tous absents** du repo — a produire.
-4. **Divergences de specs** : Laravel 11/13, PHP 8.3/8.4, PG15/16, port IA 3001/3002, Jiusion/Ninyoon, microscope USB/WiFi, stack Bun/Supabase obsolete.
-5. **CI/CD, SemGrep, SBOM, npm audit, pentest, playwright.config, ESLint flat config** : absents.
-6. **Claims faux a corriger** : "photos chiffrees" (en clair), "pas de partage tiers / local only" (OpenRouter US).
-7. **"65+ tests"** vs ~35 unitaires reels (3/9 services).
+4. **Divergences de specs RECONCILIEES** : trancher Laravel 13 / PHP 8.4 / PG16 partout (cible, etiquetee CIBLE ROADMAP) ; backend realise = mock Express + PG15 ; port IA = 3001 ; microscope = WiFi/TCP JHCMD (USB/UVC = vestiges morts) ; stack Bun/Supabase obsolete.
+5. **Deja en place** : CI GitHub Actions (`ci.yml`), `playwright.config`, ESLint flat config. **Restent a ajouter** : SemGrep, SBOM, audit deps CI bloquant, pentest.
+6. **Etat chiffrement actualise** : photos (`.jpg.enc`), file de sync et tokens desormais chiffres au repos AES-256-GCM via cryptoVault (`crypto-vault.service.ts`, `sync.service.ts`, `crm-sync.service.ts`, `config.service.ts`) ; reste a corriger cote backend mock et "pas de partage tiers / local only" (cible OpenRouter US).
+7. **"65+ tests"** : faux. Chiffres reels = 42 unitaires + 136 e2e = 178 cas (4/9 services en unitaire).
 8. **Reecriture d'historique** : 36 commits aujourd'hui, dates non representatives du dev reel — assumer.
 
 Fichiers sources cles (chemins absolus) : `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\CDC_DreamTech.md`, `...\CDC_Technique_SmartMirror_Final.md`, `...\smart_mirror_specs_techniques.md`, `...\README.md`, `...\docs\DEFENSE-JURY.md`, `...\docs\PROJET-MVP.md`, `...\smart-mirror\start.sh`, `...\smart-mirror\.env.example`, `...\.gitignore`, `...\smart-mirror\mirror-app\src\main\index.ts`, `...\smart-mirror\mock-api\{server.js,init.sql}`, `...\smart-mirror\enclosure\SPECS.md`, `...\figma-exports\docs\*.md`, `C:\Users\adria\Documents\Projets\PROJET\AUDIT_DECISIONS_SmartMirror_KBEAUTY.md`.

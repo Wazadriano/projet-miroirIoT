@@ -35,7 +35,7 @@
 | **ux-designer** | Sally | UX/UI design, empathie utilisateur |
 | **quick-flow-solo-dev** | Barry | Dev rapide brownfield |
 | **mirror-device-engineer** | Orion | Linux embarque, Electron kiosk, pipeline microscope, WiFi, cross-build ARM64/x86-64 |
-| **backend-laravel-engineer** | Nadia | API Laravel 11 (PHP 8.3), PostgreSQL 15, Sanctum, Eloquent, Docker Compose, n8n endpoints, Shopify |
+| **backend-laravel-engineer** | Nadia | API Laravel 13 (PHP 8.4) [CIBLE ROADMAP], PostgreSQL 16 cible, Sanctum, Eloquent, Docker Compose, n8n endpoints, Shopify |
 | **ai-vision-engineer** | Iris | IA vision LLM, Express Node.js proxy, OpenRouter, analyse capillaire cosmetique, benchmark modeles |
 
 ## CIS Module (Creative Innovation & Strategy)

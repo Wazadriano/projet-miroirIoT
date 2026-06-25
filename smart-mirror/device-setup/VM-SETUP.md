@@ -9,8 +9,8 @@ Guide pour configurer une VM VirtualBox/QEMU qui simule l'environnement kiosk du
 - **CPU** : 2 vCPU
 - **Disque** : 20 Go (dynamique)
 - **Video** : VMSVGA, 128 Mo VRAM, acceleration 3D activee
-- **Reseau** : NAT (host accessible via 10.0.2.2) ou Bridged (IP LAN directe)
-- **USB** : Activer le controleur USB 3.0 (pour microscope passthrough)
+- **Reseau** : NAT (host accessible via 10.0.2.2) ou Bridged (IP LAN directe). Le microscope etant en WiFi/TCP (`192.168.34.1:8080`, JHCMD), prevoir l'acces reseau au hotspot du microscope plutot qu'un passthrough USB.
+- **USB** : controleur USB 3.0 utile pour le retour tactile HID de l'ecran ; **pas requis pour le microscope** (WiFi, pas USB).
 
 ### Port Forwarding (mode NAT)
 
@@ -73,16 +73,18 @@ sudo chmod +x /opt/smart-mirror/SmartMirror.AppImage
 sudo systemctl start smart-mirror
 ```
 
-## 5. Microscope USB Passthrough
+## 5. Microscope WiFi/TCP (JHCMD)
 
-1. Brancher le microscope Ninyoon 4K en USB sur le host
-2. VirtualBox : menu **Devices > USB > Ninyoon 4K** (ou vendor ID correspondant)
-3. Verifier dans la VM :
+Le microscope Ninyoon 4K est connecte en **WiFi/TCP** (`192.168.34.1:8080`, handshake protocole JHCMD), pas en USB. Les anciennes references USB/UVC/V4L2 sont des vestiges morts.
+
+1. Connecter la VM (ou le host avec relais reseau vers la VM) au hotspot WiFi du microscope (`192.168.34.1`).
+2. Verifier l'atteignabilite du microscope :
    ```bash
-   v4l2-ctl --list-devices
-   # Doit afficher le device UVC
+   nc -vz 192.168.34.1 8080
+   # Doit etablir la connexion TCP
    ```
-4. L'app detecte automatiquement le microscope via `MicroscopeService`
+3. Le proxy (`proxy.js`) etablit le handshake JHCMD, transcode le flux H.264 en MJPEG via ffmpeg et le sert sur `localhost:9100`.
+4. L'app detecte automatiquement le microscope via `MicroscopeService`.
 
 ## 6. Acces aux services Docker du host
 
