@@ -1,0 +1,36 @@
+FROM php:8.4-fpm-alpine
+
+RUN apk add --no-cache \
+    postgresql-dev \
+    libzip-dev \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    zip \
+    unzip \
+    git \
+    curl \
+    linux-headers \
+    $PHPIZE_DEPS \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql zip pcntl opcache gd \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && apk del $PHPIZE_DEPS linux-headers
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+RUN printf \
+    'upload_max_filesize=200M\npost_max_size=210M\nmemory_limit=256M\nmax_execution_time=120\nopcache.enable=1\nopcache.revalidate_freq=0\nopcache.validate_timestamps=1\n' \
+    > /usr/local/etc/php/conf.d/upload.ini
+
+COPY php-fpm.conf /usr/local/etc/php-fpm.d/www.conf
+
+WORKDIR /var/www/html
+
+COPY entrypoint-dev.sh /usr/local/bin/entrypoint-dev.sh
+RUN chmod +x /usr/local/bin/entrypoint-dev.sh
+
+EXPOSE 9000
+
+ENTRYPOINT ["/usr/local/bin/entrypoint-dev.sh"]
