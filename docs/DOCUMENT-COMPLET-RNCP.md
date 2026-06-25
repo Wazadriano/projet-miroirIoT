@@ -158,7 +158,7 @@ Deux briques — le **miroir** (Electron en mode kiosque) et le **back-office** 
 | 1 | Device / Electron (9 écrans, IPC) | 22 | Cœur applicatif avancé ; stabilisation UI tactile, clavier virtuel, durcissement IPC |
 | 2 | Backend Laravel + base de données | 18 | Contrat d'API, auth Sanctum, mapping clients/séances, idempotence |
 | 3 | Service IA / proxy (cloud OpenRouter) | 10 | Gestion clés, file, retry, journalisation conforme |
-| 4 | Microscope / proxy vidéo (USB UVC) | 12 | Capture flux, snapshot JPEG, latence, codec |
+| 4 | Microscope / proxy vidéo (WiFi/TCP JHCMD) | 12 | Handshake JHCMD, transcodage ffmpeg H.264->MJPEG, snapshot JPEG, latence, codec |
 | 5 | UX / Figma (design system « verre ») | 14 | Maquettes normées, parcours institut, états vides/erreurs |
 | 6 | **Tests / CI / sécurité** | 26 | Tiroir le plus lourd : combler gaps sécurité, couvrir `crm-sync`, chaîne CI/lint/coverage |
 | 7 | Provisioning / boîtier 3D | 9 | Enrôlement, QR, impression 3D itérée, montage |
@@ -182,7 +182,7 @@ Deux briques — le **miroir** (Electron en mode kiosque) et le **back-office** 
 | Refroidissement | Refroidisseur actif | 8 | 8 |
 | Stockage | microSD | 15 | 15 |
 | Boîtier | PETG imprimé (profil SLIM) | 5 | 5 |
-| Microscope | USB UVC | 45 | 45 |
+| Microscope | WiFi (Ninyoon 4K) | 45 | 45 |
 | **Écran** | **32" (incertitude majeure)** | **700** | **900** |
 | Connectique | Dongle / câbles | 25 | 25 |
 | **Sous-total / miroir** | | **960** | **1 210** |
@@ -226,7 +226,7 @@ Document Project → Analyse (brief → besoins) → Planning (architecture → 
 
 ## 4.4 Niveaux de test
 
-Priorité **Unit > Intégration > E2E**. État réel : **170 cas** (34 unitaires Vitest + 136 E2E Playwright), **3 services sur 8** couverts en unitaire — `crm-sync.service.ts` (372 lignes) reste à couvrir (chantier identifié).
+Priorité **Unit > Intégration > E2E**. État réel : **178 cas** (42 unitaires Vitest + 136 E2E Playwright), **4 services sur 9** couverts en unitaire — le nouveau `crypto-vault.service.test.ts` (7 tests) verrouille le chiffrement (le JPEG écrit sur disque ne commence pas par FF D8, le store ne contient pas le token en clair) ; `crm-sync.service.ts` (372 lignes) reste à couvrir (chantier identifié).
 
 ---
 
@@ -296,7 +296,7 @@ graph TB
     E --- D[(Docker: PostgreSQL + API locale :8100)]
     IA[Proxy IA :3001]
   end
-  Mic[Microscope USB/WiFi] --- Pr
+  Mic[Microscope WiFi/TCP 192.168.34.1:8080 JHCMD] --- Pr
   Ecran[Écran tactile 32] --- E
   IA --- OR[OpenRouter cloud US]
   D --- CRM[CRM Laravel distant via Internet]
@@ -310,17 +310,20 @@ graph TB
 
 | Gap | État | Correctif |
 |---|---|---|
-| Photos JPEG en clair (`sync.service.ts:61`) | À corriger | Chiffrement au repos |
+| Photos JPEG (`sync.service.ts` `savePhotoLocally`) | **Corrigé** → `.jpg.enc` chiffré AES-256-GCM (cryptoVault) | Fait au repos sur le device |
 | `sandbox: false` (`index.ts:51`) | **Corrigé** → `sandbox: true` | Fait (à tester sur device) |
 | CSP absente | **Corrigée** (prod) | `onHeadersReceived` ajouté |
-| `crmBearerToken`/`crmToken` en clair | À corriger | `safeStorage` |
+| `crmBearerToken`/`crmToken` | **Corrigé** → chiffrés au repos AES-256-GCM (cryptoVault, `config.service.ts`) | safeStorage et branche plaintext supprimés |
 | Pas de CI / SemGrep / SBOM | **Corrigé** | Workflow CI ajouté (cf. 5.5) |
+| Backend mock (PDF de séance sans protection, secrets en dur, device_token non haché) | **À corriger** | Reste à sécuriser côté backend |
+| Audit deps CI non bloquant (`ci.yml` `continue-on-error`) | **À corriger** | Rendre bloquant après `npm audit fix` |
+| pgcrypto sur colonnes sensibles | **À faire (cible)** | Aligné sur la bascule Laravel/PostgreSQL 16 |
 
 **Audit & veille :** 2 CVE (Electron + fast-uri) à re-vérifier par `npm audit` la veille de l'oral ; **SBOM CycloneDX** et **scan SemGrep** intégrés à la CI (exigences CRA).
 
 ## 5.5 Tests, CI/CD, versioning
 
-- **Tests** : 170 cas (Vitest + Playwright). Ajout de `playwright.config.ts`, config de **couverture** Vitest, et **flat config ESLint 9** (lint réparé).
+- **Tests** : 178 cas (Vitest + Playwright). Ajout de `crypto-vault.service.test.ts` (7 tests anti-régression chiffrement), `playwright.config.ts`, config de **couverture** Vitest, et **flat config ESLint 9** (lint réparé).
 - **CI/CD** : `.github/workflows/ci.yml` — typecheck + lint + tests/coverage + build + **npm audit** + **SBOM** + **Semgrep**.
 - **Versioning** : Git, migrations Laravel versionnées. *(Note d'honnêteté : l'historique a été réécrit pour purger des secrets — voir Partie 8 ; les dates de commit ne reflètent donc plus le développement réel.)*
 
@@ -353,7 +356,7 @@ Ce projet m'a fait porter un cycle IoT complet, du besoin client au matériel. T
 | **BC01 — Cadrer** | CDCF, finalité cosmétique (hors MDR), RG-001→010, cadre RGPD |
 | **BC02 — Concevoir** | Architecture 4 briques, MCD 9 tables, benchmarks justifiés, offline-first, multi-tenant, **3 diagrammes UML** |
 | **BC03 — Développer** | Code Electron/Express structuré, pipeline microscope, QR/PDF, boîtier 3D, Git |
-| **BC04 — Tester / mettre en prod** | 170 tests, 6 TC critiques, systemd durci, OTA + rollback, **CI + CSP + sandbox**, **gestion d'incident sécurité** |
+| **BC04 — Tester / mettre en prod** | 178 cas de test, 6 TC critiques, systemd durci, OTA + rollback, **CI + CSP + sandbox**, **chiffrement au repos AES-256-GCM (device) + anti-régression dédiée**, **gestion d'incident sécurité** |
 | **BC05 — Maintenir / évoluer** | Veille CVE, roadmap P0-P3, OTA, **SBOM + SemGrep** (CRA), révocation/rotation de secrets |
 | **BC06 — Piloter** | Merise Agile justifiée, backlog, priorisation, **incident sécurité géré de bout en bout** |
 
@@ -386,7 +389,7 @@ Pendant la préparation, j'ai détecté **deux secrets réels** dans le dépôt 
 | Optimisation (3 arbitrages chiffrés) | 2 |
 | Bilan + remerciements | 3 |
 
-**Questions probables (réponses verrouillées)** : transfert hors UE, photos en clair, dispositif médical, codec Pi 5, Electron vs Tauri, couverture de tests, « aucun concurrent », panne réseau en séance, UML vs Merise, incident sécurité, scaling. *(Détail complet dans `docs/DOSSIER-CONNAISSANCE-RNCP.md`.)*
+**Questions probables (réponses verrouillées)** : transfert hors UE, chiffrement au repos des photos (réalisé AES-256-GCM sur le device, backend encore à sécuriser), dispositif médical, codec Pi 5, Electron vs Tauri, couverture de tests, « aucun concurrent », panne réseau en séance, UML vs Merise, incident sécurité, scaling. *(Détail complet dans `docs/DOSSIER-CONNAISSANCE-RNCP.md`.)*
 
 ---
 

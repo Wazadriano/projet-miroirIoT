@@ -135,13 +135,13 @@ Pour utiliser la police Montserrat (charte K Beauty) :
 | Face | Connecteurs | Usage |
 |------|-------------|-------|
 | Nord (bord court) | USB-C, micro-HDMI 0, micro-HDMI 1 | Alim + sortie video vers ecran miroir |
-| Est (bord long) | 2x paire USB-A, RJ45 | USB touch ecran + microscope + debug Ethernet |
+| Est (bord long) | 2x paire USB-A, RJ45 | USB touch ecran (HID) + dongle WiFi + debug Ethernet (microscope en WiFi, pas USB) |
 | Sud (bord court) | Slot microSD | Re-image SAV |
 | Ouest (bord long) | Rien | GPIO accessible par demontage capot |
 
-Les 4 ports USB-A sont accessibles. Attribution recommandee :
-- USB-A pair 1 (position 27mm) : retour tactile ecran (HID) + microscope UVC
-- USB-A pair 2 (position 45mm) : dongle WiFi (si microscope WiFi) + libre
+Les 4 ports USB-A sont accessibles. Le microscope etant en WiFi/TCP (`192.168.34.1:8080`, JHCMD), il n'occupe aucun port USB. Attribution recommandee :
+- USB-A pair 1 (position 27mm) : retour tactile ecran (HID) + libre
+- USB-A pair 2 (position 45mm) : dongle WiFi USB (acces internet en parallele du hotspot microscope) + libre
 
 ## 7. Fixation
 

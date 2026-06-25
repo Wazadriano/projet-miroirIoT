@@ -35,7 +35,7 @@ BOM materiel indicatif (par miroir, hors ecran a chiffrer fermement) :
 | Refroidisseur actif | ~8 EUR |
 | microSD | ~15 EUR |
 | Boitier PETG imprime (profil SLIM, -28% epaisseur, sans HAT NVMe) | ~5 EUR |
-| Microscope USB UVC | ~45 EUR |
+| Microscope WiFi (Ninyoon 4K) | ~45 EUR |
 | Ecran Shineworld 32" | ~700-900 EUR (devis a confirmer) |
 
 A l'echelle cible (6 miroirs), l'ecran represente l'essentiel du capital materiel.
@@ -60,7 +60,7 @@ A l'echelle cible (6 miroirs), l'ecran represente l'essentiel du capital materie
 | Maturite de l'IA de vision | Opportunite | Suffisante via modeles cloud (OpenRouter). Permet une analyse pertinente sans modele entraine en propre. |
 | Codecs video Pi5 (BCM2712) | Contrainte | HEVC/H.265 4K60 decode en HARDWARE uniquement. H.264, VP9, AV1 decodes en LOGICIEL/CPU. AUCUN encodeur video hardware. Implication : privilegier HEVC pour toute lecture lourde ; ne jamais coder un pipeline qui suppose une acceleration H.264 ou un encodage materiel. |
 | Dependance fournisseur cloud (OpenRouter, US) | Menace | Point unique de defaillance fonctionnel et juridique (cf. section L). Mitigation roadmap : CV on-device (OpenCV) reduisant la dependance et la surface RGPD. |
-| Connectique microscope | Decision verrouillee | USB UVC par defaut (conforme au code). Le WiFi est une option ; le double-WiFi N'EST PAS implemente en V1 (`wifi.service.ts` ne gere que `wlan0`). |
+| Connectique microscope | Decision verrouillee | WiFi/TCP par defaut, conforme au code (`192.168.34.1:8080`, protocole JHCMD ; ffmpeg H.264->MJPEG sur `localhost:9100`). Les references USB/UVC du depot sont des vestiges morts. Le double-WiFi N'EST PAS automatise en V1 (`wifi.service.ts` ne gere que `wlan0`). |
 | Footprint memoire | Decision d'ingenierie | Mesure code ~1,3-2,2 Go avec Docker on-device. Choix 4 Go a valider par une mesure 48h (`free -m` + `VmRSS`) — a presenter comme decision conditionnee, pas comme fait acquis. |
 | Stack | Maitrisee | Device : Electron 33 + React 19 + TypeScript 5.7 + Zustand 5 (electron-vite, electron-builder arm64+x64). Backend mock local : Node 20 + Express + PostgreSQL 15. CRM distant : Laravel/Sanctum (api-kbeauty.a3n.fr). Proxy IA port 3001. PAS de Redis. La stack Bun/Supabase/Budibase/Vercel des anciennes specs est OBSOLETE/abandonnee. |
 
@@ -89,17 +89,18 @@ A l'echelle cible (6 miroirs), l'ecran represente l'essentiel du capital materie
 | **Retention** | A definir | Politique de duree de conservation des snapshots et resultats ; suppression automatique. [A COMPLETER : duree retenue avec le DPO]. |
 | **Transfert hors UE (art. 44-46)** | **Requis — Schrems II** | Les snapshots JPEG sortent vers OpenRouter (datacenter US). Chapitre V obligatoire : **DPA (art. 28)** + **clauses de transfert DPF ou SCC (art. 46)** + **TIA (Transfer Impact Assessment, Schrems II)**. Sans ces elements, le transfert est non conforme. |
 
-**Securite (gaps assumes, verifies en code) — a presenter en transparence :**
+**Securite — etat verifie en code (a presenter en transparence) :**
 
-| Gap | Localisation | Risque RGPD (art. 32 — securite) |
-|-----|--------------|----------------------------------|
-| Photos JPEG en clair | `sync.service.ts:61` | Donnees potentiellement sensibles non chiffrees au repos. |
-| Sandbox desactive | `index.ts:51` (`sandbox:false`) | Surface d'attaque renderer accrue. |
-| CSP absente | — | Pas de politique de securite du contenu. |
-| `crmBearerToken` / `crmToken` en clair | — | Secrets non proteges. |
-| `config:getAll` expose tout le store au renderer | — | Fuite de configuration possible. |
+| Element | Localisation | Statut |
+|---------|--------------|--------|
+| Photos JPEG | `sync.service.ts` `savePhotoLocally` | **En place** — chiffrees au repos en AES-256-GCM (`.jpg.enc`) via cryptoVault (`crypto-vault.service.ts`) ; dechiffrement avant push CRM. |
+| Sandbox | `index.ts:51` (`sandbox: true`) | **En place** — sandbox renderer actif. |
+| CSP | `index.ts:121-143` (garde `if !is.dev`) | **En place** — politique de securite du contenu appliquee en production. |
+| `crmBearerToken` / `crmToken` | `config.service.ts` | **En place** — chiffres au repos en AES-256-GCM via cryptoVault ; safeStorage et branche plaintext supprimes. |
+| Backend mock (PDF de seance, secrets en dur, device_token non hache) | `mock-api/server.js` | **Gap restant** — a securiser cote backend. |
+| `config:getAll` expose le store au renderer | — | A durcir (whitelist). |
 
-Fondations correctes a valoriser : `contextIsolation: true`, `nodeIntegration: false`, preload via `contextBridge`, IPC. **2 CVE a re-verifier via `npm audit` la veille de l'oral.**
+Fondations deja en place a valoriser : `sandbox: true` (`index.ts:51`), CSP en production (`index.ts:121-143`), `contextIsolation: true`, `nodeIntegration: false`, preload via `contextBridge`, IPC typee, CI GitHub Actions (`ci.yml`). **`npm audit` a re-verifier la veille de l'oral.**
 
 ### MDR (Reglement dispositifs medicaux) — evite
 

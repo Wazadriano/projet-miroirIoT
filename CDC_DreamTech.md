@@ -86,7 +86,7 @@ Le client souhaite un ensemble composé de deux briques :
 
 Le miroir Shineworld fournit un ecran tactile avec Android embarque. Cet Android est bypasse : on utilise l’ecran en mode moniteur HDMI, pilote par un Raspberry Pi 5 externe (boitier fixe au dos du cadre). Le Pi tourne sous Linux. Linux est retenu pour les raisons suivantes :
 
-* Gestion native de deux interfaces WiFi simultanées (nécessaire pour le microscope sans fil \+ la connexion cloud)
+* Gestion native de deux interfaces WiFi simultanées au niveau OS (utile pour le microscope sans fil \+ la connexion cloud). Note d'honnêteté : cette orchestration double-WiFi N'EST PAS automatisée en V1 — `wifi.service.ts` ne gère que `wlan0` ; le second lien suppose un dongle USB et une configuration manuelle.
 
 * Application développée en Electron (React/TypeScript) — correspond aux compétences de l’équipe
 
@@ -100,9 +100,9 @@ Le miroir Shineworld fournit un ecran tactile avec Android embarque. Cet Android
 
 Le microscope sans fil cree son propre reseau WiFi. Quand le Pi s’y connecte, il perd internet. Solution retenue :
 
-* WiFi interne du Pi 5 → connecte au hotspot du microscope (flux video) OU au reseau boutique (si microscope USB)
+* WiFi interne du Pi 5 → connecte au hotspot du microscope (flux video). Le microscope est en WiFi/TCP (`192.168.34.1:8080`, protocole JHCMD), conforme au code ; les references USB/UVC du depot sont des vestiges morts.
 
-* Dongle WiFi USB (\~10-15 €) branche sur le Pi → connecte a la box internet de la boutique (cloud \+ API IA) — necessaire uniquement si le microscope est WiFi
+* Dongle WiFi USB (\~10-15 €) branche sur le Pi → connecte a la box internet de la boutique (cloud \+ API IA), en parallele du WiFi microscope. Note : le double-WiFi n'est pas automatise en V1 (`wifi.service.ts` ne gere que `wlan0`).
 
 Les deux interfaces fonctionnent simultanement sous Linux. Le Pi recoit la video ET communique avec le cloud en parallele. L’ecran du miroir Shineworld est connecte au Pi via HDMI, le retour tactile via USB.
 

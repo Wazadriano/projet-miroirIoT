@@ -32,8 +32,8 @@ Notre avantage ne tient pas a une brique isolee — chacune existe ailleurs — 
 
 | Critere | K-Scan | BECON | FotoFinder | ARAMO | CareOS | HiMirror | **Notre projet** |
 |---------|:------:|:-----:|:----------:|:-----:|:------:|:--------:|:----------------:|
-| Microscope/imagerie capillaire dediee | Oui | Oui | Oui (medical) | Oui | Non | Non | **Oui (USB UVC ~45 EUR)** |
-| Materiel a faible cout | Non | Non | Non | Moyen | Non | Oui | **Oui (Pi 5 + UVC)** |
+| Microscope/imagerie capillaire dediee | Oui | Oui | Oui (medical) | Oui | Non | Non | **Oui (WiFi ~45 EUR)** |
+| Materiel a faible cout | Non | Non | Non | Moyen | Non | Oui | **Oui (Pi 5 + microscope WiFi)** |
 | IA d'analyse | Oui | Oui | Oui | Partiel | Partiel | Oui | **Oui (cloud OpenRouter, ~0,002 EUR/analyse)** |
 | Integration CRM marchand (Shopify) | Non | Non | Non | Non | Non | Non | **Oui (CRM dedie K-beauty)** |
 | Ancrage institut K-beauty premium | Partiel | Oui (Coree) | Non | Non | Non | Non | **Oui (Bubble Hair Spa)** |
@@ -41,17 +41,17 @@ Notre avantage ne tient pas a une brique isolee — chacune existe ailleurs — 
 
 **Notre angle = integration verticale microscope bas cout + IA + CRM Shopify en institut K-beauty premium.** Aucun acteur du tableau ne ferme la boucle "diagnostic en cabine -> fiche client enrichie -> recommandation produit -> e-commerce/fidelisation". K-Scan et BECON ferment leur ecosysteme ; FotoFinder vise le medical ; ARAMO vend la brique sans le logiciel ni le CRM ; CareOS/HiMirror/Simplehuman ne font pas de diagnostic capillaire serieux.
 
-Note d'honnetete technique (a assumer en soutenance) : le microscope WiFi est l'**option** de differenciation visee, mais la V1 fonctionne en **USB UVC par defaut** (conforme au code ; le double-WiFi n'est pas implemente en V1, `wifi.service.ts` ne gere que `wlan0`). Le cout materiel reste l'argument fort : Raspberry Pi 5 (4 Go recommande pour le MVP, dimensionnement a confirmer par mesure 48h `free -m`/VmRSS) ~150-200 EUR (crise RAM juin 2026), alimentation 27W ~12 EUR, refroidisseur actif ~8 EUR, microSD ~15 EUR, boitier PETG imprime profil SLIM ~5 EUR, microscope USB UVC ~45 EUR. Le vrai poste d'incertitude du TCO reste l'ecran Shineworld 32 pouces ~700-900 EUR, **a chiffrer fermement par devis**.
+Note d'honnetete technique (a assumer en soutenance) : conformement au code, le microscope est connecte en **WiFi/TCP** (`192.168.34.1:8080`, protocole JHCMD ; flux H.264 transcode par ffmpeg en MJPEG sur `localhost:9100`, `proxy.js`). Les references USB/UVC presentes dans le depot sont des **vestiges morts**, non utilises par le pipeline reel ; le double-WiFi n'est pas automatise en V1 (`wifi.service.ts` ne gere que `wlan0`). Le cout materiel reste l'argument fort : Raspberry Pi 5 (4 Go recommande pour le MVP, dimensionnement a confirmer par mesure 48h `free -m`/VmRSS) ~150-200 EUR (crise RAM juin 2026), alimentation 27W ~12 EUR, refroidisseur actif ~8 EUR, microSD ~15 EUR, boitier PETG imprime profil SLIM ~5 EUR, microscope WiFi (Ninyoon 4K) ~45 EUR. Le vrai poste d'incertitude du TCO reste l'ecran Shineworld 32 pouces ~700-900 EUR, **a chiffrer fermement par devis**.
 
 ## 4. Conclusion : un positionnement defendable
 
 Le positionnement defendable n'est pas "nous sommes seuls" mais **"nous sommes les seuls a integrer toute la chaine pour ce client et ce canal precis"**. Trois piliers le soutiennent :
 
-1. **Cout d'acces materiel bas** (Pi 5 + microscope UVC) la ou les references du marche imposent des plateformes fermees et couteuses — ce qui rend le deploiement multi-points realiste : MVP soutenance = 1 boutique / 1 tenant ; cible commerciale = 6 miroirs / 3 boutiques (Nice, Lyon, Cannes).
+1. **Cout d'acces materiel bas** (Pi 5 + microscope WiFi) la ou les references du marche imposent des plateformes fermees et couteuses — ce qui rend le deploiement multi-points realiste : MVP soutenance = 1 boutique / 1 tenant ; cible commerciale = 6 miroirs / 3 boutiques (Nice, Lyon, Cannes).
 2. **Integration verticale CRM** que personne d'autre n'offre : le diagnostic alimente directement la fiche client et le e-commerce Shopify / mailing Klaviyo de KBEAUTY.
 3. **Specialisation K-beauty premium** ("Bubble Hair Spa"), un canal et un univers de marque que les acteurs generalistes ne servent pas.
 
-Les limites a assumer sans les masquer : la differenciation WiFi est une **roadmap**, pas une realite V1 (USB par defaut) ; l'IA est **100 % cloud (OpenRouter, datacenter US)**, ce qui impose une conformite RGPD Chapitre V (DPA art.28, clauses de transfert DPF/SCC art.46, TIA Schrems II, et consentement explicite art.9(2)(a) si donnees de sante — position art.9 a traiter par precaution, cf. CJUE C-184/20). La roadmap d'analyse on-device (OpenCV, scores anonymises) repond a ce point sans etre encore implementee.
+Les limites a assumer sans les masquer : le double-WiFi (microscope + internet en parallele) n'est **pas automatise en V1** (`wifi.service.ts` ne gere que `wlan0`) ; l'IA est aujourd'hui **mockee** (scores `Math.random`, `server.js:514-545`), la cible etant **OpenRouter, datacenter US**, ce qui impose une conformite RGPD Chapitre V (DPA art.28, clauses de transfert DPF/SCC art.46, TIA Schrems II, et consentement explicite art.9(2)(a) si donnees de sante — position art.9 a traiter par precaution, cf. CJUE C-184/20). La roadmap d'analyse on-device (OpenCV, scores anonymises) repond a ce point sans etre encore implementee.
 
 Message au jury : nous n'avons pas invente un marche vierge — nous avons identifie un **angle mort** dans un marche reel, et construit l'integration que les leaders ne proposent pas.
 

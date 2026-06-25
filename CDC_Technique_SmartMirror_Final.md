@@ -55,7 +55,7 @@ K Beauty Cosmetics possède 3 boutiques (Nice, Lyon, Cannes). Chaque boutique pr
 | :---- | :---- | :---- | :---- |
 | Base de données | PostgreSQL 15 | Toutes les données métier | Serveur dédié EU |
 | Interface DB (no-codeur) | WebDB (open-source, self-hosted) | Visualisation et gestion visuelle de la DB — outil interne uniquement, jamais appelé par le miroir ni le CRM | Serveur dédié |
-| API principale | Laravel 11 (PHP 8.3) — Laravel 12 sorti en mars 2025, évaluer la migration avant démarrage du dev | Reçoit tous les appels du miroir et du CRM. Unique point d'entrée vers PostgreSQL. | Serveur dédié |
+| API principale | Laravel 13 (PHP 8.4) [CIBLE ROADMAP - non implemente ; backend realise = mock Express] | Reçoit tous les appels du miroir et du CRM. Unique point d'entrée vers PostgreSQL. | Serveur dédié |
 | Automatisations | n8n (self-hosted) | PDF, QR code, webhook scan, email fallback, cron RGPD — communique via l'API Laravel | Serveur dédié |
 | Serveur IA | Express (Node.js 20 LTS) | Proxy dédié : reçoit la photo du miroir, appelle OpenRouter, retourne le diagnostic. Authentifié par token partagé. | Serveur dédié |
 | CRM | React 19 \+ TypeScript | Interface gérant : clientes, séances, miroirs, médias, produits | Navigateur web |
@@ -103,7 +103,7 @@ Ce chapitre documente les alternatives évaluées pour chaque choix technique ma
 
 ## **3.1 Laravel (PHP) vs Node.js full-stack**
 
-| Critère | Laravel (PHP 8.3) | Node.js full-stack (Express ou Fastify) |
+| Critère | Laravel 13 (PHP 8.4) [CIBLE ROADMAP] | Node.js full-stack (Express ou Fastify) |
 | :---- | :---- | :---- |
 | Maîtrise équipe | Connue — le dev a une expérience Laravel documentée | Express utilisé pour le serveur IA mais pas en full-stack |
 | Maturité ORM | Eloquent — mature, migrations versionnées, relations robustes | Drizzle / Prisma — plus récents, moins battle-tested |
@@ -665,7 +665,7 @@ Le miroir Shineworld integre un ecran tactile 32" avec Android embarque. L'Andro
 | Boitier | Imprime 3D PETG, profil slim, logo K Beauty | Fixation VESA au dos du miroir. Voir `device-setup/enclosure/` |
 | Connexion ecran | Micro-HDMI (Pi) → adaptateur → HDMI 2.0 (miroir) | Cable court 30-50 cm |
 | Connexion tactile | USB-A (Pi) ← USB (miroir) | Retour touch HID standard |
-| Microscope | Jiusion 4K WiFi (Amazon B0CPVH11Z6, \~45€) OU Ninyoon USB UVC | Protocole a confirmer a reception (PO-02) |
+| Microscope | WiFi (Ninyoon 4K, \~45€) | Protocole TRANCHE et conforme au code : WiFi/TCP `192.168.34.1:8080`, handshake JHCMD, flux H.264 transcode par ffmpeg en MJPEG sur `localhost:9100` (`proxy.js`). Les references USB/UVC du depot sont des vestiges morts (PO-02 cloture). |
 | Connectivite | WiFi interne Pi \+ dongle USB WiFi si microscope WiFi | WiFi interne \= internet boutique OU hotspot microscope |
 
 ## **10.2 Système et démarrage**
@@ -923,7 +923,7 @@ PO-05 (qualification HDS) est tranché : positionnement cosmétique retenu (voir
 | \# | Point | Impact | Responsable | Échéance |
 | :---- | :---- | :---- | :---- | :---- |
 | PO-01 | Choix hardware : Raspberry Pi 5 vs Beelink SER5 (benchmarks requis) | Budget device, performance | Orion \+ Carmack | Sprint 1 |
-| PO-02 | Protocole streaming Jiusion 4K WiFi : tester MJPEG via hotspot Linux (hostapd \+ wpa\_supplicant). Plan B USB documenté : le Jiusion fonctionne en USB via protocole UVC standard (plug & play, getUserMedia natif, pas de dongle WiFi). Si WiFi Linux non fonctionnel, basculer sur USB comme défaut. Décision à documenter dans le repo. | Architecture pipeline vidéo | Orion | Dès réception hardware |
+| PO-02 | TRANCHE (clos). Protocole streaming microscope confirme par le code : WiFi/TCP `192.168.34.1:8080`, handshake JHCMD, flux H.264 transcode par ffmpeg en MJPEG sur `localhost:9100` (`proxy.js`). Le plan B USB/UVC n'a pas ete retenu ; les references USB du depot sont des vestiges morts. | Architecture pipeline vidéo | Orion | Clos |
 | PO-03 | Validation des 8 catégories d'analyse cosmétique par les praticiennes K Beauty | Qualité recommandations IA | Iris \+ client | Sprint 1 |
 | PO-04 | DPA avec OpenRouter et fournisseurs LLM | RGPD — bloquant pour la prod | Externe (juridique) | Avant mise en prod |
 | PO-05 | \~\~Qualification HDS\~\~  TRANCHÉ : positionnement cosmétique retenu (section 14\) | Résolu | — | Résolu |

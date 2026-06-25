@@ -69,7 +69,7 @@ Le **Praticien** est l'acteur central du parcours en institut : il s'authentifie
 sequenceDiagram
     actor Prat as Praticien
     participant App as App miroir (Electron 33)
-    participant ProxM as Proxy microscope (USB UVC)
+    participant ProxM as Proxy microscope (WiFi/TCP JHCMD)
     participant ProxIA as Proxy IA (port 3001)
     participant OR as OpenRouter (datacenter US)
     participant Back as Backend local (API 8100 + PostgreSQL 15)
@@ -81,10 +81,10 @@ sequenceDiagram
     Back-->>App: session_id
 
     Prat->>App: Lance la capture
-    App->>ProxM: Demande flux video (microscope USB par defaut)
+    App->>ProxM: Demande flux video (microscope WiFi 192.168.34.1:8080)
     ProxM-->>App: Stream video local
     App->>App: Capture snapshot JPEG
-    App->>Back: Stocke JPEG EN CLAIR (sync.service.ts:61)
+    App->>Back: Stocke JPEG CHIFFRE AES-256-GCM .jpg.enc (sync.service.ts savePhotoLocally)
     Back-->>App: capture_id
 
     App->>ProxIA: Envoie snapshot pour analyse
@@ -104,7 +104,7 @@ sequenceDiagram
     CRM-->>Back: ACK
 ```
 
-Ce diagramme déroule la séance de bout en bout. Le **consentement** est la première barrière : aucune capture sans accord enregistré (approche par précaution sur l'art.9, la donnée capillaire étant déductible - CJUE C-184/20). Le **microscope est en USB UVC par défaut** (conforme au code ; le WiFi reste une option, le double-WiFi n'est pas implémenté en V1, `wifi.service.ts` ne gère que `wlan0`). Point de vigilance assumé : le snapshot JPEG est **stocké en clair** localement (`sync.service.ts:61`). L'analyse IA est **100 % cloud via OpenRouter** (datacenter US) en V1 : le snapshot **sort de l'UE**, d'où l'obligation Chapitre V (DPA art.28, clauses DPF ou SCC art.46, TIA Schrems II). La **file de sync offline** garantit qu'une coupure réseau ne bloque pas la séance : le bilan est généré localement (PDF + QR), la remontée CRM Laravel (Sanctum, Bearer token) se fait dès que le réseau est disponible. Roadmap non implémentée : analyse CV on-device (OpenCV) ne faisant sortir que des scores anonymisés.
+Ce diagramme déroule la séance de bout en bout. Le **consentement** est la première barrière : aucune capture sans accord enregistré (approche par précaution sur l'art.9, la donnée capillaire étant déductible - CJUE C-184/20). Le **microscope est connecté en WiFi/TCP** (`192.168.34.1:8080`, protocole JHCMD ; flux H.264 transcodé par ffmpeg en MJPEG sur `localhost:9100`), conformément au code ; les références USB/UVC du dépôt sont des **vestiges morts**, et le double-WiFi n'est pas automatisé en V1 (`wifi.service.ts` ne gère que `wlan0`). Sécurité au repos : le snapshot JPEG est désormais **stocké chiffré** localement en AES-256-GCM (`.jpg.enc`, `sync.service.ts` `savePhotoLocally` via cryptoVault), la file de sync et les tokens aussi ; il n'est déchiffré qu'avant le push CRM (`crm-sync.service.ts` `pushPhotoCrm`). Reste à sécuriser côté backend mock. L'analyse IA est aujourd'hui **mockée** (`server.js:514-545`, scores `Math.random`) ; la **cible OpenRouter** (datacenter US) fera **sortir le snapshot de l'UE**, d'où l'obligation Chapitre V (DPA art.28, clauses DPF ou SCC art.46, TIA Schrems II). La **file de sync offline** garantit qu'une coupure réseau ne bloque pas la séance : le bilan est généré localement (PDF + QR), la remontée CRM Laravel (Sanctum, Bearer token) se fait dès que le réseau est disponible. Roadmap non implémentée : analyse CV on-device (OpenCV) ne faisant sortir que des scores anonymisés.
 
 ---
 
@@ -115,14 +115,14 @@ graph TB
     subgraph Institut["Institut K-beauty (1 boutique - MVP)"]
         subgraph Pi["Raspberry Pi 5 (BCM2712, 4 Go recommande MVP)"]
             EL["App Electron 33 (kiosk)<br/>React 19 + TS 5.7 + Zustand 5"]
-            PM["Proxy microscope<br/>(capture UVC, V4L2)"]
+            PM["Proxy microscope<br/>(WiFi/TCP JHCMD, ffmpeg H.264->MJPEG :9100)"]
             subgraph Docker["Docker"]
                 API["API locale (Express, Node 20)<br/>port 8100"]
                 IA["Proxy IA (Express)<br/>port 3001"]
                 PG[("PostgreSQL 15<br/>port 5432")]
             end
         end
-        MIC["Microscope USB UVC (~45 EUR)"]
+        MIC["Microscope WiFi Ninyoon 4K (~45 EUR)"]
         SCR["Ecran Shineworld 32 pouces"]
     end
 
@@ -131,7 +131,7 @@ graph TB
         CRM["CRM Laravel / Sanctum<br/>api-kbeauty.a3n.fr"]
     end
 
-    MIC -- "USB" --> PM
+    MIC -- "WiFi/TCP 192.168.34.1:8080 (JHCMD)" --> PM
     EL -- "HDMI / affichage" --> SCR
     EL -- "localhost:8100 (HTTP)" --> API
     EL -- "localhost:3001 (HTTP)" --> IA
@@ -141,7 +141,7 @@ graph TB
     API -- "HTTPS (Bearer, sync offline)" --> CRM
 ```
 
-Tout le calcul sensible est **local sur le Raspberry Pi 5** (BCM2712). Le Pi héberge l'app Electron en mode kiosk, le proxy microscope et un stack Docker (API locale Express sur **8100**, proxy IA sur **3001**, PostgreSQL 15 sur 5432 ; Adminer sur 8080 en dev). Microscope en **USB**, écran 32 pouces en HDMI. **Seuls deux liens sortent vers Internet** : le proxy IA vers OpenRouter (HTTPS, sortie hors UE - point RGPD majeur) et l'API locale vers le CRM Laravel distant (HTTPS, Bearer, file de sync offline). Aucun Redis dans la stack réelle. RAM : **4 Go recommandés pour le MVP** (footprint mesuré ~1,3-2,2 Go avec Docker on-device) ; décision conditionnée à une mesure terrain 48 h (`free -m` + VmRSS), le 8 Go serait sur-dimensionné. Codec : le Pi 5 décode **HEVC/H.265 4K60 en hardware uniquement** ; H.264, VP9 et AV1 sont décodés en logiciel (CPU), sans aucun encodeur vidéo hardware.
+Tout le calcul sensible est **local sur le Raspberry Pi 5** (BCM2712). Le Pi héberge l'app Electron en mode kiosk, le proxy microscope et un stack Docker (API locale Express sur **8100**, proxy IA sur **3001**, PostgreSQL 15 sur 5432 ; Adminer sur 8080 en dev). Microscope en **WiFi/TCP** (`192.168.34.1:8080`, JHCMD ; ffmpeg H.264->MJPEG sur `localhost:9100`), écran 32 pouces en HDMI. **Seuls deux liens sortent vers Internet** : le proxy IA vers OpenRouter (HTTPS, sortie hors UE - point RGPD majeur ; en V1 l'IA est mockée) et l'API locale vers le CRM Laravel distant (HTTPS, Bearer, file de sync offline). Aucun Redis dans la stack réelle. RAM : **4 Go recommandés pour le MVP** (footprint mesuré ~1,3-2,2 Go avec Docker on-device) ; décision conditionnée à une mesure terrain 48 h (`free -m` + VmRSS), le 8 Go serait sur-dimensionné. Codec : le Pi 5 décode **HEVC/H.265 4K60 en hardware uniquement** ; H.264, VP9 et AV1 sont décodés en logiciel (CPU), sans aucun encodeur vidéo hardware.
 
 ---
 
@@ -154,7 +154,7 @@ Tout le calcul sensible est **local sur le Raspberry Pi 5** (BCM2712). Le Pi hé
 | Refroidisseur actif | ~8 EUR |
 | microSD | ~15 EUR |
 | Boîtier PETG imprimé (profil SLIM, -28 % épaisseur sans HAT NVMe) | ~5 EUR |
-| Microscope USB UVC | ~45 EUR |
+| Microscope WiFi (Ninyoon 4K) | ~45 EUR |
 | Écran Shineworld 32 pouces | ~700-900 EUR [A COMPLETER : devis ferme] |
 | **Coût IA récurrent** | **~0,002 EUR / analyse** |
 

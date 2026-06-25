@@ -2,6 +2,12 @@
 **K Beauty Cosmetics / Bubble Hair Spa** · Version 1.0 · Mars 2026  
 *Document destiné à l'équipe de développement, en complément du CDC fonctionnel.*
 
+> **AVERTISSEMENT — DOCUMENT OBSOLETE (note du 2026-06-25).** Ce complément technique de Mars 2026 ne reflète plus l'état réel du dépôt. Deux écarts majeurs à ne pas reprendre en soutenance :
+> - **Microscope** : ce document décrit un pipeline USB UVC / V4L2 (`/dev/video*`, `getUserMedia`, GStreamer). Le code réel utilise au contraire le **WiFi/TCP** (`192.168.34.1:8080`, handshake JHCMD ; flux H.264 transcodé par ffmpeg en MJPEG sur `localhost:9100`, `proxy.js`). Les références USB/UVC/V4L2 du dépôt sont des **vestiges morts**.
+> - **Stack** : la stack Bun/Supabase/Budibase/Vercel évoquée plus bas est **abandonnée**. Stack réelle : Electron 33 + React 19 côté device ; mock Express + PostgreSQL 15 côté backend (Laravel 13 / PHP 8.4, PostgreSQL 16 et Redis 7 = CIBLES ROADMAP non implémentées).
+>
+> Source de vérité de l'état réalisé : `docs/ARCHITECTURE-MVP-VS-CIBLE.md`.
+
 ---
 
 ## 1. Hardware du Miroir
