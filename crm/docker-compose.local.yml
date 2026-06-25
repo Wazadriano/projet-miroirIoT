@@ -1,0 +1,44 @@
+# Override de developpement LOCAL pour le CRM vendorise.
+# La docker-compose.yml d'origine est orientee production (Traefik + domaines *.a3n.fr,
+# aucun port HTTP publie). Cet override publie les ports en localhost et reecrit les
+# URLs vers localhost, sans toucher au fichier d'origine.
+#
+# Usage : depuis crm/, lancer
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+# (le script ./run-local.sh fait tout : reseau, build, migrate, seed, provisioning device)
+
+services:
+  frontend:
+    environment:
+      VITE_API_URL: http://localhost:8000
+      VITE_REVERB_HOST: localhost
+      VITE_REVERB_PORT: "8080"
+      VITE_REVERB_SCHEME: http
+    ports:
+      - "3000:3000"
+
+  backend:
+    environment:
+      # Surcharge les URLs prod codees en dur dans le service d'origine.
+      APP_URL: http://localhost:8000
+      FRONTEND_URL: http://localhost:3000
+
+  nginx-api:
+    # L'API Laravel, point d'entree du device (CRM_BASE_URL=http://localhost:8000/api).
+    ports:
+      - "8000:80"
+
+  reverb:
+    # WebSockets temps reel (statut miroir en ligne) pour le dashboard CRM.
+    ports:
+      - "8080:8080"
+
+  ia-service:
+    ports:
+      - "3002:3002"
+
+  postgres:
+    # Decale le port hote pour ne pas entrer en conflit avec le mock-api du device
+    # (smart-mirror/docker-compose.yml publie deja 5432).
+    ports:
+      - "5433:5432"

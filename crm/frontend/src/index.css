@@ -1,0 +1,428 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: #d4a38e;
+  --color-primary-light: #e8c9b5;
+  --color-primary-dark: #c5907b;
+  --color-primary-deeper: #a67b66;
+  --color-accent: #c5907b;
+  --color-dark: #323032;
+  --color-offwhite: #fcfcfc;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+}
+
+body {
+  font-family:
+    "Montserrat",
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Playfair Display", Georgia, serif;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    color 0.15s,
+    background-color 0.15s;
+}
+.sidebar-link:hover {
+  background-color: #faf5f2;
+  color: var(--color-primary-dark);
+}
+.sidebar-link.active {
+  background-color: #f5ebe5;
+  color: var(--color-primary-deeper);
+  font-weight: 600;
+}
+
+.card {
+  background: white;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+  cursor: pointer;
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: var(--color-primary);
+  color: white;
+  transition: background-color 0.15s;
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: #f3f4f6;
+  color: #374151;
+  transition: background-color 0.15s;
+}
+.btn-secondary:hover {
+  background-color: #e5e7eb;
+}
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  background-color: var(--color-danger);
+  color: white;
+  transition: background-color 0.15s;
+}
+.btn-danger:hover {
+  background-color: #dc2626;
+}
+.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  transition: background-color 0.15s;
+}
+.btn-outline:hover {
+  background-color: #f9fafb;
+}
+.btn-outline:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem; /* 16px min — prevents iOS Safari auto-zoom on focus */
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(212 163 142 / 0.2);
+}
+
+/* Prevent iOS Safari viewport zoom on input focus (requires font-size >= 16px) */
+@media screen and (max-width: 768px) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 1rem !important;
+  }
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.badge-success {
+  background-color: #d1fae5;
+  color: #047857;
+}
+.badge-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+.badge-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+.badge-info {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+.badge-gray {
+  background-color: #f3f4f6;
+  color: #4b5563;
+}
+
+/* ─────────────────────────────────────────────
+   DARK MODE  — palette chaude, dans l'esprit K Beauty
+   bg principal  : #0e0b0a  (presque noir chaud)
+   surface       : #161110  (brun très sombre)
+   surface-raised: #1e1714  (brun sombre)
+   hover surface : #261d19  (brun hover)
+   border        : #2e2220  (brun bordeaux discret)
+   text primary  : #f0e8e3  (blanc cassé chaud)
+   text muted    : #9a8277  (beige rosé atténué)
+   ───────────────────────────────────────────── */
+
+html.dark body {
+  background-color: #0e0b0a;
+  color: #f0e8e3;
+}
+
+/* Sidebar */
+html.dark aside {
+  background-color: #161110;
+  border-color: #2e2220;
+}
+html.dark aside .border-b,
+html.dark aside .border-t {
+  border-color: #2e2220;
+}
+html.dark .sidebar-link {
+  color: #9a8277;
+}
+html.dark .sidebar-link:hover {
+  background-color: #261d19;
+  color: var(--color-primary-light);
+}
+html.dark .sidebar-link.active {
+  background-color: #33201a;
+  color: var(--color-primary-light);
+}
+
+/* User name / email in sidebar footer */
+html.dark aside .text-gray-900 {
+  color: #f0e8e3;
+}
+html.dark aside .text-gray-500 {
+  color: #9a8277;
+}
+
+/* Hover pour les boutons icônes dans le footer sidebar */
+html.dark aside button:hover {
+  background-color: #261d19;
+}
+html.dark aside button.hover\:text-danger:hover {
+  background-color: #2d1010;
+}
+
+/* Card */
+html.dark .card {
+  background: #161110;
+  border-color: #2e2220;
+  color: #f0e8e3;
+}
+
+/* Buttons */
+html.dark .btn-secondary {
+  background-color: #1e1714;
+  color: #e4d8d1;
+}
+html.dark .btn-secondary:hover {
+  background-color: #261d19;
+}
+html.dark .btn-outline {
+  border-color: #2e2220;
+  color: #c4b0a6;
+  background-color: transparent;
+}
+html.dark .btn-outline:hover {
+  background-color: #1e1714;
+}
+
+/* Inputs */
+html.dark .input {
+  background-color: #1e1714;
+  border-color: #2e2220;
+  color: #f0e8e3;
+}
+html.dark .input::placeholder {
+  color: #6b5a52;
+}
+html.dark .input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgb(212 163 142 / 0.15);
+}
+
+/* Badges */
+html.dark .badge-success {
+  background-color: #0a2a1f;
+  color: #5ecfa0;
+}
+html.dark .badge-warning {
+  background-color: #2d1a04;
+  color: #f0bf60;
+}
+html.dark .badge-danger {
+  background-color: #2d0a0a;
+  color: #f09090;
+}
+html.dark .badge-info {
+  background-color: #0f1e30;
+  color: #7db8f8;
+}
+html.dark .badge-gray {
+  background-color: #1e1714;
+  color: #c4b0a6;
+}
+
+/* Tables */
+html.dark table th {
+  background-color: #161110;
+  color: #9a8277;
+  border-color: #2e2220;
+}
+html.dark table td {
+  border-color: #2e2220;
+  color: #e4d8d1;
+}
+html.dark table tr:hover td {
+  background-color: #1e1714;
+}
+
+/* Modals / dialogs */
+html.dark [role="dialog"],
+html.dark .modal-content {
+  background-color: #161110;
+  border-color: #2e2220;
+  color: #f0e8e3;
+}
+
+/* Dividers */
+html.dark hr {
+  border-color: #2e2220;
+}
+
+/* Select */
+html.dark select {
+  background-color: #1e1714;
+  border-color: #2e2220;
+  color: #f0e8e3;
+}
+
+/* Generic text color overrides for Tailwind utilities */
+html.dark .text-gray-900 {
+  color: #f0e8e3;
+}
+html.dark .text-gray-800 {
+  color: #e4d8d1;
+}
+html.dark .text-gray-700 {
+  color: #cfc0b6;
+}
+html.dark .text-gray-600 {
+  color: #b8a49a;
+}
+html.dark .text-gray-500 {
+  color: #9a8277;
+}
+html.dark .text-gray-400 {
+  color: #7d6b62;
+}
+
+/* bg overrides */
+html.dark .bg-white {
+  background-color: #161110;
+}
+html.dark .bg-gray-50 {
+  background-color: #130f0e;
+}
+html.dark .bg-gray-100 {
+  background-color: #1e1714;
+}
+html.dark .bg-gray-200 {
+  background-color: #261d19;
+}
+html.dark .border-gray-100 {
+  border-color: #2e2220;
+}
+html.dark .border-gray-200 {
+  border-color: #2e2220;
+}
+
+/* Hover bg harmonisé (remplace hover:bg-gray-100, hover:bg-red-50, etc.) */
+html.dark .hover\:bg-gray-100:hover {
+  background-color: #261d19;
+}
+html.dark .hover\:bg-red-50:hover {
+  background-color: #2d1010;
+}
+html.dark .hover\:bg-gray-50:hover {
+  background-color: #1e1714;
+}
+
+/* Login page card */
+html.dark .bg-offwhite {
+  background-color: #0e0b0a;
+}
