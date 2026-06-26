@@ -67,40 +67,47 @@ export function ConsentScreen(): JSX.Element {
   }
 
   return (
-    <div className="screen-padded" style={{ gap: 16 }}>
+    <div className="screen-padded" style={{ gap: '2vh' }}>
       <Header subtitle="Consentement" />
 
-      <p className="title-sm" style={{ zIndex: 1, marginTop: 10 }}>
-        {cliente.prenom} {cliente.nom}
-      </p>
-
-      <div className="glass-card-subtle" style={{
-        width: '100%',
-        maxWidth: '88vw',
-        maxHeight: '35vh',
-        overflowY: 'auto',
-        zIndex: 1
-      }}>
-        <p className="body-sm" style={{ whiteSpace: 'pre-line', lineHeight: 1.6, opacity: 0.8 }}>
-          {consentText}
+      <div className="content" style={{ marginInline: 'auto', flex: 1, minHeight: 0, gap: '2vh', zIndex: 1 }}>
+        <p className="title-sm" style={{ textAlign: 'left' }}>
+          {cliente.prenom} {cliente.nom}
         </p>
+
+        {/* La carte de consentement occupe l'espace disponible (lecture confortable). */}
+        <div className="glass-card-subtle" style={{
+          width: '100%',
+          flex: 1,
+          minHeight: 0,
+          overflowY: 'auto'
+        }}>
+          <p className="body-sm" style={{ whiteSpace: 'pre-line', lineHeight: 1.7, opacity: 0.85 }}>
+            {consentText}
+          </p>
+        </div>
+
+        <label className="checkbox-row">
+          <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
+          J'ai lu et j'accepte les conditions ci-dessus
+        </label>
+
+        {error && <p style={{ color: 'var(--color-error)', fontSize: 'var(--fs-body-sm)' }}>{error}</p>}
+
+        <div style={{ display: 'flex', gap: '2vw' }}>
+          <button className="glass-btn" onClick={() => setScreen('search')} style={{ fontWeight: 500, flex: 1, maxWidth: '38%' }}>
+            Retour
+          </button>
+          <button
+            className="glass-btn"
+            onClick={handleAccept}
+            disabled={!accepted || loading}
+            style={{ flex: 1 }}
+          >
+            {loading ? '...' : 'ACCEPTER'}
+          </button>
+        </div>
       </div>
-
-      <label className="checkbox-row" style={{ zIndex: 1, marginTop: 8 }}>
-        <input type="checkbox" checked={accepted} onChange={(e) => setAccepted(e.target.checked)} />
-        J'ai lu et j'accepte les conditions ci-dessus
-      </label>
-
-      {error && <p style={{ color: 'var(--color-error)', fontSize: 12, zIndex: 1 }}>{error}</p>}
-
-      <button
-        className="glass-btn"
-        onClick={handleAccept}
-        disabled={!accepted || loading}
-        style={{ width: '47.5vw', zIndex: 1, marginTop: 8 }}
-      >
-        {loading ? '...' : 'ACCEPTER'}
-      </button>
     </div>
   )
 }

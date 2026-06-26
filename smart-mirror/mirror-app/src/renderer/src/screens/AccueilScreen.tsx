@@ -34,22 +34,33 @@ export function AccueilScreen(): JSX.Element {
 
   return (
     <div className="screen" style={{ justifyContent: 'center', gap: '3vh' }}>
-      <h1 className="title-xl" style={{ maxWidth: '82vw', zIndex: 1, whiteSpace: 'pre-line' }}>
+      {/* Eyebrow de marque : ancre le hero sur l'identite KBeauty */}
+      <p className="detail" style={{
+        zIndex: 1,
+        letterSpacing: '0.4em',
+        textTransform: 'uppercase',
+        color: 'var(--color-accent)',
+        opacity: 0.85
+      }}>
+        K Beauty · Bubble Hair Spa
+      </p>
+
+      <h1 className="title-xl" style={{ fontSize: '6.6vw', maxWidth: '80vw', zIndex: 1, whiteSpace: 'pre-line', lineHeight: 1.2 }}>
         {'Vivez l\'experience\nBubble Hair Spa\nCoreen'}
       </h1>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '3vh', marginTop: '5vh', zIndex: 1 }}>
+      <div className="content" style={{ gap: '2.5vh', marginTop: '4vh', marginInline: 'auto', maxWidth: '460px', zIndex: 1 }}>
         <button
           className="glass-btn"
           onClick={() => setScreen('search')}
-          style={{ width: '47.5vw' }}
+          style={{ width: '100%' }}
         >
           CONNEXION
         </button>
         <button
           className="glass-btn"
           onClick={() => setScreen('new-client')}
-          style={{ width: '47.5vw' }}
+          style={{ width: '100%' }}
         >
           INSCRIPTION
         </button>
