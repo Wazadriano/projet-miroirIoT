@@ -1,0 +1,120 @@
+%%{init: {'theme':'neutral', 'themeVariables': {'fontSize':'13px'}}}%%
+erDiagram
+    BOUTIQUE     ||--o{ CLIENTE         : boutique_id
+    BOUTIQUE     ||--o{ MIROIR          : boutique_id
+    BOUTIQUE     ||--o{ PRODUIT         : boutique_id
+    BOUTIQUE     ||--o{ MEDIA           : boutique_id
+    BOUTIQUE     ||--o{ CONSENTEMENT    : boutique_id
+    BOUTIQUE     ||--o{ SEANCE          : boutique_id
+    BOUTIQUE     ||--o{ PHOTO           : boutique_id
+    CLIENTE      ||--o{ CONSENTEMENT    : cliente_id
+    CLIENTE      ||--o{ SEANCE          : cliente_id
+    MIROIR       ||--o{ SEANCE          : miroir_id
+    CONSENTEMENT ||--o{ SEANCE          : consentement_id
+    SEANCE       ||--o{ PHOTO           : seance_id
+    SEANCE       ||--o{ SEANCE_PRODUIT  : seance_id
+    PRODUIT      ||--o{ SEANCE_PRODUIT  : produit_id
+
+    BOUTIQUE {
+        uuid id PK
+        text nom
+        text email_contact
+        text shopify_domain
+        text shopify_access_token
+        timestamp created_at
+    }
+    USER {
+        uuid id PK
+        string name
+        string email UK
+        string password
+        bool is_admin
+        string role
+    }
+    CLIENTE {
+        uuid id PK
+        uuid boutique_id FK
+        text prenom
+        text nom
+        text email
+        text telephone
+        date date_de_naissance
+        text sexe
+        text shopify_customer_id
+    }
+    CONSENTEMENT {
+        uuid id PK
+        uuid boutique_id FK
+        uuid cliente_id FK
+        text texte_consent
+        timestamptz date_consentement
+        timestamp date_revocation
+    }
+    MIROIR {
+        uuid id PK
+        uuid boutique_id FK
+        text nom
+        text adresse_mac UK
+        text token_device
+        bool en_ligne
+        timestamp derniere_activite
+        text version_app
+    }
+    CONFIG_MIROIR {
+        uuid id PK
+        text couleur_primaire
+        text couleur_fond
+        text typographie
+        bool fond_anime
+        int volume
+    }
+    SEANCE {
+        uuid id PK
+        uuid boutique_id FK
+        uuid miroir_id FK
+        uuid cliente_id FK
+        uuid consentement_id FK
+        timestamp date_debut
+        timestamp date_fin
+        text rapport_pdf_path
+        text rapport_url
+        timestamp qr_scanne_at
+        bool email_envoye
+    }
+    PHOTO {
+        uuid id PK
+        uuid seance_id FK
+        uuid boutique_id FK
+        text chemin_local
+        text chemin_serveur
+        text phase
+        jsonb diagnostic_ia
+        text modele_ia
+        int latence_ms
+        bool synced
+        timestamp supprime_local_at
+    }
+    PRODUIT {
+        uuid id PK
+        uuid boutique_id FK
+        text shopify_id
+        text nom
+        text description
+        text fournisseur
+        float prix
+        bool mis_en_avant
+        bool actif
+    }
+    MEDIA {
+        uuid id PK
+        uuid boutique_id FK
+        text type
+        text chemin_fichier
+        text url_youtube
+        text checksum
+        bool actif
+    }
+    SEANCE_PRODUIT {
+        uuid seance_id PK_FK
+        uuid produit_id PK_FK
+    }

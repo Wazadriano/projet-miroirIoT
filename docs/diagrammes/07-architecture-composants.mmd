@@ -1,0 +1,49 @@
+%%{init: {'theme':'neutral', 'themeVariables': {'fontSize':'14px'}}}%%
+flowchart TB
+    subgraph DEVICE["DEVICE - Raspberry Pi 5 (kiosk)"]
+        direction TB
+        UI["Renderer React 19 + Zustand<br/>(ecrans tactiles)"]
+        MAIN["Main Electron 33<br/>services TypeScript"]
+        subgraph SVC["Services (main process)"]
+            MIC["MicroscopeService<br/>WiFi/TCP JHCMD -> ffmpeg MJPEG :9100"]
+            SYNC["SyncService + CryptoVault<br/>AES-256-GCM (.jpg.enc)"]
+            CRMS["CrmSyncService"]
+            CFG["ConfigService<br/>secrets chiffres au repos"]
+        end
+        subgraph DOCK["Docker (backend local MVP)"]
+            API["mock-api Express :8100"]
+            IA["proxy IA Express :3001 (mocke)"]
+            PG[("PostgreSQL 15")]
+        end
+        UI <--> MAIN
+        MAIN --> SVC
+        SYNC --> API
+        CRMS --> API
+        API --> PG
+        MIC -. snapshot .-> SYNC
+    end
+
+    MICRO["Microscope WiFi 4K<br/>192.168.34.1:8080"]
+    SCREEN["Ecran 32 pouces (HDMI)"]
+
+    subgraph CRM["CRM cible (Laravel 13 / PHP 8.4)"]
+        direction TB
+        NGINX["nginx-api :8000"]
+        LAR["API Laravel + Sanctum<br/>/api/miroir/*"]
+        PG16[("PostgreSQL 16")]
+        RED[("Redis 7 (queue/cache)")]
+        REV["Reverb (WebSocket temps reel)"]
+        FRONT["Dashboard React 19 :3000"]
+        NGINX --> LAR
+        LAR --> PG16
+        LAR --> RED
+        LAR --> REV
+        FRONT --> NGINX
+    end
+
+    OR["OpenRouter (datacenter US)<br/>sortie HORS UE - cible"]
+
+    MICRO -- "WiFi/TCP" --> MIC
+    MAIN -- "HDMI" --> SCREEN
+    IA -. "HTTPS (cible)" .-> OR
+    CRMS -- "HTTPS Bearer<br/>sync offline-first" --> NGINX

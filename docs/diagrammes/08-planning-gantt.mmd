@@ -1,0 +1,34 @@
+%%{init: {'theme':'neutral'}}%%
+gantt
+    title Planning projet - Miroir connecte KBEAUTY (Merise Agile + TDD)
+    dateFormat YYYY-MM-DD
+    axisFormat %b
+
+    section Cadrage
+    Brief + analyse besoin (CDCF)      :a1, 2026-02-02, 14d
+    PESTEL + veille + SWOT             :a2, after a1, 10d
+    Architecture + choix stack (CDCT)  :a3, after a2, 12d
+
+    section Modelisation
+    Dictionnaire de donnees            :b1, after a3, 5d
+    MCD / MLD + UML                    :b2, after b1, 8d
+
+    section Sprint 1 - Socle device
+    Kiosk Electron + UI React          :c1, 2026-03-23, 14d
+    Pipeline microscope WiFi/ffmpeg    :c2, after c1, 12d
+
+    section Sprint 2 - Backend + parcours
+    API locale + PostgreSQL            :d1, after c2, 12d
+    Parcours seance + consentement RGPD:d2, after d1, 10d
+
+    section Sprint 3 - IA + bilan
+    Proxy IA + diagnostic (mocke)      :e1, after d2, 10d
+    Bilan PDF + QR + file de sync      :e2, after e1, 10d
+
+    section Sprint 4 - Securite + qualite
+    Chiffrement au repos AES-256-GCM   :f1, after e2, 8d
+    CI/CD + tests + audit secu         :f2, after f1, 8d
+
+    section Cible
+    Integration CRM Laravel local      :g1, after f2, 7d
+    Dossier + soutenance               :milestone, after g1, 0d

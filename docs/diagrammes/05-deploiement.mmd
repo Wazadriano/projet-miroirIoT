@@ -1,0 +1,28 @@
+graph TB
+    subgraph Institut["Institut K-beauty (1 boutique - MVP)"]
+        subgraph Pi["Raspberry Pi 5 (BCM2712, 4 Go recommande MVP)"]
+            EL["App Electron 33 (kiosk)<br/>React 19 + TS 5.7 + Zustand 5"]
+            PM["Proxy microscope<br/>(WiFi/TCP JHCMD, ffmpeg H.264->MJPEG :9100)"]
+            subgraph Docker["Docker"]
+                API["API locale (Express, Node 20)<br/>port 8100"]
+                IA["Proxy IA (Express)<br/>port 3001"]
+                PG[("PostgreSQL 15<br/>port 5432")]
+            end
+        end
+        MIC["Microscope WiFi Ninyoon 4K (~45 EUR)"]
+        SCR["Ecran Shineworld 32 pouces"]
+    end
+
+    subgraph Cloud["Internet"]
+        OR["OpenRouter (datacenter US)"]
+        CRM["CRM Laravel / Sanctum<br/>api-kbeauty.a3n.fr"]
+    end
+
+    MIC -- "WiFi/TCP 192.168.34.1:8080 (JHCMD)" --> PM
+    EL -- "HDMI / affichage" --> SCR
+    EL -- "localhost:8100 (HTTP)" --> API
+    EL -- "localhost:3001 (HTTP)" --> IA
+    EL -- "IPC" --> PM
+    API -- "TCP 5432" --> PG
+    IA -- "HTTPS (sortie HORS UE)" --> OR
+    API -- "HTTPS (Bearer, sync offline)" --> CRM
