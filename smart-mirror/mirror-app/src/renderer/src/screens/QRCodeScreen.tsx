@@ -38,10 +38,10 @@ export function QRCodeScreen(): JSX.Element {
 
       {/* QR Code */}
       <div style={{
-        width: '50vw',
-        height: '50vw',
+        width: '42vw',
+        height: '42vw',
         background: '#FFFFFF',
-        borderRadius: '6.25vw',
+        borderRadius: '4vw',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -72,16 +72,18 @@ export function QRCodeScreen(): JSX.Element {
       </p>
 
       {/* Action buttons */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5vh', zIndex: 1, width: '100%', maxWidth: '62.5vw' }}>
-        <button className="glass-btn" onClick={() => { resetSession() }} style={{ width: '100%' }}>
-          VEILLE
-        </button>
+      <div className="content" style={{ gap: '1.5vh', zIndex: 1, marginInline: 'auto', maxWidth: '560px' }}>
         <button className="glass-btn" onClick={() => setScreen('comparison')} style={{ width: '100%' }}>
           AVANT / APRES
         </button>
-        <button className="glass-btn" onClick={() => {}} style={{ width: '100%' }}>
-          CONSEIL
-        </button>
+        <div style={{ display: 'flex', gap: '2vw' }}>
+          <button className="glass-btn" onClick={() => {}} style={{ flex: 1, fontWeight: 500 }}>
+            CONSEIL
+          </button>
+          <button className="glass-btn" onClick={() => { resetSession() }} style={{ flex: 1, fontWeight: 500 }}>
+            VEILLE
+          </button>
+        </div>
       </div>
     </div>
   )
