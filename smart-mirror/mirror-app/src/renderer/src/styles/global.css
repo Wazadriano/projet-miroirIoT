@@ -21,23 +21,26 @@
      ce qui rendait tout ~x2,7 trop gros sur le miroir. On rebaise l'echelle a une
      taille confortable a distance miroir, et on plafonne la largeur de contenu
      pour ne plus etaler un layout "telephone" sur toute la largeur. */
-  --content-max: 760px;       /* colonne de contenu centree */
-  --control-h: 7.4vw;         /* hauteur cible des controles tactiles (~80px) */
-  --radius: 1.8vw;
+  --content-max: 680px;       /* colonne de contenu centree */
+  /* Tailles PLAFONNEES en px : min(vw, cap). Sans le cap, une fenetre large
+     (ex. 1600px) regonfle tout le vw et le design redevient un "telephone geant".
+     Le cap garde des elements petits et stables quelle que soit la largeur. */
+  --control-h: min(7vw, 56px);   /* hauteur controle tactile, stable ~56px */
+  --radius: min(1.8vw, 14px);
   --radius-pill: 1000px;
   --radius-circle: 50%;
   --transition: 300ms ease;
 
-  /* Typography - echelle miroir */
-  --fs-xl: 5.2vw;     /* ~56px : hero / titre marque */
-  --fs-lg: 3.9vw;     /* ~42px */
-  --fs-md: 3.3vw;     /* ~36px */
-  --fs-sm: 2.5vw;     /* ~27px */
-  --fs-body: 2.4vw;   /* ~26px : texte courant */
-  --fs-body-sm: 2vw;  /* ~22px */
-  --fs-btn: 2.7vw;    /* ~29px */
-  --fs-detail: 1.9vw; /* ~20px */
-  --fs-label: 2vw;    /* ~22px */
+  /* Typography - echelle miroir, plafonnee */
+  --fs-xl: min(5.2vw, 44px);    /* hero / titre marque */
+  --fs-lg: min(3.9vw, 32px);
+  --fs-md: min(3.3vw, 27px);
+  --fs-sm: min(2.5vw, 21px);
+  --fs-body: min(2.4vw, 20px);  /* texte courant */
+  --fs-body-sm: min(2vw, 17px);
+  --fs-btn: min(2.7vw, 22px);
+  --fs-detail: min(1.9vw, 16px);
+  --fs-label: min(2vw, 17px);
 }
 
 * {
