@@ -23,8 +23,8 @@
 |---------|--------|--------------------|
 | Crise RAM 2026 (cout Pi5) | Menace | Pi5 ~150-200 EUR (vs prix historique plus bas). Le choix 4 Go (vs 8 Go sur-dimensionne) limite l'exposition au surcout RAM. |
 | Cout de l'IA cloud | Opportunite | ~0,002 EUR/analyse : negligeable a l'echelle d'un institut. Le poste IA n'est pas un risque budgetaire en V1. |
-| Cout dominant = l'ecran | Menace / incertitude | Ecran Shineworld 32 pouces ~700-900 EUR : c'est la vraie incertitude du TCO. [A COMPLETER : devis ferme Shineworld a obtenir] avant tout chiffrage commercial. |
-| TJM / cout de la prestation | — | [A COMPLETER : TJM d'Adriano / OHADJA et modele de facturation] |
+| Cout dominant = l'ecran | Menace / incertitude | Ecran Shineworld 32 pouces ~700-900 EUR : c'est la vraie incertitude du TCO. Montant a confirmer par devis fournisseur avant tout chiffrage commercial. |
+| TJM / cout de la prestation | — | [A COMPLETER : TJM d'Adriano / OHADJA et modele de facturation — a arreter par l'entreprise] |
 
 BOM materiel indicatif (par miroir, hors ecran a chiffrer fermement) :
 
@@ -86,7 +86,7 @@ A l'echelle cible (6 miroirs), l'ecran represente l'essentiel du capital materie
 | **Consentement** | Requis avant toute capture | Parcours de recueil explicite avant snapshot ; tracabilite du consentement. |
 | **Consentement art. 9(2)(a)** (donnees de sante) | **Par precaution** | Position FRAGILE : l'etat capillaire/cutane est une donnee potentiellement deductible de sante (CJUE C-184/20). NE PAS affirmer "l'art. 9 ne s'applique pas" ; adopter une approche par precaution = consentement explicite. |
 | **Minimisation** | A appliquer | Ne capturer/transmettre que le strict necessaire au diagnostic. Roadmap on-device : ne faire sortir que des scores anonymises. |
-| **Retention** | A definir | Politique de duree de conservation des snapshots et resultats ; suppression automatique. [A COMPLETER : duree retenue avec le DPO]. |
+| **Retention** | A definir | Politique de duree de conservation des snapshots et resultats ; suppression automatique. Hypothese de travail retenue cote solution : 30 jours en local / 365 jours serveur. [A COMPLETER : duree definitive a valider avec le DPO]. |
 | **Transfert hors UE (art. 44-46)** | **Requis — Schrems II** | Les snapshots JPEG sortent vers OpenRouter (datacenter US). Chapitre V obligatoire : **DPA (art. 28)** + **clauses de transfert DPF ou SCC (art. 46)** + **TIA (Transfer Impact Assessment, Schrems II)**. Sans ces elements, le transfert est non conforme. |
 
 **Securite — etat verifie en code (a presenter en transparence) :**
@@ -132,4 +132,4 @@ Implication : mettre en place des maintenant la tracabilite des dependances (ver
 3. **Economique** : securiser le devis ecran (poste dominant du TCO).
 4. **Securite** : combler les gaps assumes (chiffrement JPEG, CSP, protection des tokens) et `npm audit` avant soutenance.
 
-> [A COMPLETER : identite/activite d'OHADJA, parcours d'Adriano, remerciements.]
+> Prestataire : OHADJA, SAS de programmation informatique (APE 62.01Z), siege a Paris 8e. Candidat realisateur : Adriano Palamara (alternant). Parcours du candidat et remerciements : voir document principal DOCUMENT-COMPLET-RNCP.md (sections 1.1, 6.2 et 6.3).

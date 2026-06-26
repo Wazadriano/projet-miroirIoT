@@ -1,7 +1,7 @@
 # Livrable 05 - Diagrammes UML
 
 > Projet : Miroir connecté d'analyse capillaire - KBEAUTY / K Beauty Cosmetics
-> Chef de projet unique : Adriano [A COMPLETER : nom complet, statut OHADJA]
+> Chef de projet unique : Adriano Palamara — alternant chez OHADJA (SAS)
 > Méthodologie : Merise Agile + TDD
 > Date : 15 juin 2026
 
@@ -155,7 +155,7 @@ Tout le calcul sensible est **local sur le Raspberry Pi 5** (BCM2712). Le Pi hé
 | microSD | ~15 EUR |
 | Boîtier PETG imprimé (profil SLIM, -28 % épaisseur sans HAT NVMe) | ~5 EUR |
 | Microscope WiFi (Ninyoon 4K) | ~45 EUR |
-| Écran Shineworld 32 pouces | ~700-900 EUR [A COMPLETER : devis ferme] |
+| Écran Shineworld 32 pouces | ~700-900 EUR (à confirmer par devis fournisseur) |
 | **Coût IA récurrent** | **~0,002 EUR / analyse** |
 
 L'écran est la vraie incertitude du TCO et doit être chiffré par devis. Ces diagrammes serviront de référence à l'implémentation et seront tenus à jour avec le MCD/MCT au fil des sprints.

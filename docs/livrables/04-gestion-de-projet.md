@@ -90,4 +90,4 @@ Ce positionnement est aussi un argument de différenciation produit : face aux c
 
 ---
 
-*Remerciements et parcours : [A COMPLETER : identité et activité d'OHADJA, TJM d'Adriano, parcours personnel, remerciements].*
+*Prestataire : OHADJA, SAS de programmation informatique (APE 62.01Z), siège à Paris 8e. TJM à arrêter par l'entreprise. Parcours du candidat (Adriano Palamara, alternant) et remerciements : voir document principal DOCUMENT-COMPLET-RNCP.md (sections 1.1, 6.2 et 6.3).*

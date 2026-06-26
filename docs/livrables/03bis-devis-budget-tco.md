@@ -3,7 +3,7 @@
 > Responsable chiffrage : Adriano (chef de projet unique).
 > Methodologie : Merise Agile + TDD. Les agents BYAN sont un outillage IA d'assistance, jamais une equipe humaine.
 > Perimetre MVP soutenance : 1 boutique / 1 tenant. Cible commerciale : 6 miroirs / 3 boutiques (Nice, Lyon, Cannes).
-> Editeur / prestataire : [A COMPLETER : identite et activite d'OHADJA, statut juridique, SIRET].
+> Editeur / prestataire : OHADJA, SAS de programmation informatique (code APE 62.01Z), siege 60 rue Francois Ier, 75008 Paris, SIREN 992 146 480 / SIRET 992 146 480 00015. Candidat realisateur : Adriano Palamara (alternant).
 
 ---
 
@@ -29,7 +29,7 @@ Estimation ascendante, justifiee par la complexite reelle mesuree dans le code (
 
 ## 2. Cout de developpement (CapEx logiciel)
 
-TJM en parametre. **[A COMPLETER : TJM d'OHADJA / Adriano, ex. 350-500 EUR/j].**
+TJM en parametre. **[A COMPLETER : TJM d'OHADJA / Adriano, ex. 350-500 EUR/j — a arreter par l'entreprise].**
 
 | Total J/H | TJM bas (350 EUR) | TJM median (425 EUR) | TJM haut (500 EUR) |
 |-----------|-------------------|----------------------|--------------------|
@@ -114,4 +114,4 @@ Detail OpEx : bas = 71 x 36 = 2 556 ; median ~102,5 x 36 = 3 690 ; haut = 134 x 
 
 ---
 
-*Devis a finaliser une fois le TJM arrete par Adriano et le devis ecran obtenu. Remerciements et parcours : [A COMPLETER].*
+*Devis a finaliser une fois le TJM arrete par Adriano Palamara et le devis ecran obtenu (a confirmer par devis fournisseur). Parcours du candidat et remerciements : voir document principal DOCUMENT-COMPLET-RNCP.md, sections 1.1, 6.2 et 6.3.*

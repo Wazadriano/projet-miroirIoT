@@ -1,7 +1,7 @@
 # Veille concurrentielle
 
 > Livrable de soutenance — Projet Miroir IoT capillaire pour institut K-beauty
-> Chef de projet unique : Adriano [A COMPLETER : nom complet]
+> Chef de projet unique : Adriano Palamara — alternant chez OHADJA (SAS)
 > Client : KBEAUTY / K Beauty Cosmetics (cosmetiques coreens, e-commerce Shopify, mailing Klaviyo, service premium "Bubble Hair Spa")
 
 ## 1. Introduction : sortir du mythe "aucun concurrent"
@@ -57,4 +57,4 @@ Message au jury : nous n'avons pas invente un marche vierge — nous avons ident
 
 ---
 
-*[A COMPLETER : identite et activite d'OHADJA, son TJM, le parcours personnel d'Adriano, remerciements.]*
+*Prestataire : OHADJA, SAS de programmation informatique (APE 62.01Z), siege a Paris 8e. TJM a arreter par l'entreprise. Parcours du candidat (Adriano Palamara) et remerciements : voir document principal DOCUMENT-COMPLET-RNCP.md (sections 1.1, 6.2 et 6.3).*
