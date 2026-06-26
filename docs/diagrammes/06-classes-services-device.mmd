@@ -1,0 +1,64 @@
+%%{init: {'theme':'neutral', 'themeVariables': {'fontSize':'13px'}}}%%
+classDiagram
+    direction LR
+
+    class ConfigService {
+        +isProvisioned() bool
+        +getDeviceId() string
+        +getCrmBaseUrl() string
+        +getCrmToken() string
+        +storeSecret(k, v) void
+        +readSecret(k) string
+    }
+    class CryptoVault {
+        +isEnabled() bool
+        +encryptBuffer(buf) Buffer
+        +decryptBuffer(buf) Buffer
+        +encryptString(s) Buffer
+        +isEncrypted(buf) bool
+    }
+    class MicroscopeService {
+        +connect() void
+        +getStreamUrl() string
+        +captureSnapshot() Buffer
+        +isConnected() bool
+    }
+    class ApiClientService {
+        +registerDevice() void
+        +createSeance() Seance
+        +checkValidConsent() bool
+        +createConsentement() Consentement
+    }
+    class SyncService {
+        +savePhotoLocally(buf) string
+        +startPeriodicSync() void
+        +getQueueSize() int
+    }
+    class CrmSyncService {
+        +authenticate() bool
+        +checkOnline() bool
+        +syncAll() SyncReport
+        +syncSessionNow(id) void
+    }
+    class MediaCacheService {
+        +syncPlaylist() void
+        +getLocalPlaylist() Media[]
+    }
+    class WifiService {
+        +getStatus() WifiStatus
+        +connect(ssid, pwd) bool
+        +startHotspot(id) bool
+    }
+    class UpdaterService {
+        +init() void
+        +stop() void
+    }
+
+    SyncService ..> CryptoVault : chiffre photos/queue
+    ConfigService ..> CryptoVault : chiffre secrets au repos
+    CrmSyncService ..> ConfigService : lit URL + tokens
+    CrmSyncService ..> ApiClientService : lit la base locale
+    CrmSyncService ..> CryptoVault : dechiffre avant upload
+    SyncService ..> ApiClientService : pousse vers backend local
+    MicroscopeService ..> SyncService : fournit le snapshot JPEG
+    MediaCacheService ..> ConfigService : URL backend

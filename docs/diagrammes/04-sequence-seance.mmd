@@ -1,0 +1,36 @@
+sequenceDiagram
+    actor Prat as Praticien
+    participant App as App miroir (Electron 33)
+    participant ProxM as Proxy microscope (WiFi/TCP JHCMD)
+    participant ProxIA as Proxy IA (port 3001)
+    participant OR as OpenRouter (datacenter US)
+    participant Back as Backend local (API 8100 + PostgreSQL 15)
+    participant CRM as CRM Laravel distant (Sanctum)
+
+    Prat->>App: Ouvre session, recueille consentement client
+    Note over App: Consentement RGPD art.9(2)(a) enregistre<br/>(donnee de sante deductible - precaution)
+    App->>Back: POST session + consentement (localhost:8100)
+    Back-->>App: session_id
+
+    Prat->>App: Lance la capture
+    App->>ProxM: Demande flux video (microscope WiFi 192.168.34.1:8080)
+    ProxM-->>App: Stream video local
+    App->>App: Capture snapshot JPEG
+    App->>Back: Stocke JPEG CHIFFRE AES-256-GCM .jpg.enc (sync.service.ts savePhotoLocally)
+    Back-->>App: capture_id
+
+    App->>ProxIA: Envoie snapshot pour analyse
+    ProxIA->>OR: Snapshot JPEG (sortie HORS UE)
+    Note over ProxIA,OR: Chap.V RGPD : DPA art.28 + DPF/SCC art.46 + TIA<br/>Cout ~0,002 EUR/analyse
+    OR-->>ProxIA: Scores / diagnostic cosmetique
+    ProxIA-->>App: Resultat analyse
+    App->>Back: Stocke analyse (PostgreSQL local)
+
+    App->>App: Genere bilan PDF + QR code
+    App->>Back: Met en file de sync offline (vers CRM)
+    App-->>Prat: Affiche bilan + QR
+    Prat-->>App: Presente QR au client
+
+    Note over Back,CRM: Sync asynchrone quand reseau dispo
+    Back->>CRM: PUSH bilan (api-kbeauty.a3n.fr, Bearer)
+    CRM-->>Back: ACK

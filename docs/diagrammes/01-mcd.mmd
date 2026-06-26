@@ -1,0 +1,68 @@
+%%{init: {'theme':'neutral', 'themeVariables': {'fontSize':'15px'}}}%%
+erDiagram
+    BOUTIQUE   ||--o{ CLIENTE      : "possede (1,n)"
+    BOUTIQUE   ||--o{ MIROIR       : "heberge (1,n)"
+    BOUTIQUE   ||--o{ PRODUIT      : "catalogue (1,n)"
+    BOUTIQUE   ||--o{ MEDIA        : "diffuse (1,n)"
+    BOUTIQUE   ||--o{ CONSENTEMENT : "collecte (1,n)"
+    BOUTIQUE   ||--o{ SEANCE       : "encadre (1,n)"
+    CLIENTE    ||--o{ CONSENTEMENT : "donne (1,n)"
+    CLIENTE    ||--o{ SEANCE       : "participe a (1,n)"
+    MIROIR     ||--o{ SEANCE       : "realise (1,n)"
+    CONSENTEMENT ||--o{ SEANCE     : "autorise (1,n)"
+    SEANCE     ||--o{ PHOTO        : "contient (1,n)"
+    SEANCE     }o--o{ PRODUIT      : "recommande (n,n)"
+
+    BOUTIQUE {
+        uuid id PK
+        text nom
+        text email_contact
+        text shopify_domain
+    }
+    CLIENTE {
+        uuid id PK
+        text prenom
+        text nom
+        text email
+        date date_de_naissance
+        text sexe
+    }
+    CONSENTEMENT {
+        uuid id PK
+        text texte_consent
+        timestamptz date_consentement
+        timestamp date_revocation
+    }
+    MIROIR {
+        uuid id PK
+        text nom
+        text adresse_mac
+        text token_device
+        bool en_ligne
+    }
+    SEANCE {
+        uuid id PK
+        timestamp date_debut
+        timestamp date_fin
+        text rapport_url
+        bool email_envoye
+    }
+    PHOTO {
+        uuid id PK
+        text phase
+        jsonb diagnostic_ia
+        text modele_ia
+        bool synced
+    }
+    PRODUIT {
+        uuid id PK
+        text nom
+        float prix
+        bool mis_en_avant
+    }
+    MEDIA {
+        uuid id PK
+        text type
+        text chemin_fichier
+        bool actif
+    }
