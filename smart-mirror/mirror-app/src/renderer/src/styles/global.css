@@ -16,22 +16,28 @@
   --font-body: 'Montserrat', sans-serif;
   --font-detail: 'Inter', sans-serif;
 
-  /* Figma base: 399px wide. All sizes as vw = px/399*100 */
-  --radius: 2.5vw;
+  /* Echelle MIROIR (1080x1920 portrait, vu a ~0,5-1 m).
+     L'ancienne echelle etait calee sur une frame mobile de 399px (vw = px/399),
+     ce qui rendait tout ~x2,7 trop gros sur le miroir. On rebaise l'echelle a une
+     taille confortable a distance miroir, et on plafonne la largeur de contenu
+     pour ne plus etaler un layout "telephone" sur toute la largeur. */
+  --content-max: 760px;       /* colonne de contenu centree */
+  --control-h: 7.4vw;         /* hauteur cible des controles tactiles (~80px) */
+  --radius: 1.8vw;
   --radius-pill: 1000px;
   --radius-circle: 50%;
   --transition: 300ms ease;
 
-  /* Typography scaled to viewport */
-  --fs-xl: 8vw;      /* 32px / 399 */
-  --fs-lg: 6vw;      /* 24px / 399 */
-  --fs-md: 5vw;      /* 20px / 399 */
-  --fs-sm: 3.75vw;   /* 15px / 399 */
-  --fs-body: 3.5vw;  /* 14px / 399 */
-  --fs-body-sm: 3vw; /* 12px / 399 */
-  --fs-btn: 4vw;     /* 16px / 399 */
-  --fs-detail: 2.75vw; /* 11px / 399 */
-  --fs-label: 3vw;   /* 12px / 399 */
+  /* Typography - echelle miroir */
+  --fs-xl: 5.2vw;     /* ~56px : hero / titre marque */
+  --fs-lg: 3.9vw;     /* ~42px */
+  --fs-md: 3.3vw;     /* ~36px */
+  --fs-sm: 2.5vw;     /* ~27px */
+  --fs-body: 2.4vw;   /* ~26px : texte courant */
+  --fs-body-sm: 2vw;  /* ~22px */
+  --fs-btn: 2.7vw;    /* ~29px */
+  --fs-detail: 1.9vw; /* ~20px */
+  --fs-label: 2vw;    /* ~22px */
 }
 
 * {
@@ -78,14 +84,14 @@ html, body, #root {
   cursor: pointer;
   border: none;
   outline: none;
-  min-height: 12vw;
+  min-height: var(--control-h);
   border-radius: var(--radius-pill);
-  padding: 1.5vw 5vw;
+  padding: 1vw 4vw;
   color: var(--color-text);
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 2vw 0px var(--color-shadow-gold);
   transition: all var(--transition);
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -117,17 +123,18 @@ html, body, #root {
   font-family: var(--font-body);
   font-weight: 400;
   font-size: var(--fs-body);
-  padding: 3vw 4vw;
+  padding: 2vw 3vw;
   border-radius: var(--radius-pill);
   border: none;
   outline: none;
   background: var(--color-glass-bg);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
+  box-shadow: inset 0px 0px 2vw 0px var(--color-shadow-gold);
   color: var(--color-text);
   width: 100%;
-  min-height: 12vw;
+  max-width: var(--content-max);
+  min-height: var(--control-h);
   transition: box-shadow var(--transition);
 }
 
@@ -210,7 +217,7 @@ html, body, #root {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5vw;
+  padding: 4vw;
   position: relative;
   z-index: 1;
 }
@@ -221,9 +228,20 @@ html, body, #root {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 18vw 5vw 5vw;
+  /* Top = hauteur status bar (4.4vh) + bandeau titre, pour ne plus chevaucher */
+  padding: 13vh 4vw 4vw;
   position: relative;
   z-index: 1;
+}
+
+/* Colonne de contenu centree : capte la largeur sur les grands ecrans miroir
+   pour eviter l'etalement "telephone agrandi". A poser sur le contenu d'un ecran. */
+.content {
+  width: 100%;
+  max-width: var(--content-max);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .overlay {
@@ -243,14 +261,14 @@ html, body, #root {
   top: 0;
   left: 0;
   right: 0;
-  height: 5vh;
+  height: 4.4vh;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 5vw;
+  padding: 0 3vw;
   background: rgba(0, 0, 0, 0.4);
   z-index: 50;
-  font-size: var(--fs-body-sm);
+  font-size: var(--fs-detail);
   color: rgba(255, 255, 255, 0.5);
   font-family: var(--font-body);
 }
@@ -458,10 +476,11 @@ button {
   box-shadow: inset 0px 0px 2.5vw 0px var(--color-shadow-gold);
   color: var(--color-text);
   border-radius: var(--radius-pill);
-  padding: 3vw 6vw;
+  padding: 1.8vw 4.5vw;
   font-weight: 700;
   font-size: var(--fs-btn);
-  min-height: 12vw;
+  min-height: var(--control-h);
+  max-width: var(--content-max);
   transition: all var(--transition);
   text-transform: uppercase;
 }
@@ -476,10 +495,11 @@ button {
   box-shadow: inset 0px 0px 0.5vw 0px var(--color-shadow-gold);
   color: var(--color-text);
   border-radius: var(--radius-pill);
-  padding: 3vw 6vw;
+  padding: 1.8vw 4.5vw;
   font-weight: 500;
   font-size: var(--fs-body);
-  min-height: 12vw;
+  min-height: var(--control-h);
+  max-width: var(--content-max);
   transition: all var(--transition);
 }
 
