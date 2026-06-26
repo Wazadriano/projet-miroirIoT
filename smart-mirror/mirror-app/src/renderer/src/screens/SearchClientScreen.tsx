@@ -7,7 +7,18 @@ export function SearchClientScreen(): JSX.Element {
   const { setScreen, setCliente } = useSessionStore()
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Cliente[]>([])
+  const [recent, setRecent] = useState<Cliente[]>([])
   const debouncedQuery = useDebounce(query, 300)
+
+  // Clientes recentes chargees a l'ouverture : l'ecran n'est jamais vide, la
+  // praticienne peut selectionner sans taper (usage tactile au miroir).
+  useEffect(() => {
+    let cancelled = false
+    window.mirrorApi.searchClientes('')
+      .then((data) => { if (!cancelled) setRecent(data as Cliente[]) })
+      .catch(() => setRecent([]))
+    return () => { cancelled = true }
+  }, [])
 
   useEffect(() => {
     if (!debouncedQuery) { setResults([]); return }
@@ -19,6 +30,11 @@ export function SearchClientScreen(): JSX.Element {
       .catch(() => setResults([]))
     return () => { cancelled = true }
   }, [debouncedQuery])
+
+  const shown = query ? results : recent
+  const sectionLabel = query
+    ? (results.length ? 'Resultats' : 'Aucun resultat')
+    : 'Clientes recentes'
 
   const handleSelect = async (cliente: Cliente): Promise<void> => {
     setCliente(cliente)
@@ -43,47 +59,54 @@ export function SearchClientScreen(): JSX.Element {
       <Header subtitle="Recherche Client" />
 
       {/* Search bar + calendar icon */}
-      <div style={{ width: '100%', maxWidth: '88vw', marginTop: '2.5vh', position: 'relative', zIndex: 1, display: 'flex', gap: '2.5vw', alignItems: 'center' }}>
+      <div className="content" style={{ marginTop: '2.5vh', position: 'relative', zIndex: 1, flexDirection: 'row', gap: '2vw', alignItems: 'center' }}>
         <div style={{ position: 'relative', flex: 1 }}>
-          <svg width="5.25vw" height="5vw" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5"
-            style={{ position: 'absolute', left: '4vw', top: '50%', transform: 'translateY(-50%)' }}>
+          <svg width="3.5vw" height="3.5vw" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5"
+            style={{ position: 'absolute', left: '3vw', top: '50%', transform: 'translateY(-50%)' }}>
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
           </svg>
           <input
             className="glass-input"
-            placeholder="Rechercher"
+            placeholder="Rechercher une cliente"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            style={{ paddingLeft: '12vw', fontFamily: 'var(--font-title)', fontWeight: 400, fontSize: 'var(--fs-sm)' }}
+            style={{ paddingLeft: '8vw', fontFamily: 'var(--font-title)', fontWeight: 400, fontSize: 'var(--fs-sm)', maxWidth: 'none' }}
           />
         </div>
         {/* Calendar icon */}
         <button className="glass-card-subtle" style={{
-          width: '17.5vw', height: '17.5vw', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          width: 'var(--control-h)', height: 'var(--control-h)', display: 'flex', alignItems: 'center', justifyContent: 'center',
           borderRadius: 'var(--radius)', padding: 0, border: 'none', cursor: 'pointer', flexShrink: 0
         }}>
-          <svg width="11vw" height="7.5vw" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5">
+          <svg width="3.5vw" height="3.5vw" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5">
             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
             <rect x="7" y="14" width="3" height="3"/><rect x="14" y="14" width="3" height="3"/>
           </svg>
         </button>
       </div>
 
-      {/* Results */}
-      <p className="title-sm" style={{ marginTop: '3vh', zIndex: 1 }}>Resultats Rapides</p>
+      {/* Results / recent */}
+      <p className="title-sm" style={{ marginTop: '3vh', zIndex: 1, alignSelf: 'flex-start', maxWidth: 'var(--content-max)', width: '100%', marginInline: 'auto', textAlign: 'left' }}>{sectionLabel}</p>
 
-      <div style={{
+      {shown.length === 0 ? (
+        <div className="content" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: '2vh', zIndex: 1, opacity: 0.7 }}>
+          <p className="body-md" style={{ textAlign: 'center' }}>
+            {query ? 'Aucune cliente ne correspond a cette recherche.' : 'Commencez a taper ou creez une nouvelle fiche cliente.'}
+          </p>
+        </div>
+      ) : (
+      <div className="content" style={{
         display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '4vw',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: '3vw',
         marginTop: '2vh',
-        width: '100%',
-        maxWidth: '88vw',
+        marginInline: 'auto',
         flex: 1,
         overflowY: 'auto',
+        alignContent: 'start',
         zIndex: 1
       }}>
-        {results.map((cliente) => (
+        {shown.map((cliente) => (
           <button
             key={cliente.id}
             onClick={() => handleSelect(cliente)}
@@ -119,64 +142,13 @@ export function SearchClientScreen(): JSX.Element {
           </button>
         ))}
       </div>
+      )}
 
-      {/* Back button */}
-      <button
-        onClick={() => setScreen('accueil')}
-        style={{
-          position: 'absolute',
-          bottom: 30,
-          left: 30,
-          width: 46,
-          height: 46,
-          borderRadius: '50%',
-          background: 'var(--color-glass-bg)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0px 0px 4px 3px var(--color-shadow-gold-light)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: 'none',
-          cursor: 'pointer',
-          zIndex: 1,
-          padding: 0,
-          minWidth: 'unset',
-          minHeight: 'unset'
-        }}
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5">
-          <path d="M15 18l-6-6 6-6"/>
-        </svg>
-      </button>
-
-      {/* New client button */}
-      <button
-        onClick={() => setScreen('new-client')}
-        style={{
-          position: 'absolute',
-          bottom: 30,
-          right: 30,
-          width: 46,
-          height: 46,
-          borderRadius: '50%',
-          background: 'var(--color-glass-bg)',
-          backdropFilter: 'blur(10px)',
-          boxShadow: '0px 0px 4px 3px var(--color-shadow-gold-light)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: 'none',
-          cursor: 'pointer',
-          zIndex: 1,
-          padding: 0,
-          minWidth: 'unset',
-          minHeight: 'unset'
-        }}
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-accent)" strokeWidth="1.5">
-          <path d="M9 18l6-6-6-6"/>
-        </svg>
-      </button>
+      {/* Bottom actions : libelles explicites plutot que des fleches en coin */}
+      <div className="content" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: '3vw', marginTop: '2vh', marginBottom: '1vh', marginInline: 'auto', zIndex: 1 }}>
+        <button className="glass-btn" onClick={() => setScreen('accueil')} style={{ fontWeight: 500, flex: 1, maxWidth: '40%' }}>Retour</button>
+        <button className="glass-btn" onClick={() => setScreen('new-client')} style={{ flex: 1, maxWidth: '55%' }}>+ Nouvelle cliente</button>
+      </div>
     </div>
   )
 }

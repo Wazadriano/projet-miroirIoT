@@ -54,18 +54,21 @@ export function NewClientScreen(): JSX.Element {
         Recherche
       </button>
 
-      <div style={{ width: '100%', maxWidth: '88vw', display: 'flex', flexDirection: 'column', gap: '2.5vw', zIndex: 1 }}>
-        <div>
-          <label className="label">Nom :</label>
-          <input className="glass-input" value={form.nom} onChange={(e) => setForm(p => ({ ...p, nom: e.target.value }))} />
-        </div>
-        <div>
-          <label className="label">Prenom :</label>
-          <input className="glass-input" value={form.prenom} onChange={(e) => setForm(p => ({ ...p, prenom: e.target.value }))} />
+      <div className="content" style={{ marginInline: 'auto', gap: '2vh', zIndex: 1 }}>
+        {/* Nom + Prenom sur une ligne : on exploite la largeur du miroir */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2vw' }}>
+          <div>
+            <label className="label">Nom :</label>
+            <input className="glass-input" style={{ maxWidth: 'none' }} value={form.nom} onChange={(e) => setForm(p => ({ ...p, nom: e.target.value }))} />
+          </div>
+          <div>
+            <label className="label">Prenom :</label>
+            <input className="glass-input" style={{ maxWidth: 'none' }} value={form.prenom} onChange={(e) => setForm(p => ({ ...p, prenom: e.target.value }))} />
+          </div>
         </div>
         <div>
           <label className="label">Adresse mail :</label>
-          <input className="glass-input" type="email" value={form.email} onChange={(e) => setForm(p => ({ ...p, email: e.target.value }))} />
+          <input className="glass-input" style={{ maxWidth: 'none' }} type="email" value={form.email} onChange={(e) => setForm(p => ({ ...p, email: e.target.value }))} />
         </div>
 
         {/* Sexe selector */}
