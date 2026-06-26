@@ -31,7 +31,11 @@
 
 ## 1.1 Le candidat
 
-Je suis **développeur junior full-stack spécialisé IoT**, en alternance chez **OHADJA**, et je candidate au titre **RNCP 37046 – Chef de projet en solutions logicielles pour l'Internet des Objets**. Sur ce projet, j'ai porté l'ensemble du cycle : cadrage du besoin avec le client, conception (modélisation des données et des traitements), développement du logiciel embarqué et du backend, intégration matérielle (Raspberry Pi, microscope), tests, et sécurité. *(À personnaliser : ton parcours en 2-3 lignes, formations, technologies maîtrisées.)*
+Je m'appelle **Adriano Palamara**. Je suis **développeur junior full-stack orienté IoT**, en **alternance chez OHADJA (SAS)** tout en suivant la formation **Bachelor 3 (niveau 6)** préparant au titre **RNCP 37046 – Chef de projet en solutions logicielles pour l'Internet des Objets** (certificateur FACILITYCERT, ex-ALGOSUP). Ce parcours en alternance me permet d'articuler la théorie de la gestion de projet logiciel avec une mise en pratique continue en entreprise.
+
+Sur ce projet, j'ai porté **seul l'ensemble du cycle** en posture de chef de projet et de réalisateur : cadrage du besoin avec le client, conception (modélisation Merise des données et des traitements, diagrammes UML), développement du logiciel embarqué et du backend, intégration matérielle (device kiosk, microscope WiFi), tests, sécurité et pilotage des arbitrages MVP / cible.
+
+**Technologies mobilisées :** TypeScript, React 19, Electron 33, Zustand, Node.js / Express, PostgreSQL, Docker ; chaîne qualité Vitest + Playwright et CI GitHub Actions (lint, typecheck, tests, audit de dépendances, gitleaks, SBOM) ; sécurité applicative (chiffrement au repos AES-256-GCM, gestion de secrets) ; et, sur la trajectoire cible, l'écosystème Laravel / PHP 8.4 / Redis. Au-delà du code, ce projet m'a surtout fait travailler les compétences de **pilotage** : priorisation, gestion du risque, conformité RGPD et communication des arbitrages techniques.
 
 ## 1.2 L'entreprise : OHADJA
 
@@ -337,13 +341,25 @@ graph TB
 - **P1** : analyse **CV on-device (OpenCV)** — ne ferait sortir que des **scores anonymisés** (supprime le transfert hors UE), couverture de tests `crm-sync`, CI/SBOM en place.
 - **P2/P3** : spike Tauri, accélérateur **Hailo** pour CNN spécialisé, VLM local souverain.
 
-## 6.2 Bilan personnel *(trame à personnaliser)*
+## 6.2 Bilan personnel
 
-Ce projet m'a fait porter un cycle IoT complet, du besoin client au matériel. Trois apprentissages forts : (1) **la modélisation Merise** comme socle avant le code ; (2) **l'arbitrage d'ingénieur** (RAM, codec, cloud vs on-device) qui n'est jamais « le mieux » mais « le plus adapté au contexte et au budget » ; (3) **la sécurité réelle** — j'ai découvert et corrigé une **fuite de secrets** dans le dépôt, ce qui m'a appris la différence entre *nettoyer un historique* (hygiène) et *révoquer un secret* (la vraie remédiation). *(À enrichir avec ton vécu : difficultés, montée en compétence, ce que tu referais autrement.)*
+Ce projet m'a fait porter **seul un cycle IoT complet**, du besoin client jusqu'au matériel, en assumant à la fois la posture de chef de projet et celle de réalisateur. Mener un projet en solo m'a obligé à formaliser ce qu'une équipe se partage implicitement : cadrer le besoin, modéliser avant de coder, prioriser le backlog, documenter mes décisions et tenir les délais sans pouvoir déléguer. J'en retire une conviction concrète : sur un projet IoT, **la modélisation Merise (MCD/MCT) et les vues UML ne sont pas un livrable académique mais un socle qui évite de payer plus tard les erreurs de conception** dans le code embarqué comme dans le backend.
 
-## 6.3 Remerciements *(à personnaliser)*
+L'apprentissage qui m'a le plus marqué est celui de la **sécurité by design**, et il est né d'un incident réel. En préparant le dépôt, j'ai détecté puis corrigé une **fuite de secrets** (un token GitHub présent dans l'historique de commits, un token CRM en dur dans un script de démarrage). Cette situation m'a appris une distinction que je ne percevais pas avant : *réécrire l'historique* relève de l'hygiène, mais *révoquer et faire tourner le secret* est la seule remédiation qui rend le secret inutilisable où qu'il traîne. J'ai fait les deux, puis j'ai durci la chaîne en amont (gestion par `.env`, scan **gitleaks** et **audit de dépendances bloquant** en CI) pour que le contrôle ne dépende plus de ma vigilance ponctuelle. C'est ce qui m'a fait basculer d'une sécurité réactive vers une sécurité intégrée au pipeline.
 
-*(À compléter : OHADJA et ton tuteur, KBEAUTY, l'équipe ACADENICE, le jury.)*
+J'ai aussi appris à **arbitrer en ingénieur plutôt qu'en collectionneur de technologies**. Le choix d'un MVP réaliste (Electron/React, backend mock Express + PostgreSQL, IA mockée) distinct d'une cible plus ambitieuse (CRM Laravel) m'a contraint à justifier chaque décision par le contexte et le budget, et non par « le mieux » dans l'absolu : dimensionnement RAM conditionné à une mesure, codec vidéo du microscope, IA cloud vs on-device. Sur le plan méthode, la pratique du **TDD** (tests Vitest unitaires côté device et Playwright en e2e, dont une suite anti-régression sur le chiffrement) a changé mon rapport au code : écrire le test d'abord m'a servi de spécification exécutable et m'a donné la confiance nécessaire pour refactorer sans casser l'existant.
+
+Enfin, ce projet m'a confronté à la **conformité RGPD sur une donnée de santé déductible** : une analyse capillaire et du cuir chevelu peut révéler des indices de santé, ce qui impose un niveau de précaution supérieur à une simple photo cosmétique (consentement explicite, chiffrement au repos AES-256-GCM des photos et des files de synchronisation, minimisation et rétention maîtrisée). Avec le recul, ce que je referais différemment : mettre en place le scan de secrets et les garde-fous CI **dès le premier commit** plutôt qu'après l'incident, et cadrer plus tôt la frontière exacte entre finalité cosmétique et donnée de santé. Ce sont précisément ces réflexes — sécurité, conformité et arbitrage documenté — que je veux consolider dans la suite de mon parcours de chef de projet IoT.
+
+## 6.3 Remerciements
+
+Je remercie l'**équipe d'OHADJA** ainsi que mon **tuteur en entreprise, [nom du tuteur entreprise]**, pour l'encadrement, la confiance et le cadre technique qui m'ont permis de mener ce projet de bout en bout en alternance.
+
+Je remercie le client **KBEAUTY / K Beauty Cosmetics** pour la qualité des échanges lors du cadrage du besoin et pour m'avoir confié un cas d'usage concret autour de son service *Bubble Hair Spa*.
+
+Je remercie l'**équipe pédagogique de la formation (ACADENICE)** et mes **formateurs**, pour leur accompagnement tout au long du Bachelor 3, ainsi que le certificateur **FACILITYCERT** pour le cadre du titre RNCP 37046.
+
+Enfin, je remercie les **membres du jury** pour le temps consacré à l'évaluation de ce dossier et de ma soutenance.
 
 ---
 
@@ -399,4 +415,4 @@ Pendant la préparation, j'ai détecté **deux secrets réels** dans le dépôt 
 - `docs/DOSSIER-CONNAISSANCE-RNCP.md` — cartographie + Q&A jury détaillées
 - `docs/livrables/` — SWOT, PESTEL, veille, devis/TCO, gestion de projet, UML (versions détaillées)
 
-> **Restent à ta main :** ton parcours (1.1), le bilan personnel (6.2), les remerciements (6.3), le TJM réel (3bis), et le test sur device de la CSP/sandbox.
+> **Restent à compléter avec des données externes :** le nom du tuteur entreprise (6.3), le TJM réel arrêté par OHADJA (3bis), le devis ferme de l'écran 32" (3bis / PESTEL / UML), l'avis du DPO sur la qualification donnée de santé et la durée de rétention (PESTEL), et le test sur device de la CSP/sandbox.
