@@ -6,7 +6,7 @@ export function Header({ subtitle }: HeaderProps): JSX.Element {
   return (
     <div style={{
       position: 'fixed',
-      top: 0,
+      top: '4.4vh',
       left: 0,
       right: 0,
       zIndex: 10,
@@ -16,10 +16,14 @@ export function Header({ subtitle }: HeaderProps): JSX.Element {
     }}>
       <div style={{
         width: '100%',
-        padding: '2.5vw 5vw 1.5vw',
+        padding: '1.6vw 5vw 1.2vw',
         textAlign: 'center'
       }}>
-        <h1 className="title-lg" style={{ letterSpacing: '0.25vw' }}>
+        <h1 className="title-md" style={{
+          letterSpacing: '0.15vw',
+          whiteSpace: 'nowrap',
+          textAlign: 'center'
+        }}>
           KBEAUTY - BUBBLE HAIR SPA
         </h1>
       </div>
