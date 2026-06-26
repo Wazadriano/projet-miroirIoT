@@ -307,6 +307,11 @@ export function registerIpcHandlers(services: Services): void {
     const mirrorId = configService.getDeviceId()
     if (!mirrorId) return { playlist: [], produits: [] }
 
+    // Le CRM (via /miroir/auth) est la source de verite pour le catalogue produits
+    // et le theme. On prefere ses valeurs quand elles existent.
+    const crmProduits = crmSync.getCrmProduits()
+    const crmConfig = crmSync.getCrmConfig()
+
     try {
       const config = await apiClient.fetchAndUpdateConfig(mirrorId) as {
         playlist?: Array<{ id: string; type: string; nom_fichier: string; chemin_serveur: string; checksum: string; ordre_affichage: number }>
@@ -321,11 +326,11 @@ export function registerIpcHandlers(services: Services): void {
           src: item.chemin_serveur,
           ordre_affichage: item.ordre_affichage
         })),
-        produits: config?.produits || [],
-        config: config?.config || null
+        produits: crmProduits.length ? crmProduits : (config?.produits || []),
+        config: crmConfig ?? config?.config ?? null
       }
     } catch {
-      // Offline — return cached file paths
+      // Offline — return cached file paths + last CRM catalog/theme seen at auth
       const localFiles = mediaCacheService.getLocalPlaylist()
       return {
         playlist: localFiles.map((filePath, i) => ({
@@ -335,8 +340,8 @@ export function registerIpcHandlers(services: Services): void {
           src: `file://${filePath}`,
           ordre_affichage: i
         })),
-        produits: [],
-        config: null
+        produits: crmProduits,
+        config: crmConfig
       }
     }
   })

@@ -46,8 +46,62 @@ export class CrmSyncService {
   // Persisted via config so we don't need to re-auth on every restart
   private crmBearerToken = ''
 
+  // Derniere config envoyee par le CRM a l'authentification (theme, catalogue,
+  // playlist). Le CRM est la source de verite : on l'expose au renderer.
+  private crmConfig: Record<string, unknown> | null = null
+  private crmProduits: unknown[] = []
+  private crmMedias: unknown[] = []
+
   get bearerToken(): string {
     return this.crmBearerToken
+  }
+
+  getCrmConfig(): Record<string, unknown> | null {
+    return this.crmConfig
+  }
+
+  getCrmProduits(): unknown[] {
+    return this.crmProduits
+  }
+
+  getCrmMedias(): unknown[] {
+    return this.crmMedias
+  }
+
+  // Notifie le CRM que le miroir se deconnecte (statut du parc juste cote dashboard).
+  // Best-effort, timeout court : ne doit jamais retarder la fermeture de l'app.
+  async goOffline(): Promise<void> {
+    if (!this.crmUrl || !this.crmBearerToken) return
+    try {
+      await fetch(`${this.crmUrl}/miroir/offline`, {
+        method: 'POST',
+        headers: this.crmHeaders,
+        body: JSON.stringify({}),
+        signal: AbortSignal.timeout(2000)
+      })
+    } catch {
+      // Hors ligne ou fermeture : on ignore, le heartbeat CRM expirera de lui-meme.
+    }
+  }
+
+  // Mappe la config CRM (couleurs/typo/volume/fond anime) vers le display config
+  // du device, et memorise catalogue + playlist renvoyes par l'auth.
+  private applyCrmAuthPayload(result: Record<string, unknown>): void {
+    const config = (result.config ?? result.data?.['config']) as Record<string, unknown> | undefined
+    this.crmConfig = config ?? null
+    this.crmProduits = (result.produits as unknown[]) ?? []
+    this.crmMedias = (result.medias as unknown[]) ?? []
+    if (config) {
+      const display: Record<string, unknown> = {}
+      if (typeof config.fond_anime === 'boolean') display.animatedBgEnabled = config.fond_anime
+      if (typeof config.theme_fond_anime === 'string' && config.theme_fond_anime) {
+        display.animatedBgTheme = config.theme_fond_anime
+      }
+      if (typeof config.volume === 'number') display.volume = config.volume
+      if (Object.keys(display).length > 0) {
+        this.config.updateDisplayConfig(display as Partial<{ animatedBgEnabled: boolean; animatedBgTheme: string; volume: number; mediaMode: 'fullscreen' | 'side_panel' | 'hidden' }>)
+      }
+    }
   }
 
   async authenticate(): Promise<boolean> {
@@ -68,6 +122,8 @@ export class CrmSyncService {
       if (this.crmBearerToken) {
         this.config.setCrmBearerToken(this.crmBearerToken)
       }
+      // Le CRM renvoie aussi config/medias/produits a l'auth : on les applique.
+      this.applyCrmAuthPayload(result)
       console.log(`[CrmSync] Authenticated with CRM, mirror: ${result.miroir?.nom || result.data?.miroir?.nom || 'unknown'}`)
       return Boolean(this.crmBearerToken)
     } catch {

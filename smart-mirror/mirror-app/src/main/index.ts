@@ -213,3 +213,13 @@ app.on('window-all-closed', () => {
   wifiService.stopMonitoring()
   if (process.platform !== 'darwin') app.quit()
 })
+
+// Notifie le CRM que le miroir passe hors ligne avant de quitter, pour que le
+// statut du parc reste juste cote dashboard. Best-effort, timeout court.
+let offlineNotified = false
+app.on('before-quit', (event) => {
+  if (offlineNotified) return
+  event.preventDefault()
+  offlineNotified = true
+  crmSync.goOffline().finally(() => app.quit())
+})
