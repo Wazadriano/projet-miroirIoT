@@ -1,312 +1,531 @@
-<!-- Genere par analyse multi-agents le 2026-06-15. Brouillon de travail : a relire et a re-accentuer avant integration au docx/PPT. -->
-
 # DOSSIER DE CONNAISSANCE — Soutenance RNCP 37046
-## Smart Mirror KBEAUTY / Bubble Hair Spa — Equipe DreamTech
+## Chef de projet en solutions logicielles pour l'IoT
+### Smart Mirror KBEAUTY / Bubble Hair Spa
 
-> **Avertissement de l'examinateur (a lire avant tout).** Ce dossier distingue strictement (a) ce qui est *prouve dans le repo*, (b) ce qui *manque* pour le docx/PPT, (c) mes *recommandations*. Plusieurs piliers attendus par le RNCP (SWOT, PESTEL, veille, devis J/H) **n'existent dans aucun fichier du depot** — je le dis sans le romancer. A l'inverse, l'incident de fuite de secrets est une **vraie matiere defensive** que vous sous-exploitez aujourd'hui. Convention de sourcing : `[CDCF]`, `[CDCT]`, `[Contexte-MVP]`, `[Code-device]`, `[Tests-CI]`, `[Backend-DB]`, `[Hardware]`, `[UX]`, `[Audit-secu]` + verifications git que j'ai faites moi-meme (notees `[git verifie]`).
-
-> **Contradiction majeure a trancher AVANT l'oral.** Le projet existe en **deux narratifs techniques incompatibles** :
-> - **Narratif A (autoritaire, code reel)** : IA **100% cloud** via OpenRouter ; pas de Hailo/NPU ; Electron+React ; Laravel/PostgreSQL. Source : `[CDCT]` (v5.0 faisant autorite), `[Code-device]`, `[Backend-DB]`.
-> - **Narratif B (cible de l'audit)** : IA **CV on-device** (OpenCV/CPU), photo qui ne sort jamais, migration Hailo, Python vision, proxy Rust. Source : `[Audit-secu]`.
->
-> **Le code livre = Narratif A.** L'audit decrit un Narratif B *souhaite* (P1/P2/P3 non implementes). Si vous melangez les deux a l'oral, le jury vous prendra en flagrant delit d'incoherence. **Choisissez votre histoire** : soit "MVP cloud assume, migration on-device documentee comme roadmap", soit vous implementez le CV on-device avant la soutenance. Je recommande la premiere (honnete, factuelle).
+> Document de connaissance du projet, mappe aux blocs de competences BC01 a BC06 du
+> referentiel RNCP 37046. Il presente le projet tel qu'il a ete concu et realise (MVP),
+> distingue ce qui releve du MVP livre de ce qui releve de la cible/roadmap, et expose
+> les raisons des choix techniques et methodologiques.
 
 ---
 
-## PARTIE 1 — Presentation perso & pro (KBEAUTY & OHADJA) + SWOT KBEAUTY
+## PARTIE 1 — Presentation et contexte client
 
-### (a) Ce qui existe deja
-- **Client KBEAUTY (K Beauty Cosmetics)** : enseigne de cosmetiques coreens, **3 boutiques France (Nice, Lyon, Cannes)**, service premium **"Bubble Hair Spa"**, e-commerce **Shopify** (kbeauty-cosmetics.com), mailing **Klaviyo**, base clients existante. Aujourd'hui les praticiens travaillent sur **tablette** (a remplacer par le miroir). Source : `[CDCF]` 1.1-1.4.
-- **Equipe de realisation = "DreamTech"** (developpement + deploiement). Source : `[CDCF]` 12.4, `[Contexte-MVP]`.
-- **Cibles utilisateurs definies** (font office de mini-personas) : Praticien, Client final, Administrateur/siege. Source : `[CDCF]` 1.4.
+### Le client : KBEAUTY (K Beauty Cosmetics)
 
-### (b) Ce qui manque (a produire pour le docx/PPT)
-- **OHADJA : totalement absent du depot.** Aucun fichier ne mentionne ce nom. Si OHADJA est *votre entreprise* (ESN/structure qui porte le projet face au client KBEAUTY), c'est **a vous de l'ecrire** : raison sociale, activite, positionnement, votre role exact dedans. **Rien dans le repo ne le fournit.**
-- **ACADENICE (ecole) : absent.** A ajouter pour le cadre RNCP.
-- **Votre presentation perso/pro** (parcours, role precis "Chef de projet en solutions logicielles IoT") : **absent**. Le CDCF ne nomme aucun etudiant ni role individuel ; il parle d'"equipe DreamTech" et d'un "developpeur dedie" (`[CDCF]` 4.3).
-- **SWOT KBEAUTY formel : n'existe nulle part** (pas de matrice). Elements epars seulement.
+KBEAUTY est une enseigne de cosmetiques coreens disposant de trois boutiques en France
+(Nice, Lyon, Cannes). Elle propose un service premium de soin capillaire baptise
+"Bubble Hair Spa". Son e-commerce repose sur Shopify (kbeauty-cosmetics.com) et son
+mailing sur Klaviyo. Une base clients existe deja. Aujourd'hui, les praticiens realisent
+les soins en s'appuyant sur une tablette, sans outil dedie a l'analyse capillaire ni a
+la centralisation des donnees client.
 
-### (c) Recommandations examinateur
-- **Clarifiez le triangle OHADJA / DreamTech / KBEAUTY des la slide 1.** Aujourd'hui le depot dit "DreamTech", votre plan dit "OHADJA". Le jury *exigera* de savoir qui est qui. Proposition coherente : OHADJA = votre entreprise (prestataire), DreamTech = nom de marque/equipe projet, KBEAUTY = client. **Decidez et tenez la ligne partout** (docx, PPT, oral).
-- **Construisez la SWOT vous-meme**, en vous appuyant sur la matiere reelle :
-  - **Forces** : positionnement premium, CRM Shopify deja en place, IA differenciante, architecture offline-first robuste.
-  - **Faiblesses** : dependance fournisseur IA (OpenRouter), MVP mono-boutique, equipe reduite, dette technique de securite (voir Partie 5/Section B).
-  - **Opportunites** : first-mover revendique, modele franchise/B2B instituts (`[CDCF]` 12).
-  - **Menaces** : qualification "dispositif medical" si glissement de vocabulaire (RGPD art. 9 / MDR), transfert de donnees hors UE via OpenRouter, copie facile par un concurrent.
-- **Piege** : la SWOT doit etre celle de **KBEAUTY** (le client), pas de votre produit. Ne confondez pas.
+### Le besoin
 
----
+Remplacer la tablette par un miroir connecte capable d'analyser le cuir chevelu via un
+microscope, de proposer un diagnostic cosmetique assiste par IA, de recueillir le
+consentement RGPD du client, puis d'alimenter le CRM de l'enseigne. La proposition de
+valeur : "Votre cuir chevelu, analyse par IA. Votre soin, revele par K Beauty Cosmetics."
 
-## PARTIE 2 — Projet : PESTEL, veille concurrentielle, contexte
+### Les acteurs
 
-### (a) Ce qui existe deja
-- **Contexte** : solide et factuel (cf. Partie 1). Vision produit claire, positionnement *"Votre cuir chevelu, analyse par IA. Votre soin, revele par K Beauty Cosmetics."* Source : `[CDCF]` 1.2, 11, 12.1.
-- **Cadre reglementaire (matiere PESTEL-Legal)** : RGPD (consentement art. 7, minimisation, retention), debat **donnees de sante / HDS**, **DPA OpenRouter requis**, vocabulaire medical banni, cadres **RED art. 3.3 / CRA (SBOM)**, **MDR evite**. Source : `[CDCF]` 8, `[CDCT]` §15, `[Audit-secu]` §5.
+Trois cibles utilisateurs structurent le produit :
+- le praticien, qui conduit la seance au miroir ;
+- le client final, qui consent et recoit son bilan ;
+- l'administrateur / siege, qui pilote les boutiques et les miroirs via le back-office.
 
-### (b) Ce qui manque
-- **PESTEL : absent du depot.** Aucune analyse Politique/Economique/Social/Technologique/Environnemental/Legal structuree.
-- **Veille concurrentielle : inexistante en tant qu'analyse.** Le CDCF repete *"aucun concurrent identifie — first-mover advantage"* (`[CDCF]` 1.3, 12) **sans aucune source**. C'est un **claim non demontre** — danger en l'etat.
+### SWOT (positionnement KBEAUTY)
 
-### (c) Recommandations examinateur
-- **Le "first-mover, aucun concurrent" est votre plus gros risque oral.** Un jury cite immediatement : miroirs connectes (HiMirror, Care OS Poseidon), apps de trichoscopie (TrichoLab, FotoFinder en medical), diagnostics capillaires IA (L'Oreal SkinConsult, Haircare AI de marques). **Reformulez** : *"pas de concurrent direct sur le couplage microscope WiFi + IA + CRM en institut K-Beauty ; concurrents adjacents existent en cosmetique grand public et en dermatologie medicale, dont nous nous differencions par X."* Sourcez au moins 3 acteurs.
-- **Construisez le PESTEL** en reutilisant la matiere legale deja presente (c'est le L le plus fourni). Le **E (Environnemental)** peut s'appuyer sur vos chiffres conso (5.7-6.8 W, `[Hardware]`) — bonus d'optimisation.
-- **Piege fact-check** (cf. vos regles BYAN) : tout claim "le meilleur / aucun / toujours" doit etre source niveau L2+. "First-mover" sans preuve = `[HYPOTHESIS]`, pas `[CLAIM]`. Annoncez-le comme hypothese.
+| Axe | Elements |
+|---|---|
+| Forces | Positionnement premium, CRM Shopify deja en place, IA differenciante, architecture offline-first robuste |
+| Faiblesses | Dependance a un fournisseur d'IA cloud, perimetre MVP mono-boutique, equipe reduite |
+| Opportunites | Fenetre de positionnement (couplage microscope WiFi + IA + CRM en institut K-Beauty peu peuple en France), modele franchise / B2B instituts |
+| Menaces | Risque de requalification en dispositif medical en cas de glissement de vocabulaire (RGPD art. 9 / MDR), transfert de donnees image hors UE, reproduction par un concurrent |
 
 ---
 
-## PARTIE 3 — CDCF (problematique, besoin, contrainte, solution)
+## PARTIE 2 — Marche, PESTEL et veille concurrentielle
 
-### (a) Ce qui existe deja — **C'est votre partie la plus solide.**
-- **Problematique metier** : aucun outil dedie au soin capillaire (tablette), besoin de centraliser les donnees, suivi longitudinal, IA comme avantage, alimentation CRM, MVP en vue franchise. Source : `[CDCF]` 1.2-1.3, 12.
-- **Besoins fonctionnels exhaustifs** : app miroir (flux microscope, captures, analyse IA, consentement RGPD horodate, workflow seance), back-office (fiches clients, controle miroir, produits via Shopify, export CRM, multi-boutique), IA (5-15 photos/seance, 1 appel/photo, JSON, 7 categories), QR + PDF A4. Source : `[CDCF]` 3-6.
-- **Contraintes** : Debian 12 / Pi 5 8 Go ARM64, double WiFi, Electron kiosk, materiel (Shineworld 32" 400 nits, microscope Jiusion ~45 EUR, 6 miroirs), RGPD, **flux video local ne transitant pas par le cloud**. Source : `[CDCF]` 3,7,8,9.
-- **Solution** : 2 briques (miroir + back-office), design sombre futuriste K-Beauty. Source : `[CDCF]` 2.1, 11.
+### Analyse PESTEL (synthese)
 
-### (b) Ce qui manque
-- **Energie : aucune contrainte chiffree dans le CDCF** (seule l'alimentation ecran est citee). Les chiffres conso viennent de `[Hardware]`, pas du CDCF.
-- **Delais de developpement : absents** (seul un calendrier *marketing* existe, `[CDCF]` 12.2).
-- **Personas detailles** : seulement 3 cibles, pas de personas riches.
+- Politique / Legal : RGPD (consentement art. 7, minimisation, retention), debat donnees
+  de sante / hebergement HDS, contrat de sous-traitance (DPA) avec le fournisseur d'IA
+  cloud, vocabulaire medical proscrit, cadres RED (art. 3.3) et Cyber Resilience Act
+  (exigence de SBOM). Le perimetre est strictement cosmetique, hors MDR.
+- Economique : modele SaaS B2B par boutique, materiel maitrise, cout d'analyse IA tres
+  faible (de l'ordre de 0,002 EUR par analyse).
+- Social : attente de personnalisation et de transparence sur l'usage des donnees.
+- Technologique : Raspberry Pi 5, Electron, vision par IA, microscope WiFi.
+- Environnemental : sobriete energetique (consommation mesuree 5,7 a 6,8 W cote SBC).
 
-### (c) Recommandations examinateur
-- **Mettez en avant la tracabilite besoin -> regle de gestion -> test.** Vous avez RG-001 a RG-010 (`[Contexte-MVP]`) et TC-01 a TC-06. Montrez la chaine : *besoin consentement -> RG-001/005 -> TC-02 (erreur 422 sans consentement_id)*. C'est exactement ce qu'un jury RNCP veut voir (BC01).
-- **Attention contradiction de perimetre** : le CDCF parle de **6 miroirs / 3 boutiques** ; le MVP cible **1 boutique, 1 tenant** (`[Contexte-MVP]`). Annoncez : *"cible commerciale 6 miroirs, perimetre MVP de soutenance = 1 boutique."*
-- **Piege** : la contrainte "flux local, ne transite pas par le cloud" (`[CDCF]`) contredit le fait que **les photos partent vers OpenRouter** pour analyse (`[Audit-secu]` C2). Le *flux video live* reste local, mais les *snapshots* sortent. Distinguez explicitement les deux, sinon le jury releve le mensonge.
+### Veille concurrentielle
 
----
+Le marche n'est pas vide : des acteurs serieux existent a l'echelle adjacente, meme si le
+couplage precis microscope WiFi + IA + CRM en institut K-Beauty reste peu peuple en France.
+- analyse capillaire / cuir chevelu professionnelle : L'Oreal/Kerastase K-Scan, BECON
+  (coreen, soutenu par Samsung), FotoFinder (trichoscopie medicale), Aram Huvis / ARAMO ;
+- miroirs connectes beaute grand public : CareOS, HiMirror.
 
-## PARTIE 3bis — Devis : estimation temps, budget, J/H en tiroir
-
-### (a) Ce qui existe deja
-- **Couts materiels unitaires** (deux sources, **chiffres divergents** — a reconcilier) :
-  - `[CDCF]` 12.4 : miroir Shineworld ~800 EUR + boitier Pi5 ~165 EUR + microscope ~45 + dongle ~15 + HDMI ~10 = **~1 035 EUR/unite** (somme deduite, non ecrite).
-  - `[CDCT]` §17 : materiel ~**180 EUR/miroir hors ecran** (Pi5 ~90, boitier PETG ~5, microscope ~45, dongle ~15, microSD ~15).
-- **Cout recurrent (OpEx)** : `[CDCT]` ~**55-115 EUR/mois** (VPS Scaleway 30-35, stockage 5-15, backup 2-5, OpenRouter 15-40 pour ~3 300 appels/mois, domaine 1, SMTP 0-5). HDS ecarte = -150 a -400 EUR/mois.
-- **Cout IA a l'analyse** : ~**0,002 EUR/analyse**, ~0,20 EUR/mois/miroir a 100 analyses (`[Audit-secu]` §6).
-- **Couts d'evolution chiffres** : CNN Hailo-8L ~190-220 EUR ; VLM AI HAT+2 ~120 EUR (`[Audit-secu]` §6).
-
-### (b) Ce qui manque — **CRITIQUE**
-- **Aucun devis formel, aucune estimation J/H, aucun planning de sprints date** n'existe dans tout le depot. Confirme par `[CDCF]`, `[CDCT]`, `[Contexte-MVP]` (les trois le disent explicitement).
-- **Budget projet global (cout de developpement) : absent.**
-- **Decomposition "en tiroir"** (par lot/sprint/fonctionnalite) : **a produire entierement.**
-
-### (c) Recommandations examinateur
-- **Vous devez fabriquer le devis vous-meme.** Methode defendable : partez des **6 processus metier** (`[Contexte-MVP]` : workflow seance, provisioning, analyse IA, PDF, sync medias, export Shopify) + 4 briques + 9 ecrans, estimez en J/H par lot, appliquez un TJM, ajoutez le materiel.
-- **Tiroirs proposes** : (1) Device/Electron, (2) Backend Laravel + DB, (3) Service IA, (4) Microscope/proxy, (5) UX/Figma, (6) Tests/CI/securite, (7) Provisioning/boitier 3D, (8) Gestion projet. Chiffrez chaque tiroir en J/H.
-- **Argument fort** : reconciliez les deux chiffrages materiel. Le ~1 035 EUR du CDCF inclut l'ecran (~800), le ~180 du CDCT est **hors ecran** : **les deux sont coherents** (1 035 ~= 800 + 235). **Dites-le** — ca montre que vous maitrisez vos chiffres et non que vous vous contredisez.
-- **Piege** : annoncez un cout total de possession (TCO) sur 3 ans = CapEx materiel + OpEx*36 mois. Un jury "solution logicielle pour l'IoT" adore le TCO.
+La differenciation du projet ne repose pas sur une absence de concurrents mais sur
+l'integration verticale : microscope WiFi a faible cout + IA + suivi longitudinal en
+boutique relie au CRM Shopify de l'enseigne. Toute affirmation de type "aucun concurrent"
+ou "first-mover" est ecartee.
 
 ---
 
-## PARTIE 4 — Gestion de projet (methodologie justifiee)
+## PARTIE 3 — Cahier des charges fonctionnel (CDCF)
 
-### (a) Ce qui existe deja
-- **Methode = Merise Agile + TDD** (cadre BYAN, 64 mantras), justifiee dans `DEFENSE-JURY.md` : Merise = modelisation rigoureuse donnees (MCD) + traitements (MCT) avant de coder ; agile = enrichissement incremental. Source : `[Contexte-MVP]` §2.
-- **Cycle 5 phases** : Document Project -> Analyse -> Planning -> Solutioning -> Implementation.
-- **Acteurs/roles** : Praticien, Client, Gerant, Collaborateur, Super admin, No-codeur + acteurs systeme (`[Contexte-MVP]` §4). Agents BYAN simulant une equipe (Orion device, Nadia backend, Iris IA, Amelia panel, Winston archi, Bob SM, Quinn/Murat QA).
-- **Niveaux de test** : Unit > Integration > E2E, API first-class ; valeur prouvee lors de la migration mock-API -> CRM reel.
+### Problematique metier
 
-### (b) Ce qui manque
-- **Aucun decoupage en sprints dates, aucun backlog chiffre (story points), aucun jalon calendaire, aucune affectation de personnes physiques.** Les "agents BYAN" ne sont **pas une vraie equipe** — c'est de l'outillage IA. Confirme par `[Contexte-MVP]` §4-5.
-- **Contradiction de preuve** : `[Audit-secu]` F8 signalait "commit unique, aucun historique" contredisant le recit des tests (chiffre reel = 178 cas, jamais "65+"). **[git verifie]** : l'historique existe bel et bien aujourd'hui. **A jour, F8 est partiellement obsolete** (mais l'historique a ete *reecrit*, donc les dates ne refletent plus le developpement reel — soyez transparent la-dessus).
+Absence d'outil dedie au soin capillaire (la tablette ne centralise rien), besoin de
+suivi longitudinal des clients, d'un diagnostic differenciant, et d'une alimentation
+automatique du CRM, le tout dans une perspective de franchise.
 
-### (c) Recommandations examinateur
-- **Justifiez Merise Agile, mais anticipez la contre-attaque.** Un jury demandera : *"Merise c'est du cycle en V, pas de l'agile — comment conciliez-vous ?"* Reponse modele : *"Merise pour la rigueur du modele de donnees (MCD/MCT), iteration agile pour l'enrichir sprint par sprint ; Sprint 0 = MCD squelettique, enrichi ensuite."* C'est exactement votre narratif `[Contexte-MVP]` §2 — tenez-le.
-- **N'invoquez JAMAIS "les agents BYAN" comme une equipe humaine.** Si le jury comprend que Orion/Nadia/Iris sont des personas IA, votre "gestion d'equipe" s'effondre. Presentez-les comme **un outil d'assistance**, et vous comme le **chef de projet unique** qui orchestre.
-- **Produisez un backlog retrospectif** : meme reconstitue, un tableau "epic -> stories -> J/H -> statut" credibilise BC06.
-- **Assumez la reecriture d'historique** (voir Section B) : c'est une force, pas une faute, *si vous l'expliquez*.
+### Besoins fonctionnels
 
----
+- Application miroir : flux microscope en direct, captures photo, analyse IA, recueil et
+  horodatage du consentement RGPD, deroule complet de la seance.
+- Back-office : fiches clients, controle des miroirs, produits synchronises via Shopify,
+  export vers le CRM, gestion multi-boutique.
+- IA : 5 a 15 photos par seance, un appel par photo, reponse structuree JSON, 7 categories
+  de diagnostic cosmetique.
+- Restitution : QR code et PDF A4 du bilan remis au client.
 
-## PARTIE 5 — CDCT : benchmark, UML, securite, SemGrep, tests, versioning, audit
+### Contraintes
 
-### (a) Ce qui existe deja
-**Stack reelle (code livre)** — `[Code-device]`, `[Backend-DB]` :
-- Device : **Electron ^33.2.0 + React ^19 + TypeScript ^5.7 + Zustand ^5**, electron-vite, electron-builder (deb + AppImage, **arm64 ET x64**), electron-updater (rollback apres 3 crashes), electron-store + safeStorage.
-- Backend mock : **Node 20 + Express ^4.21 + PostgreSQL 15** (9 tables, UUID, JSONB `diagnostic_ia`, RLS multi-tenant `boutique_id`, requetes parametrees anti-injection).
-- IA : proxy Express port 3001, header `X-Mirror-Token`, OpenRouter (cloud).
-- Microscope : proxy Node, TCP 192.168.34.1:8080, handshake `JHCMD`, transcodage **H.264 -> MJPEG via ffmpeg `-r 15 -q:v 5`**, SSE bouton physique (`[Hardware]`).
+- Materiel : Debian 12 sur Raspberry Pi 5 (4 Go retenu, cf. decision RAM ; ARM64), double
+  WiFi (dongle USB, non automatise en V1), ecran 32" 400 nits, microscope WiFi (~45 EUR),
+  Electron en mode kiosk.
+- RGPD : consentement obligatoire, minimisation, retention bornee.
+- Contrainte de flux : le flux video en direct du microscope reste local et ne transite
+  pas par le cloud. Cette contrainte concerne le flux video temps reel. Les captures
+  (snapshots) destinees a l'analyse IA, elles, sont transmises au service d'analyse (voir
+  Partie 5 et la note RGPD), distinction documentee explicitement.
 
-**Benchmarks technologiques documentes** — `[CDCT]` §3, `[Audit-secu]` §3 :
-- Electron vs Chromium kiosk (Chromium economise 300-500 Mo RAM) ; Electron vs Tauri (Tauri superieur 2-10 Mo footprint mais risque UI glassmorphism sur WebKitGTK -> Electron retenu, gate RAM, migration documentee) ; Laravel vs Node ; PostgreSQL vs MySQL/SQLite ; Scaleway vs Hetzner (RGPD) ; modeles IA (Gemini Flash 1.5 / GPT-4o mini / Claude 3.5 Haiku) ; codecs (H.264 preview vs JPEG/MJPEG analyse, AV1/H.266 rejetes).
+### Solution retenue
 
-**Securite (etat reel)** — `[Code-device]` §5, `[Audit-secu]` :
-- **BON** : `contextIsolation: true`, `nodeIntegration: false`, contextBridge propre, `setWindowOpenHandler` deny, durcissement kiosk, **chiffrement au repos AES-256-GCM via cryptoVault des photos (`.jpg.enc`), de la file de sync et des tokens (device.token, crmToken, crmBearerToken)** — plus de safeStorage ni de branche plaintext, requetes SQL parametrees.
-- **GAPS RESTANTS** : backend mock a securiser (PDF de seance servi sans protection, secrets en dur, device_token non hache), audit deps CI non bloquant (`ci.yml` `continue-on-error`) a rendre bloquant apres `npm audit fix`, pgcrypto sur colonnes sensibles (cible), transfert hors UE via OpenRouter (C2, cible), 2 CVE hautes (Electron + fast-uri, F1), remote debug CDP 9222 sur 0.0.0.0 si flag.
+Deux briques applicatives : le miroir (device) et le back-office. Design sombre, futuriste,
+coherent avec l'identite K-Beauty.
 
-**Tests** — `[Tests-CI]` :
-- Unitaires : Vitest 2, **42 cas / 4 services testes sur 9** (config, api-client, sync, crypto-vault). Le nouveau `crypto-vault.service.test.ts` (7 tests) prouve notamment que le JPEG ecrit sur disque ne commence pas par FF D8 et que le store ne contient pas le token en clair. Non testes : crm-sync (le plus gros), media-cache, microscope, updater, wifi, + 0% renderer/ipc/preload.
-- E2E : Playwright 1.59, 4 specs (~50+ cas dans qa-complete), dont 2 via CDP sur VM Debian 12.
-- 6 tests critiques TC-01 a TC-06 (isolation tenant, consentement 422, sync offline, auth, IA malformee, fallback email).
+### Tracabilite besoin -> regle de gestion -> test
 
-**Versioning** : Git, migrations Laravel versionnees, schema-changelog. **[git verifie]** : 36 commits, historique reecrit, email unique propre.
+Le projet maintient une chaine de tracabilite des regles de gestion (RG-001 a RG-010) vers
+les cas de test critiques (TC-01 a TC-06). Exemple : le besoin de consentement se traduit
+par les regles RG-001/RG-005, verifiees par le test TC-02 (refus HTTP 422 en l'absence de
+`consentement_id`). Cette chaine illustre directement la maitrise du cadrage (BC01).
 
-### (b) Ce qui manque — **plusieurs points bloquants pour un jury**
-- **UML : AUCUN diagramme formel** (cas d'usage, sequence, classes, deploiement). `[CDCT]` §7 le confirme. Il n'y a que du MCD/MCT textuel (Merise) + schemas ASCII. **Le plan parle de "diagramme UML" — il n'existe pas.**
-- **SemGrep : ABSENT** (grep = 0). Cite dans l'audit comme *a faire*, jamais versionne (`[Tests-CI]` §5, `[Audit-secu]` F5).
-- **CI/CD : ABSENT** — aucun `.github/workflows`, GitLab CI, Jenkins. Tests/lint/build/scan 100% manuels (`[Tests-CI]` §5).
-- **npm audit / SBOM / Snyk / Dependabot : ABSENTS** (`[Tests-CI]`, `[Audit-secu]` F4).
-- **ESLint 9 non fonctionnel** : flat config `eslint.config.js` manquante -> `npm run lint` echoue (`[Tests-CI]` §3).
-- **playwright.config.ts : absent** -> E2E non executable en CI, URLs hardcodees.
-- **Tests de penetration : non realises** (exiges par BC04, `[Audit-secu]`).
-- **CVE-IDs formels : non cites** (2 CVE decrites sans numero).
-
-### (c) Recommandations examinateur
-- **UML : produisez au minimum 3 diagrammes avant la soutenance.** (1) Cas d'usage (Praticien/Client/Admin), (2) Sequence "workflow seance" (du consentement au QR), (3) Deploiement (Pi5, double WiFi, proxy, backend local, CRM distant). Vous pouvez les deriver directement du MCD existant et du parcours `[Code-device]` §3. **Ne dites pas "j'ai de l'UML" si vous montrez du Merise** — assumez Merise et ajoutez les 3 UML demandes par le referentiel.
-- **SemGrep + CI : le quick-win le plus rentable.** Un seul workflow GitHub Actions (typecheck + `vitest --coverage` + `npm audit` + job Semgrep + build arm64) transforme 4 gaps en 1 preuve BC04/BC05. Faisable en 1 jour. **Faites-le, meme minimal.**
-- **CSP** : ajoutez `session.defaultSession.webRequest.onHeadersReceived` avec `default-src 'self'` + sources explicites du flux microscope/medias. C'est 10 lignes, ferme F2.
-- **Reconciliez les divergences de specs** (Laravel 11/PHP 8.3/PG15 du YAML vs Laravel 13/PHP 8.4/PG16 du README ; port IA 3001 vs 3002 ; Jiusion vs Ninyoon ; stack Bun/Supabase obsolete du complement). **Le jury lira vos docs** : un seul chiffre faux et il tire le fil. Declarez `[CDCT]` v5.0 comme autoritaire et marquez le complement "obsolete".
-- **Piege classique** : *"Vous annoncez 65+ tests, j'en compte ~42 unitaires."* Reponse (chiffres reels) : *"42 unitaires Vitest + 136 e2e Playwright = 178 cas, mais seulement 4 services sur 9 couverts en unitaire et `crm-sync.service.ts` (372 l) a 0 test ; je connais ma dette et voici le plan."* L'honnetete sur la couverture (non mesuree faute de `--coverage`) vaut mieux qu'un chiffre gonfle. Ne JAMAIS annoncer "65+".
+Le perimetre commercial cible vise 6 miroirs sur 3 boutiques. Le perimetre du MVP de
+soutenance est volontairement reduit a une boutique et un tenant.
 
 ---
 
-## PARTIE 6 — Bilan (ameliorations, bilan personnel, remerciements)
+## PARTIE 3bis — Estimation, budget et cout total de possession
 
-### (a) Ce qui existe deja
-- **Backlog d'ameliorations chiffre et priorise** : P0-P3 dans `[Audit-secu]` §6 (chiffrer photos+token, npm audit fix+CSP, CV on-device, SBOM+CI, proxy Rust, spike Tauri, CNN Hailo, VLM AI HAT+2).
-- **Hors-scope post-MVP documente** : workflows n8n etendus, Redis/Horizon, temps reel Reverb, scaling load-balancer, multi-region, monitoring par tenant (`[Contexte-MVP]`).
-- **Recommandations ingenieur hardware** : supprimer `stream.py` redondant, consolider button-listener dans le proxy, purger les vestiges USB/UVC morts (le microscope reel est en WiFi/TCP JHCMD), valider SPACER_HEIGHT par mesure IR (`[Hardware]` §6).
+### Couts materiels
 
-### (b) Ce qui manque
-- **Bilan personnel** (ce que vous avez appris, difficultes, montee en competence) : **absent** — c'est intrinsequement a vous.
-- **Remerciements** : **absents** — a rediger.
-- **Bilan projet quantifie** (objectifs atteints vs cibles : MVP 1 boutique, IA >=80%, isolation tenant) : a formaliser depuis les criteres de succes `[Contexte-MVP]`.
+Le materiel unitaire avec ecran s'etablit autour de 1 000 a 1 100 EUR : ecran 32" ~700 a
+900 EUR (incertitude majeure, a figer par devis fournisseur), Raspberry Pi 5 ~150 a 200 EUR
+(tension RAM 2026), alimentation 27 W, refroidisseur actif, microSD, boitier imprime,
+microscope WiFi ~45 EUR, dongle ~15 EUR, cablage ~10 EUR. Hors ecran, le poste materiel
+revient a environ 250 a 290 EUR par miroir. L'ecran represente ainsi environ 70 a 75 % du
+BOM unitaire : c'est la vraie incertitude du cout total, le reste etant stable.
 
-### (c) Recommandations examinateur
-- **Le meilleur bilan personnel possible = l'incident de securite.** Racontez : "j'ai decouvert pendant la prep que le depot public fuyait 2 secrets reels, j'ai conduit la remediation complete, et j'ai compris la difference entre revoquer et nettoyer." C'est la preuve la plus forte de maturite (voir Section B). **C'est votre histoire de bilan.**
-- **Distinguez ameliorations "souhaitables" et "necessaires".** Le on-device CV / Hailo est *souhaitable* ; CSP / SBOM / CI / revocation des secrets sont *necessaires* et certains *deja faits*. Montrez que vous savez prioriser (Rasoir d'Ockham).
-- **Piege** : ne presentez pas la roadmap Hailo/Rust comme "fait". C'est P2/P3 non implemente.
+### Couts recurrents (OpEx)
+
+Charge mensuelle estimee entre 55 et 115 EUR par instance : VPS, stockage, sauvegarde,
+appels au service d'IA cloud (~3 300 appels/mois), nom de domaine, SMTP. Le choix d'ecarter
+un hebergement HDS (perimetre strictement cosmetique) economise 150 a 400 EUR/mois.
+
+### Cout d'usage de l'IA
+
+L'analyse cloud revient a environ 0,002 EUR par analyse, soit de l'ordre de 0,20 EUR par
+mois et par miroir a 100 analyses. Au cout strict, le cloud est plus economique qu'un
+accelerateur local ; l'investissement on-device se justifie par la souverainete et
+l'independance reseau, non par le prix. Cet arbitrage est assume.
+
+### Decoupage en lots (tiroirs)
+
+Le chiffrage projet se decompose en lots : (1) device Electron, (2) backend et base de
+donnees, (3) service IA, (4) microscope et proxy, (5) UX, (6) tests, CI et securite,
+(7) provisioning et boitier 3D, (8) gestion de projet. Le cout total de possession sur
+3 ans agrege le CapEx materiel et l'OpEx mensuel.
+
+---
+
+## PARTIE 4 — Gestion de projet et methodologie
+
+### Methodologie : Merise Agile + TDD
+
+La methode combine la rigueur de modelisation Merise (modele conceptuel de donnees MCD,
+modele conceptuel de traitements MCT etablis avant le code) et l'iteration agile
+(enrichissement incremental). Le Sprint 0 produit un MCD squelettique, enrichi sprint
+apres sprint. Cette combinaison repond a la contre-objection classique ("Merise releve du
+cycle en V") : la modelisation donne le socle de donnees, l'agile en gere l'evolution.
+
+Articulation avec la contre-attaque jury : Merise sert a la rigueur du modele de donnees,
+l'iteration agile sert a l'enrichir incrementalement. Sprint 0 = MCD squelettique, enrichi
+ensuite.
+
+### Cycle de developpement en 5 phases
+
+Document Project -> Analyse -> Planning -> Solutioning -> Implementation.
+
+### Niveaux de test
+
+Priorite aux niveaux bas de la pyramide : unitaire, puis integration, puis end-to-end. Les
+tests d'API sont traites comme des citoyens de premiere classe. La valeur de cette approche
+s'est verifiee lors de la bascule du backend mock vers l'integration CRM.
+
+### Role
+
+Le projet est pilote par un chef de projet unique, qui orchestre l'ensemble du cycle. Le
+versioning est assure par Git.
+
+---
+
+## PARTIE 5 — Cahier des charges technique (CDCT)
+
+### Stack technique realisee (MVP)
+
+Device (`smart-mirror/mirror-app`) :
+- Electron ^33.2.0, React ^19, TypeScript ^5.7, Zustand ^5.
+- electron-vite, electron-builder, electron-updater (mises a jour OTA avec rollback),
+  electron-store (config), qrcode, react-simple-keyboard (clavier tactile).
+
+Backend du device :
+- Le backend embarque du miroir est un mock Express (Node.js), reuni dans un fichier
+  unique exposant deux applications Express : une API simulant le backend ("Mock Laravel
+  API", port 8100) et un proxy IA ("Mock Express IA Proxy", port 3001). Ce n'est pas un
+  Laravel embarque.
+- Acces a la base : SQL brut via le driver `pg` (`Pool.query`), sans ORM.
+
+Base de donnees serveur :
+- PostgreSQL 15 (`postgres:15-alpine`), base `smartmirror`, schema charge depuis `init.sql`.
+  Types specifiques Postgres (UUID via `uuid-ossp`, JSONB pour le diagnostic IA, TEXT[]).
+  Multi-tenant par `boutique_id`, requetes parametrees contre l'injection SQL.
+
+Microscope et video :
+- Connexion WiFi/TCP vers `192.168.34.1:8080`, handshake protocole JHCMD a la connexion.
+- Codec source H.264, transcode en MJPEG par ffmpeg cote proxy. Le H.264 n'atteint jamais
+  le renderer. La preview en direct est un flux MJPEG (`multipart/x-mixed-replace`) affiche
+  dans une balise `<img>` pointant sur le port 9100. Les snapshots sont des JPEG recuperes
+  en HTTP (`/snapshot.jpg`) puis transmis par IPC. ffmpeg est central dans le pipeline.
+
+CRM separe (hors device) :
+- Un veritable Laravel existe, mais c'est le CRM separe (`crm/backend`, framework ^13.0),
+  deploye cote serveur. Il ne doit pas etre confondu avec le backend embarque du miroir.
+  La montee vers ce CRM Laravel constitue la cible / roadmap d'integration.
+
+### Modele de donnees
+
+- Le schema `init.sql` definit 9 tables : boutiques, clientes, consentements, miroirs,
+  seances, photos, produits, medias, et `config_miroir`.
+- Le MCD definit 8 entites : BOUTIQUE, CLIENTE, CONSENTEMENT, MIROIR, SEANCE, PHOTO,
+  PRODUIT, MEDIA. Chacune correspond 1:1 a une table SQL.
+- L'ecart 8 entites vs 9 tables s'explique par `config_miroir`, table technique de
+  configuration de l'interface du miroir, presente en base mais absente du MCD.
+- Divergences de nommage documentees : pour MIROIR, le MCD parle de
+  `adresse_mac/token_device/en_ligne` la ou le SQL utilise `device_token/is_online/ip_address`
+  (pas de colonne `adresse_mac`) ; pour PRODUIT, le MCD parle de `mis_en_avant` la ou le
+  SQL utilise `affiche_miroir`.
+
+### Verrou RGPD du consentement (deux niveaux)
+
+- Niveau base : `consentement_id UUID NOT NULL REFERENCES consentements(id)` sur la table
+  `seances`.
+- Niveau applicatif : `POST /api/seances` refuse en HTTP 422 si le `consentement_id` est
+  absent, et egalement si le consentement est introuvable ou revoque (verification de
+  `date_revocation IS NULL`). Le code retourne 422, et non 403.
+
+### Chiffrement et securite (etat realise)
+
+- Chiffrement au repos en AES-256-GCM via le service CryptoVault (singleton `cryptoVault`).
+  Format de la charge : version (1 octet) + IV (12 octets) + authTag GCM (16 octets) +
+  chiffre. Donnees chiffrees : photos de cuir chevelu (`.jpg.enc`), file de synchronisation
+  JSON, secrets et tokens de configuration. Avant upload vers le CRM, les `.jpg.enc` sont
+  dechiffres et le suffixe `.enc` retire du nom distant.
+- Gestion de la cle maitre, par ordre de priorite : variable d'environnement
+  `SMART_MIRROR_MASTER_KEY` (base64, 32 octets), puis credentials systemd, puis fichier
+  `MASTER_KEY_FILE`, puis cle de developpement locale en dernier recours. En production
+  sans cle, le service leve une exception (pas de degrade silencieux).
+- safeStorage d'Electron n'est pas utilise en production ; il n'apparait que dans le mock de
+  test. Le chiffrement applicatif repose sur CryptoVault.
+- Durcissement Electron : `sandbox: true`, `contextIsolation: true`, `nodeIntegration: false`,
+  et une CSP appliquee en production via `onHeadersReceived`. systemd durci
+  (`ProtectSystem=strict`, `NoNewPrivileges`), mode kiosk durci.
+
+### Integration continue (CI)
+
+Le pipeline `.github/workflows/ci.yml` definit des controles dont l'etat de blocage est le
+suivant :
+- Bloquants : `npm audit` au niveau CRITICAL sur les dependances de production, et le scan
+  de secrets gitleaks (job `secrets-scan`).
+- Non bloquants (`continue-on-error`) : `npm audit` au niveau high incluant les dependances
+  de developpement, la generation de SBOM CycloneDX (uploadee en artefact), et l'analyse
+  statique Semgrep.
+
+Cette gradation est assumee : les gates bloquants couvrent le risque critique avere et la
+fuite de secrets ; SBOM et Semgrep sont en place comme controles d'observation, non encore
+promus en gates bloquants.
+
+### Tests
+
+- Tests unitaires Vitest : 60 cas repartis sur 5 services (`src/main/services/`) :
+  api-client (14), config (14), crm-sync (18), crypto-vault (7), sync (7). Le service
+  crm-sync est donc bien couvert (18 cas). Les services non couverts en unitaire sont
+  media-cache, microscope, updater et wifi (5 services testes sur 9).
+- Tests end-to-end Playwright : 136 cas sur 4 fichiers (mirror-qa 14, qa-complete 65,
+  qa-senior-vm 42, vm-qa 15), dont des scenarios pilotes via CDP sur VM Debian 12.
+- Total : 196 cas (60 unitaires + 136 e2e). Six cas critiques (TC-01 a TC-06) couvrent
+  l'isolation tenant, le consentement 422, la synchronisation offline, l'authentification,
+  l'IA malformee et le fallback email. Le test crypto-vault verrouille notamment le fait
+  qu'un JPEG ecrit sur disque ne commence pas par l'en-tete FF D8 (preuve du chiffrement).
+
+### Build et packaging
+
+electron-builder cible Linux uniquement : formats deb et AppImage, chacun produit pour
+arm64 ET x64 (pas de mono-architecture). appId `com.dreamtech.smartmirror`, productName
+`SmartMirror`. Publication via `provider: generic` sur l'URL `${UPDATE_SERVER_URL}`. Aucune
+cible Windows ni macOS.
+
+### Benchmarks technologiques documentes
+
+- Electron vs Chromium kiosk : Chromium economise 300 a 500 Mo de RAM ; footprint RAM
+  maitrise (reconstruit a ~1,3 a 2,2 Go depuis le code), 4 Go suffisent pour le MVP (cf.
+  decision RAM, a valider par mesure 48 h), avec bascule documentee en repli.
+- Electron vs Tauri : Tauri presente un footprint inferieur, mais Rust + WebKitGTK fait
+  peser un risque sur le rendu glassmorphism (backdrop-filter) ; Electron retenu, Tauri
+  documente comme voie de migration mesuree.
+- PostgreSQL vs MySQL : PostgreSQL retenu pour JSONB, les types UUID/TEXT[] et l'isolation
+  multi-tenant par `boutique_id` (requetes parametrees).
+- Codecs : source microscope H.264 transcodee par ffmpeg en MJPEG pour la preview live
+  (balise `<img>`, port 9100) ; snapshots JPEG pleine resolution pour l'analyse. AV1/H.266
+  rejetes (pas de decodage materiel sur Pi 5).
+
+---
+
+## PARTIE 6 — Bilan et roadmap
+
+### Roadmap priorisee
+
+- Court terme : promotion en gate bloquant de l'audit de dependances apres remediation,
+  ajout d'un seuil de couverture de tests en CI.
+- Moyen terme : integration du CRM Laravel separe (Laravel 13, PHP 8.4, PostgreSQL 16 en
+  cible), pgcrypto sur colonnes sensibles, securisation complete du backend.
+- Long terme : evolution de la souverainete de l'IA (voir section dediee), accelerateur
+  materiel local (Hailo) sous reserve d'un dataset trichoscopique labellise.
+
+### Elements hors-scope post-MVP documentes
+
+Workflows d'automatisation etendus, file et workers asynchrones, temps reel, scaling
+horizontal (load-balancer, replicas), multi-region, monitoring par tenant.
+
+### Bilan projet
+
+Le MVP atteint ses criteres : perimetre une boutique / un tenant, isolation multi-tenant
+operationnelle des le depart, chaine de seance complete fonctionnelle en conditions
+offline-first.
 
 ---
 
 # SECTIONS TRANSVERSES
 
-## A) MAPPING RNCP 37046 — BC01 a BC06
+## A) Mapping RNCP 37046 — BC01 a BC06
 
-> Aligne sur `[Audit-secu]` §5 + preuves repo. Pour chaque bloc : preuves a mettre en avant + ce qui manque.
+| Bloc | Preuves dans le projet |
+|---|---|
+| BC01 — Specifier / cadrer | CDCF complet (problematique, besoins, contraintes, 3 cibles, parcours seance) ; finalite cosmetique explicite (hors MDR) ; 10 regles de gestion RG-001 a RG-010 tracees vers TC-01 a TC-06 ; cadre RGPD. |
+| BC02 — Concevoir l'architecture | Architecture en deux briques (device + back-office) plus services (proxy IA, proxy microscope) ; MCD 8 entites / 9 tables en base ; choix techniques justifies par benchmarks ; offline-first ; multi-tenant par `boutique_id` ; anticipation RGPD (chiffrement au repos, retention). |
+| BC03 — Developper | Device structure (services main, IPC typee, contextBridge) ; backend mock Express + PostgreSQL 15 ; pipeline microscope WiFi/TCP JHCMD -> ffmpeg MJPEG -> preview `<img>` ; QR et PDF ; boitier 3D parametrique ; versioning Git ; durcissement Electron (sandbox, contextIsolation, CSP en production) ; chiffrement au repos AES-256-GCM (CryptoVault) des photos, de la file de sync et des tokens. |
+| BC04 — Tester / mettre en production | 196 cas de test (60 unitaires Vitest dont crm-sync 18 + 136 e2e Playwright), 6 cas critiques ; CI GitHub Actions ; build electron-builder cross-architecture (deb + AppImage, arm64 et x64) ; OTA avec rollback ; systemd et kiosk durcis. |
+| BC05 — Maintenir / faire evoluer | Veille CVE ; roadmap priorisee ; OTA electron-updater ; cadre Cyber Resilience Act (SBOM CycloneDX en place, non bloquant) ; gestion des secrets via variables d'environnement et `.env.example`. |
+| BC06 — Piloter | Methodologie Merise Agile + TDD justifiee ; cycle en 5 phases ; priorisation ; hygiene du depot. |
 
-| Bloc | Preuves concretes a montrer | Manques a combler |
-|---|---|---|
-| **BC01 — Specifier / cadrer** | CDCF complet (problematique, besoins exhaustifs 3-6, contraintes, 3 cibles, parcours seance) ; finalite **cosmetique** explicite (hors MDR) ; 10 regles de gestion RG-001..010 ; cadre RGPD. Source `[CDCF]`, `[Contexte-MVP]`. | SWOT, PESTEL, veille concurrentielle (Parties 1-2). Personas detailles. |
-| **BC02 — Concevoir l'architecture** | Architecture 4 briques ; **MCD 9 tables** (`[Backend-DB]`) ; choix techno justifies + benchmarks (`[CDCT]` §3) ; offline-first/local-first ; multi-tenant RLS ; anticipation RGPD (chiffrement LUKS, retention, HDS debattu) ; microscope WiFi/TCP JHCMD (double-WiFi non automatise en V1, `wifi.service.ts` ne gere que `wlan0`). | **Diagrammes UML** (cas d'usage/sequence/deploiement). Decision finale cloud vs on-device (contradiction A/B). |
-| **BC03 — Developper** | Code device structure (9 services main, IPC typee, contextBridge) ; backend mock Express+PG15 ; pipeline microscope WiFi/TCP JHCMD -> ffmpeg MJPEG ; QR+PDF (qrcode, pdfkit) ; boitier 3D PETG parametrique (OpenSCAD) ; **versioning Git [git verifie]** ; sandbox actif (`index.ts:51`) et CSP en production (`index.ts:121-143`) ; **chiffrement au repos AES-256-GCM (cryptoVault) des photos, de la file de sync et des tokens** deja en place. | Couverture unitaire partielle (4/9 services, `crm-sync` 372 l a 0 test). Reste a faire : securiser le backend mock, pgcrypto, audit deps CI bloquant. |
-| **BC04 — Tester / mettre en prod** | 178 cas reels (42 unitaires Vitest dont `crypto-vault.service.test.ts` = 7 tests + 136 e2e Playwright), 6 TC critiques bloquants, systemd durci (`ProtectSystem=strict`, `NoNewPrivileges`), kiosk durci, electron-builder cross-arch, OTA avec rollback ; **CI GitHub Actions (`ci.yml`), `playwright.config` et ESLint flat config deja en place** ; sandbox actif (`index.ts:51`), CSP en production (`index.ts:121-143`) ; **chiffrement au repos AES-256-GCM verrouille par tests d'anti-regression**. **Remediation secrets = test de securite vecu.** | SemGrep, SBOM, tests de penetration, audit deps CI bloquant (apres `npm audit fix`), couverture `crm-sync`, securisation du backend mock, pgcrypto. |
-| **BC05 — Maintenir / faire evoluer** | Veille CVE (2 CVE hautes identifiees) ; roadmap P0-P3 chiffree ; OTA electron-updater ; **incident secrets -> process de revocation/rotation** ; cadre CRA (SBOM a venir). | SBOM CycloneDX, Dependabot/npm audit en CI, CVE-IDs formels, DPA OpenRouter signe. |
-| **BC06 — Piloter** | Methodo Merise Agile + TDD justifiee ; 5 phases ; **gestion d'incident securite documentee (backup, filter-repo, force-push)** ; priorisation P0-P3 ; hygiene repo. | Backlog date/chiffre, sprints, jalons. Nettoyage `_byan/`+`.claude/` du repo produit (F9). |
+## B) Securite (presentee comme une force — BC04 et BC05)
 
-## B) POSTURE SECURITE (a presenter comme une FORCE — BC04 + BC05)
+Mesures realisees et verifiables dans le code :
+- Isolation Electron : `contextIsolation: true`, `nodeIntegration: false`, contextBridge
+  propre, refus des fenetres externes (`setWindowOpenHandler` deny), `sandbox: true`, CSP
+  appliquee en production.
+- Chiffrement : photos (`.jpg.enc`), file de synchronisation et tokens (device.token,
+  crmToken, crmBearerToken) chiffres au repos en AES-256-GCM via CryptoVault ; cle maitre
+  resolue selon l'ordre environnement -> credentials systemd -> keyfile -> repli dev, avec
+  exception levee en production en l'absence de cle.
+- RGPD : consentement obligatoire cote API (refus HTTP 422 si absent ou revoque), retention
+  des photos a 30 jours, vocabulaire medical proscrit, isolation multi-tenant par `boutique_id`.
+- Gestion des dependances : 2 CVE hautes identifiees (Electron, fast-uri) suivies pour
+  remediation ; audit en CI.
 
-**Etat reel verifie dans le code** :
-- **Isolation Electron** : `contextIsolation:true`, `nodeIntegration:false`, contextBridge propre, window.open deny. **Mais `sandbox:false`** (F6) et **CSP absente** (`[git verifie]` : confirme, aucune meta ni header). `[Code-device]` §5.
-- **Secrets / chiffrement** : **photos JPEG (`.jpg.enc`), file de sync et tokens (device.token, `crmToken`, `crmBearerToken`) chiffres au repos en AES-256-GCM via cryptoVault** ; safeStorage et la branche plaintext supprimes ; cle maitre env -> systemd-creds (TPM) -> keyfile -> fallback dev, THROW en prod sans cle. **Reste a faire** : securiser le backend mock (PDF de seance, secrets en dur, device_token non hache) et pgcrypto en base. `[Audit-secu]`.
-- **RGPD** : consentement obligatoire cote API (422 sans `consentement_id`), retention 30j, vocabulaire medical banni, multi-tenant RLS, **chiffrement au repos des photos desormais reel sur le device**. **Point de vigilance restant** : le claim "pas de partage tiers" reste a nuancer car OpenRouter (US) sera dans la boucle en cible (C2).
-- **CVE** : 2 hautes (Electron window.open + injection switch ; fast-uri path traversal), **sans CVE-ID** -> a numeroter. `[Audit-secu]` F1.
+Points de vigilance documentes (cible) : securisation complementaire du backend, pgcrypto
+sur colonnes sensibles, et surtout l'enjeu de confidentialite lie au transfert de la photo
+vers le service d'analyse cloud (voir note RGPD ci-dessous).
 
-**L'INCIDENT DE FUITE DE SECRETS — votre meilleur atout oral** (verifie par moi) :
-- **Constat** : depot public contenant **2 secrets reels** : (S1) un **PAT GitHub `ghp_...`** present dans le champ email auteur de **31 commits** ; (S2) un **token Bearer CRM en dur dans `smart-mirror/start.sh`**.
-- **Remediation conduite** : backup bundle -> reecriture complete de l'historique avec **git filter-repo** (purge du token CRM de tous les blobs + correction des 31 emails + suppression de 2 fichiers au nom illegal Windows avec deux-points) -> durcissement `start.sh` (token charge depuis `.env`/env, `.env.example` ajoute, `.gitignore` corrige) -> **force-push**.
-- **Reste a faire (a annoncer comme tel)** : **revocation du PAT GitHub** et **rotation du token CRM** cote fournisseur.
-- **[git verifie] — la remediation tient** : `git rev-list --all` = **36 commits**, **un seul email auteur** `adriano.palamara19@gmail.com`, **zero occurrence `ghp_`** dans les emails de tout l'historique, **zero `Bearer` token dans start.sh** des blobs, `.env.example` documente explicitement la fuite et la revocation, `.gitignore` exclut `.env`/`.env.*` (sauf `.env.example`).
+## C) Souverainete de l'IA et confidentialite des donnees
 
-**Le message pedagogique cle (a dire mot pour mot au jury)** :
-> *"Reecrire l'historique avec git filter-repo, c'est de l'**hygiene** : ca empeche un nouveau visiteur de trouver le secret. Mais tout fork ou clone anterieur le possede encore. La **vraie remediation, c'est la revocation** : un PAT revoque et un token CRM rotates sont inutilisables, peu importe ou la chaine de caracteres traine encore. J'ai fait les deux : nettoyage pour l'hygiene, revocation/rotation pour la securite reelle."*
+### Etat realise (MVP)
 
-C'est exactement la nuance qui separe un junior d'un chef de projet IoT senior. **Exploitez-la.**
+- Chemin par defaut de l'application : le proxy IA du device (port 3001) est un mock. Les
+  scores sont generes aleatoirement (`Math.random`), la latence simulee, le modele est une
+  chaine litterale en dur. L'image recue n'est pas exploitee. Il n'existe aucune vision par
+  ordinateur on-device : aucun OpenCV, aucune cascade Haar, aucune inference CPU locale.
+- Service d'analyse IA reel : un second service (`crm/ia-service`, port 3002) realise un
+  veritable appel reseau. Il envoie la photo JPEG complete encodee en base64 vers GitHub
+  Models (plateforme Azure, hebergement US), en vision multimodale (`image_url`),
+  authentifie par `GITHUB_TOKEN`, sur des modeles vision (Llama-3.2-11B-Vision,
+  Phi-3.5-vision, gpt-4o-mini). Ce service est deploye cote serveur (CRM), pas sur le
+  device. Le fournisseur reellement appele dans le code est GitHub Models / Azure, et non
+  OpenRouter.
 
-**Tests de penetration** : non realises. A annoncer comme prochain jalon BC04, ou a faire a minima un `npm audit` + Semgrep + un scan OWASP ZAP sur le backend avant l'oral.
+Consequence RGPD a documenter : dans le chemin d'analyse reel, la photo quitte le device
+vers un cloud situe hors UE. La contrainte "flux local" s'applique au flux video temps
+reel ; les snapshots d'analyse, eux, sont transmis. Ce transfert doit etre encadre
+(consentement explicite, contrat de sous-traitance) et constitue le principal point de
+vigilance de confidentialite.
 
-## C) OPTIMISATION (signature examinateur) — donnees, energie, materiel, budget
+### Roadmap de souverainete (trois versions, cible)
 
-**Energie** :
-- Pi 5 sous Electron + video = **5.7-6.8 W** (`[Hardware]` SPECS.md:69). Levier : ffmpeg `-r 15 -q:v 5` plafonne le decode ; passer a `-r 10` baisserait CPU/conso/temperature.
-- Pas de DPMS (kiosk 24/7) -> **le backlight ecran domine le bilan energetique, hors SBC**. Arbitrage assume : disponibilite > economie d'energie de veille.
-- SoC 65-75 C, marge 5-15 C avant throttle (80 C) avec Active Cooler.
+| Critere | V1 actuelle (cloud US) | V2 cloud souverain (Mistral UE) | V3 NPU local offline |
+|---|---|---|---|
+| Souverainete | Faible (hebergement US) | Elevee (editeur et hebergement UE) | Maximale (rien ne sort du miroir) |
+| Dependance internet | Oui | Oui | Non |
+| Type de sortie | Langage naturel | Langage naturel | Voie A : labels + scores ; Voie B : langage naturel |
+| Cout materiel | Pi 5 seul | Pi 5 seul | + HAT NPU 70 a 130 EUR |
+| Cout d'usage | ~0,002 EUR/analyse | fractions de centime a ~1 ct EUR | 0 EUR marginal |
+| Statut RGPD | Transfert hors UE | Pas de transfert hors UE si endpoint EU + Zero Data Retention + DPA | Aucun traitement externe |
 
-**Place / pertinence materielle** :
-- Boitier **29.3 mm** (profil SLIM) vs 40.7 mm avec NVMe HAT = **-28% d'epaisseur** en supprimant le M.2 HAT+, sans perte thermique. microSD au lieu de SSD = zero volume additionnel. `[Hardware]` SPECS.md:59-63.
-- **Arbitrage Hailo** : le HAT IA occupe le slot PCIe/M.2 -> **incompatible SSD NVMe simultane** + necessite un dataset trichoscopique labellise (projet a part entiere). D'ou IA cloud en MVP. `[Audit-secu]` §6.
-- Microscope WiFi mutualise **capture video + bouton physique sur une seule interface** -> pas de GPIO, pas de cablage, BOM simplifie.
+- V2 (Mistral AI, UE) : Mistral est une entreprise francaise, hebergement UE par defaut,
+  routage US en option explicite, Zero Data Retention contractualisable via DPA. La gamme
+  vision actuelle est Medium 3.5 / Large 3 / Ministral 3 (Pixtral etant deprecie depuis
+  debut 2026). Cette option rend l'analyse substantiellement souveraine, sans etre 100%
+  locale : l'image quitte toujours le miroir. La souverainete UE depend de la configuration
+  (endpoint EU + ZDR active + DPA signe).
+- V3 (NPU local sur Pi 5) : deux voies realistes. Voie A (defendable aujourd'hui) :
+  classification CNN dediee sur Hailo-8 (par exemple "cuir chevelu sec / gras / pellicules /
+  normal"), sortie en labels + scores, texte cosmetique genere par regles cote application,
+  100% offline. Voie B (prospective) : VLM generatif local, possible seulement avec le tres
+  recent Hailo-10H (AI HAT+ 2, janvier 2026) ou un petit VLM sur CPU a latence degradee. Un
+  VLM generatif "diagnostic en langage naturel 100% local" n'est pas realiste sur
+  Hailo-8/8L (limite SRAM : pas d'interface memoire externe).
 
-**Donnees** :
-- Retention : photos serveur 365j, photos locales 30j post-sync, QR 30j, logs 90j (`[CDCT]` §9). Minimisation RGPD.
-- Sync **incrementale par checksum SHA-256**, cache medias <2 Go, lecture cache local (jamais CDN direct). 
-- RAM miroir **<6 Go sur 8** (contrainte tendue) -> gate non negociable Electron (sinon bascule Chromium kiosk, -300/500 Mo).
-- Codec : H.264 inter-frame pour preview fluide, JPEG/MJPEG intra-frame plein resolution pour l'analyse IA (nettete). AV1/H.266 rejetes (Pi5 sans decodage materiel AV1).
+### Note RGPD transversale
 
-**Budget** (arbitrages chiffres) :
-- Materiel **~1 035 EUR/unite** (avec ecran) = ~800 ecran + ~235 le reste (= ~180 hors ecran du CDCT + ~55). **Les deux sources concordent une fois l'ecran isole.**
-- OpEx **55-115 EUR/mois** ; **HDS ecarte = -150 a -400 EUR/mois** (arbitrage : finalite cosmetique, pas de donnees de sante au sens MDR).
-- IA cloud **~0,002 EUR/analyse** : honnetete budgetaire de l'audit -> **le cloud gagne au cout** ; l'on-device se justifierait par souverainete/reproductibilite/independance, **pas par le prix**. Dites-le : c'est un arbitrage assume, pas un oubli.
+Une image de cuir chevelu a finalite cosmetique n'est en principe pas une donnee de sante
+au sens de l'article 9 du RGPD, tant qu'aucune finalite medicale (diagnostic de pathologie)
+n'est revendiquee. D'ou le cadrage strict "cosmetique, non medical" dans toute la
+documentation et le code (vocabulaire medical proscrit, seuil de non-conclusion si la
+confiance est inferieure a 60%).
 
-**Phrase signature pour le jury** : *"Chaque choix materiel est un arbitrage chiffre : -28% d'epaisseur en sacrifiant le NVMe, IA cloud a 0,002 EUR plutot qu'un Hailo a 220 EUR non amorti sur un MVP mono-boutique, et HDS ecarte pour -150 a -400 EUR/mois grace au cadrage cosmetique strict."*
+## D) Optimisation (donnees, energie, materiel, budget)
 
-## D) PREPARATION ORALE
+Energie :
+- Pi 5 sous Electron avec video : 5,7 a 6,8 W. Levier : ffmpeg `-r 15 -q:v 5` plafonne le
+  decodage ; passer a `-r 10` reduirait CPU, consommation et temperature.
+- Pas de mise en veille ecran (kiosk 24/7) : le retroeclairage domine le bilan energetique,
+  arbitrage disponibilite > economie de veille assume.
+- SoC entre 65 et 75 C, marge avant throttle (80 C) preservee par l'Active Cooler.
 
-### 12 questions de jury difficiles + reponses modeles
+Materiel :
+- Boitier en profil slim (29,3 mm) contre 40,7 mm avec HAT NVMe, soit -28% d'epaisseur en
+  supprimant le M.2 HAT, sans perte thermique ; microSD au lieu de SSD.
+- Un accelerateur Hailo occuperait le slot PCIe/M.2 (incompatible SSD NVMe simultane) et
+  exigerait un dataset trichoscopique labellise : d'ou l'IA cloud en MVP.
+- Le microscope WiFi mutualise capture video et bouton physique sur une seule interface :
+  pas de GPIO, pas de cablage, BOM simplifiee.
 
-1. **"Vous dites que les photos ne sortent pas du local, mais l'IA est sur OpenRouter (US). Expliquez."**
- -> *"Le flux video live reste 100% local. Seuls des snapshots JPEG partent vers OpenRouter pour analyse — c'est un transfert hors UE que j'encadre par DPA + consentement explicite. La suppression totale du transfert passe par le CV on-device (OpenCV), que j'ai documente en roadmap P1."*
+Donnees :
+- Retention : photos serveur 365 jours, photos locales 30 jours apres synchronisation, QR
+  30 jours, logs 90 jours. Minimisation RGPD.
+- Synchronisation incrementale par checksum SHA-256, cache medias < 2 Go, lecture du cache
+  local.
+- RAM miroir maintenue sous 6 Go sur 8 (gate non negociable Electron).
 
-2. **"Vous affirmez que les photos sont chiffrees localement. Montrez la ligne de code."**
- -> *"Oui : `sync.service.ts` `savePhotoLocally` ecrit un `.jpg.enc` produit par `cryptoVault.encryptBuffer` (AES-256-GCM, `crypto-vault.service.ts`), et `config.service.ts` chiffre de la meme facon device.token, crmToken et crmBearerToken. J'avais identifie l'ecriture en clair dans mon propre audit ; je l'ai corrigee, supprime safeStorage et la branche plaintext, et verrouille avec un test prouvant que le fichier sur disque ne commence pas par FF D8. Ce qui reste a faire est cote backend mock et pgcrypto."*
+Budget :
+- Materiel ~1 000 a 1 100 EUR/unite (ecran ~700 a 900 + ~250 a 290 hors ecran) ; l'ecran pese ~70 a 75 % du BOM, vraie variable de cout.
+- OpEx 55 a 115 EUR/mois ; HDS ecarte (-150 a -400 EUR/mois) grace au cadrage cosmetique.
+- IA cloud ~0,002 EUR/analyse : le cloud gagne au cout strict, l'on-device se justifie par
+  la souverainete.
 
-3. **"C'est un diagnostic capillaire : donc un dispositif medical ?"**
- -> *"Non. Finalite strictement cosmetique, aucune allegation therapeutique, vocabulaire medical banni cote code (RG-010 : alopecie/inflammation/pathologie interdits), seuil 'non concluant' si confiance <60%. On reste hors MDR et hors RGPD art.9."*
+## E) Architecture offline-first (point fort BC02/BC03)
 
-4. **"npm audit renvoie 2 CVE hautes. Quel est votre process de veille ?"**
- -> *"Electron (window.open + injection switch) et fast-uri (path traversal). Remediation : npm audit fix + montee Electron 33->34. Pour industrialiser : CI avec npm audit + Semgrep + SBOM CycloneDX, conformement au CRA. Aujourd'hui c'est manuel, c'est ma priorite P1."*
+L'application est concue offline-first : `savePhotoLocally` ecrit la photo chiffree sur
+disque puis l'ajoute a la file de synchronisation avant toute operation reseau. La file de
+synchronisation est un fichier JSON chiffre (`/var/smart-mirror/sync-queue.json`), sans
+broker (ni MQTT, ni Redis, ni AMQP). Le traitement de la file (`processQueue`) ne s'execute
+que si le device est provisionne et reempile l'element en cas d'erreur reseau (retry).
+Polling toutes les 30 s, heartbeat toutes les 60 s, purge des photos expirees (30 jours)
+hors elements encore en file. Le device ne dialogue jamais directement avec la base
+distante : il passe par le backend. Une seance peut donc se terminer entierement hors ligne.
 
-5. **"Pourquoi Electron et pas Tauri, techniquement superieur ?"**
- -> *"Tauri 2 est meilleur sur le footprint (2-10 Mo vs centaines) et la RAM. Mais Rust + WebKitGTK pose un risque sur le glassmorphism (backdrop-filter) et sur le delai. J'ai retenu Electron avec une gate RAM non negociable (<6 Go sur Pi5) et documente Tauri comme voie de migration mesuree au Sprint 1."*
-
-6. **"Vous annoncez 65+ tests : votre couverture reelle ?"**
- -> *"Le chiffre exact est 178 cas : 42 unitaires Vitest + 136 e2e Playwright. La couverture unitaire est partielle : 4 services sur 9 seulement, et `crm-sync.service.ts` (372 l) est a 0 test. Le nouveau `crypto-vault.service.test.ts` (7 tests) verrouille le chiffrement. Je ne dis JAMAIS 65+ ; c'etait une erreur d'un ancien livrable. Mon plan : --coverage avec seuil en CI."*
-
-7. **"Comment industrialisez-vous la qualite avant merge ?"**
- -> *"La CI GitHub Actions est deja en place (`ci.yml`), avec `playwright.config` et ESLint flat config. L'audit deps n'est pas encore bloquant (`continue-on-error`) : je le rends bloquant apres `npm audit fix`. Reste a ajouter Semgrep et un SBOM CycloneDX (CRA), ainsi qu'un seuil de couverture."*
-
-8. **"Que se passe-t-il si le WiFi ou le CRM tombe en pleine seance ?"**
- -> *"L'architecture est offline-first. La photo est ecrite sur disque immediatement, la seance bufferisee avec synced=false, et une file rejoue l'upload toutes les 30s, la sync CRM toutes les 60s. Le miroir parle a un backend Laravel local, jamais directement a la DB distante. La seance se termine meme totalement hors ligne."*
-
-9. **"Vous parlez de diagramme UML : montrez-le."**
- -> *"J'ai modelise en Merise (MCD 9 tables, MCT) car ma methodo est Merise Agile. Pour le referentiel, j'ai ajoute trois diagrammes UML : cas d'usage, sequence du workflow seance, et deploiement. Les voici."* (NE dites ceci que si vous les avez produits — sinon, voir Partie 5b.)
-
-10. **"Vous revendiquez first-mover, aucun concurrent. Vraiment ?"**
- -> *"Pas de concurrent direct sur le couplage microscope WiFi + IA + CRM en institut K-Beauty. Des acteurs adjacents existent : HiMirror/Care OS cote miroir, FotoFinder cote trichoscopie medicale, SkinConsult cote diagnostic cosmetique IA. Notre differenciation : le suivi longitudinal en boutique relie au CRM Shopify."*
-
-11. **"Votre depot a fuite des secrets. Qu'avez-vous fait, et est-ce suffisant ?"**
- -> *"Deux secrets reels : un PAT GitHub dans l'email de 31 commits, et un token CRM en dur dans start.sh. J'ai backupe, reecrit l'historique avec git filter-repo, durci start.sh (.env + .gitignore), force-pushe. Mais nettoyer l'historique n'est que de l'hygiene : la vraie remediation, c'est la revocation du PAT et la rotation du token CRM, que je realise cote fournisseur. Le nettoyage protege les nouveaux visiteurs, la revocation neutralise les clones existants."*
-
-12. **"Scaling a 100 salons : votre archi tient ?"**
- -> *"Le MVP cible 1 boutique, 1 tenant. L'isolation multi-tenant par boutique_id + RLS PostgreSQL est en place des le depart. Le scaling horizontal (load-balancer, replicas PG, CDN, Redis/Horizon, monitoring par tenant) est explicitement hors-scope MVP et documente en post-MVP. Le modele economique SaaS B2B par boutique finance cette montee en charge."*
-
-### Minutage indicatif des 40 minutes
-
-| Bloc | Minutes | Justification |
-|---|---|---|
-| Intro + presentation perso/pro (OHADJA/vous) + SWOT KBEAUTY | **4 min** | Cadre rapide, ne pas s'attarder |
-| Partie 2 — contexte, PESTEL, veille | **4 min** | Poser le "pourquoi", desamorcer le first-mover |
-| Partie 3 — CDCF (problematique/besoin/contrainte/solution) | **6 min** | Votre socle le plus solide, valorisez la tracabilite besoin->RG->test |
-| Partie 3bis — devis / J/H / budget | **3 min** | Court mais chiffre (TCO, tiroirs) |
-| Partie 4 — gestion de projet | **3 min** | Merise Agile justifiee, vous = chef de projet unique |
-| Partie 5 — CDCT (archi, benchmarks, UML, securite, tests) | **12 min** | **Le coeur technique** : demo archi, MCD, benchmarks Electron/Tauri, securite |
-| Section B — incident securite (integre dans P5/P6) | **3 min** | Votre moment fort, racontez l'histoire revocation vs hygiene |
-| Section C — optimisation (chiffres) | **2 min** | Signature : 3 arbitrages chiffres max |
-| Partie 6 — bilan, ameliorations, remerciements | **3 min** | Cloture, roadmap P0-P3, bilan perso = l'incident |
-| **Demo live / marge** | **garder ~5 min de marge** sur les 40 + reserver le Q&A separement |
-
-**Conseil de minutage** : si vous montrez une **demo du workflow seance** (Veille -> Consentement -> Session microscope -> Bilan -> QR), placez-la dans la Partie 5 et comptez 3-4 min ; reduisez d'autant les Parties 1-2.
+Cote stockage local du device, il n'existe aucun SQLite : la persistance repose sur
+electron-store (configuration), le fichier JSON chiffre de la file de synchronisation, et
+les fichiers `.jpg.enc`. La seule base relationnelle du systeme est le PostgreSQL 15 du
+serveur.
 
 ---
 
-## Synthese des contradictions/manques a NE PAS cacher au jury
+## Preparation orale — questions cles et reponses alignees
 
-1. **Cloud (code) vs on-device (audit)** : narratifs incompatibles — choisir.
-2. **OHADJA absent** du depot — entreprise a presenter par vous seul.
-3. **SWOT, PESTEL, veille, devis J/H, UML, planning sprints** : **tous absents** du repo — a produire.
-4. **Divergences de specs RECONCILIEES** : trancher Laravel 13 / PHP 8.4 / PG16 partout (cible, etiquetee CIBLE ROADMAP) ; backend realise = mock Express + PG15 ; port IA = 3001 ; microscope = WiFi/TCP JHCMD (USB/UVC = vestiges morts) ; stack Bun/Supabase obsolete.
-5. **Deja en place** : CI GitHub Actions (`ci.yml`), `playwright.config`, ESLint flat config. **Restent a ajouter** : SemGrep, SBOM, audit deps CI bloquant, pentest.
-6. **Etat chiffrement actualise** : photos (`.jpg.enc`), file de sync et tokens desormais chiffres au repos AES-256-GCM via cryptoVault (`crypto-vault.service.ts`, `sync.service.ts`, `crm-sync.service.ts`, `config.service.ts`) ; reste a corriger cote backend mock et "pas de partage tiers / local only" (cible OpenRouter US).
-7. **"65+ tests"** : faux. Chiffres reels = 42 unitaires + 136 e2e = 178 cas (4/9 services en unitaire).
-8. **Reecriture d'historique** : 36 commits aujourd'hui, dates non representatives du dev reel — assumer.
+1. "Le flux video reste local mais l'analyse IA part dans le cloud, expliquez."
+   Le flux video en direct du microscope reste 100% local. Seuls les snapshots JPEG sont
+   transmis au service d'analyse IA reel (`crm/ia-service`, cote serveur), qui les envoie a
+   GitHub Models (Azure, US). C'est un transfert hors UE encadre par consentement explicite
+   et contrat de sous-traitance. La suppression totale du transfert passe par la souverainete
+   V2 (Mistral UE) ou V3 (NPU local), documentees en roadmap.
 
-Fichiers sources cles (chemins absolus) : `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\CDC_DreamTech.md`, `...\CDC_Technique_SmartMirror_Final.md`, `...\smart_mirror_specs_techniques.md`, `...\README.md`, `...\docs\DEFENSE-JURY.md`, `...\docs\PROJET-MVP.md`, `...\smart-mirror\start.sh`, `...\smart-mirror\.env.example`, `...\.gitignore`, `...\smart-mirror\mirror-app\src\main\index.ts`, `...\smart-mirror\mock-api\{server.js,init.sql}`, `...\smart-mirror\enclosure\SPECS.md`, `...\figma-exports\docs\*.md`, `C:\Users\adria\Documents\Projets\PROJET\AUDIT_DECISIONS_SmartMirror_KBEAUTY.md`.
+2. "Montrez que les photos sont chiffrees localement."
+   `savePhotoLocally` ecrit un fichier `.jpg.enc` produit par CryptoVault (AES-256-GCM,
+   `crypto-vault.service.ts`) ; `config.service.ts` chiffre de la meme facon device.token,
+   crmToken et crmBearerToken. Un test verrouille le fait que le fichier sur disque ne
+   commence pas par l'en-tete JPEG FF D8.
+
+3. "Diagnostic capillaire : est-ce un dispositif medical ?"
+   Non. Finalite strictement cosmetique, aucune allegation therapeutique, vocabulaire
+   medical proscrit cote code (RG-010), seuil de non-conclusion si confiance < 60%. Hors MDR
+   et hors RGPD art. 9.
+
+4. "Quel est l'etat de votre veille sur les dependances ?"
+   Deux CVE hautes identifiees (Electron, fast-uri), suivies pour remediation. La CI execute
+   un audit (bloquant au niveau critical/prod, observant au niveau high) et genere un SBOM
+   CycloneDX. L'industrialisation continue avec la promotion progressive des controles en
+   gates bloquants.
+
+5. "Pourquoi Electron et pas Tauri ?"
+   Tauri offre un meilleur footprint, mais Rust + WebKitGTK fait peser un risque sur le
+   rendu glassmorphism. Electron retenu avec une gate RAM non negociable (<6 Go sur Pi 5),
+   Tauri documente comme voie de migration mesuree.
+
+6. "Quelle est votre couverture de tests ?"
+   196 cas au total : 60 unitaires Vitest (api-client 14, config 14, crm-sync 18,
+   crypto-vault 7, sync 7) sur 5 services, et 136 e2e Playwright sur 4 fichiers. La
+   couverture unitaire vise 5 services sur 9 ; l'extension aux services restants est
+   planifiee.
+
+7. "Comment industrialisez-vous la qualite avant merge ?"
+   CI GitHub Actions : audit de dependances (bloquant critical/prod), scan de secrets
+   gitleaks (bloquant), plus SBOM CycloneDX et Semgrep en controle d'observation. La
+   prochaine etape est la promotion de ces controles en gates et l'ajout d'un seuil de
+   couverture.
+
+8. "Que se passe-t-il si le reseau tombe en pleine seance ?"
+   L'architecture est offline-first : la photo est chiffree et ecrite sur disque
+   immediatement, la seance bufferisee, une file rejoue l'upload (30 s) et la synchronisation
+   CRM (60 s). Le miroir parle a un backend local, jamais directement a la base distante. La
+   seance se termine meme totalement hors ligne.
+
+9. "Quelle est votre demarche de modelisation ?"
+   Modelisation Merise (MCD 8 entites, MCT) au coeur de la methode Merise Agile, completee
+   par les diagrammes UML demandes par le referentiel (cas d'usage, sequence du workflow
+   seance, deploiement).
+
+10. "Vous revendiquez une position de precurseur ?"
+    Non. Le marche n'est pas vide : K-Scan (L'Oreal/Kerastase), BECON (coreen, Samsung),
+    FotoFinder, Aram Huvis/ARAMO en analyse capillaire ; CareOS, HiMirror en miroir beaute.
+    Je ne revendique aucun first-mover ; la differenciation tient a l'integration verticale
+    (microscope WiFi + IA + CRM offline-first) et au suivi longitudinal relie au CRM Shopify,
+    pour le creneau B2B institut K-Beauty.
+
+11. "Le scaling a 100 salons tient-il ?"
+    Le MVP cible une boutique, un tenant. L'isolation multi-tenant par `boutique_id` est en
+    place des le depart. Le scaling horizontal est explicitement hors-scope MVP et documente
+    en post-MVP.

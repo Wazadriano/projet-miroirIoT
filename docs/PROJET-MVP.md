@@ -55,16 +55,16 @@ Le backend est multi-tenant : chaque boutique est isolee au niveau des donnees. 
 
 ### 2.3 IA Service (Microservice Diagnostic)
 
-ETAT REEL (MVP realise) : l'IA est MOCKEE. Le proxy Express renvoie des scores generes par `Math.random` avec un commentaire en dur (`server.js:514-545`), modele cosmetique `'google/gemini-flash-1.5'`, sans aucun appel reseau a un vrai modele de vision. La colonne CIBLE decrit le branchement OpenRouter planifie, non encore code.
+ETAT REEL (MVP realise) : sur le device, l'IA est MOCKEE. Le proxy Express renvoie des scores generes par `Math.random` avec un commentaire en dur (`server.js:518-549`), modele cosmetique `'google/gemini-flash-1.5'`, sans aucun appel reseau a un vrai modele de vision. Un service IA reel existe cote serveur CRM (`crm/ia-service` :3002) et appelle GitHub Models (Azure US), mais il n'est pas branche par defaut sur le device. La colonne CIBLE decrit ce branchement, non encore actif cote miroir. OpenRouter n'est jamais appele dans le code.
 
 | Parametre       | REALISE (MVP)                               | CIBLE ROADMAP (non implemente)              |
 |-----------------|---------------------------------------------|---------------------------------------------|
-| Runtime         | Node.js + Express (proxy mock)              | Node.js + Express branche sur OpenRouter     |
-| API             | Aucune (scores `Math.random`, `server.js:514-545`) | OpenRouter (LLM vision reel)                 |
-| Modeles         | Mock cosmetique `google/gemini-flash-1.5`   | Gemini Flash (primaire), GPT-4o mini puis Claude 3.5 Haiku (fallbacks) |
-| Port            | 3001                                        | 3001                                        |
+| Runtime         | Node.js + Express (proxy mock)              | Node.js + Express branche sur GitHub Models (Azure US) -- deja code dans `crm/ia-service` |
+| API             | Aucune (scores `Math.random`, `server.js:518-549`) | GitHub Models / models.inference.ai.azure.com (auth `GITHUB_TOKEN`) ; OpenRouter jamais appele |
+| Modeles         | Mock cosmetique `google/gemini-flash-1.5`   | Llama-3.2-11B-Vision, Phi-3.5-vision, gpt-4o-mini (GitHub Models) |
+| Port            | 3001                                        | 3001 (mock device) / 3002 (service IA reel, cote serveur) |
 
-CIBLE ROADMAP : le service recevra une photo capturee par le microscope, la transmettra au modele de vision OpenRouter, et retournera un diagnostic structure en JSON avec score de confiance. Un envoi de photo de cuir chevelu vers OpenRouter (routage possible hors UE) est un transfert de donnee potentiellement de sante (art. 9 RGPD) a encadrer (Zero Data Retention, routage EU in-region, SCC, ou minimisation). Le fallback a plusieurs niveaux vise la disponibilite meme en cas d'indisponibilite d'un modele.
+CIBLE ROADMAP (cote device) : le service recevra une photo capturee par le microscope, la transmettra au modele de vision GitHub Models (Azure US), et retournera un diagnostic structure en JSON avec score de confiance. Le service IA reel `crm/ia-service` envoie deja le JPEG complet en base64 a GitHub Models (Azure US, hors UE) : c'est un transfert de donnee potentiellement de sante (art. 9 RGPD) a encadrer (Zero Data Retention, routage EU in-region, SCC, ou minimisation). Le fallback a plusieurs niveaux vise la disponibilite meme en cas d'indisponibilite d'un modele.
 
 Important : le diagnostic est cosmetique, jamais medical. Le praticien conserve toujours le dernier mot.
 
@@ -100,8 +100,8 @@ Le proxy etablit le handshake JHCMD vers le microscope WiFi, transcode le flux H
         |
 5. Le praticien lance l'analyse IA (MVP : mockee)
    -> Les photos sont envoyees au service IA mock (:3001)
-   -> MVP : scores Math.random (server.js:514-545)
-   -> [CIBLE ROADMAP] OpenRouter LLM vision : Gemini Flash -> GPT-4o mini -> Claude 3.5 Haiku
+   -> MVP : scores Math.random (server.js:518-549)
+   -> [CIBLE ROADMAP] GitHub Models (Azure US) vision : Llama-3.2-11B-Vision -> Phi-3.5-vision -> gpt-4o-mini (service `crm/ia-service` ; OpenRouter jamais appele)
    -> Reponse JSON : diagnostic, recommandations, niveau de confiance
         |
 6. Les resultats s'affichent sur l'ecran Session
@@ -182,7 +182,7 @@ Les assets statiques (logos, videos de veille, configurations boutique) sont cac
 
 ### 6.1 Isolation des donnees
 
-Chaque boutique est un tenant isole. Les requetes sont filtrees par `boutique_id` a chaque niveau : middleware Laravel, policies Eloquent, contraintes PostgreSQL.
+Chaque boutique est un tenant isole. Les requetes sont filtrees par `boutique_id` : en MVP au niveau applicatif du mock Express et via les contraintes PostgreSQL ; la cible roadmap ajoute le middleware Laravel et les policies Eloquent.
 
 ### 6.2 Configuration par miroir
 
@@ -226,7 +226,7 @@ Chaque miroir physique est identifie par son adresse MAC. Lors du provisioning, 
 
 - Un docker-compose avec PostgreSQL 15-alpine, mock-api (Express :8100), mock-ia (Express :3001) et adminer.
 - Un miroir en developpement, un tenant de test.
-- 178 cas de test : 42 unitaires Vitest (dont `crypto-vault.service.test.ts` = 7 tests) + 136 e2e Playwright (4 fichiers) ; 4/9 services main couverts ; `crm-sync.service.ts` (372 l) a 0 test.
+- 196 cas de test : 60 unitaires Vitest (5 services : api-client 14, config 14, crm-sync 18, crypto-vault 7, sync 7) + 136 e2e Playwright (4 fichiers) ; 5/9 services main couverts ; `crm-sync.service.ts` est couvert par 18 tests (services sans test : media-cache, microscope, updater, wifi).
 
 ### 8.2 Post-MVP
 
@@ -247,11 +247,11 @@ Synchronisation bidirectionnelle des clients et produits entre le CRM et la bout
 
 ## 9. Pipeline de Diagnostic IA
 
-> ETAT REEL : l'IA est MOCKEE (scores `Math.random`, `server.js:514-545`). Toute cette section 9 (hormis le cadre deontologique) decrit la CIBLE ROADMAP - le branchement OpenRouter - non encore implementee.
+> ETAT REEL : sur le device, l'IA est MOCKEE (scores `Math.random`, `server.js:518-549`). Toute cette section 9 (hormis le cadre deontologique) decrit la CIBLE ROADMAP - le branchement GitHub Models (Azure US), deja code cote serveur dans `crm/ia-service` mais non branche par defaut sur le device. OpenRouter n'est jamais appele dans le code.
 
 ### 9.1 Architecture du service [CIBLE ROADMAP - non implemente]
 
-Le microservice IA est decouple du CRM. Il recevra une image en base64 ou multipart, la transmettra a un modele de vision via OpenRouter, et retournera un diagnostic structure. En MVP, le proxy renvoie des scores aleatoires sans appel reseau.
+Le microservice IA est decouple du CRM. Il recevra une image en base64 ou multipart, la transmettra a un modele de vision via GitHub Models (Azure US), et retournera un diagnostic structure. En MVP cote device, le proxy renvoie des scores aleatoires sans appel reseau ; le service reel `crm/ia-service` fait deja l'appel GitHub Models. OpenRouter n'est jamais appele.
 
 ### 9.2 Strategie de fallback a plusieurs modeles [CIBLE ROADMAP - non implemente]
 
@@ -259,15 +259,15 @@ Le microservice IA est decouple du CRM. Il recevra une image en base64 ou multip
 Requete d'analyse
     |
     v
-[Gemini Flash Vision] -- succes --> Retourne diagnostic
+[Llama-3.2-11B-Vision] -- succes --> Retourne diagnostic
     |
     | echec/timeout
     v
-[GPT-4o mini]         -- succes --> Retourne diagnostic
+[Phi-3.5-vision]       -- succes --> Retourne diagnostic
     |
     | echec/timeout
     v
-[Claude 3.5 Haiku]    -- succes --> Retourne diagnostic
+[gpt-4o-mini]          -- succes --> Retourne diagnostic
     |
     | echec total
     v
@@ -288,7 +288,7 @@ Requete d'analyse
 - Le praticien a toujours le dernier mot.
 - L'IA est un outil d'aide a la decision, pas un substitut au jugement professionnel.
 - Les photos clients ne sont jamais utilisees pour entrainer des modeles.
-- [CIBLE ROADMAP] Les modeles seront appeles via OpenRouter ; un routage possible hors UE impose un encadrement (Zero Data Retention, EU in-region, SCC) ou la minimisation avant tout envoi d'image.
+- [CIBLE ROADMAP] Les modeles sont appeles via GitHub Models (Azure US) -- deja le cas dans `crm/ia-service` ; ce routage hors UE impose un encadrement (Zero Data Retention, EU in-region, SCC) ou la minimisation avant tout envoi d'image. OpenRouter n'est jamais appele.
 
 ---
 

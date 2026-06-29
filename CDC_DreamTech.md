@@ -44,7 +44,7 @@ Le client souhaite un ensemble composé de deux briques :
 
 * Permettre un suivi longitudinal de l’état capillaire d’une séance à l’autre
 
-* Exploiter l’IA comme avantage concurrentiel (aucun concurrent sur ce créneau)
+* Exploiter l’IA comme avantage concurrentiel via l’intégration verticale (miroir + microscope + CRM + IA), face à des concurrents existants sur l’analyse capillaire (K-Scan, BECON, FotoFinder, Aram Huvis/ARAMO) et les smart mirrors beauté (CareOS, HiMirror)
 
 * Alimenter le CRM Shopify existant avec les données du miroir pour du mailing ciblé
 
@@ -300,15 +300,17 @@ Pour chaque photo, le back-end envoie à l’API :
 
 L’API renvoie un JSON structuré contenant le diagnostic, le commentaire et les produits recommandés.
 
-## **6.3 Agrégateur API : OpenRouter**
+## **6.3 Fournisseur API : GitHub Models (Azure US)**
 
-L’API est appelée via OpenRouter, un agrégateur qui permet de basculer entre différents modèles (GPT-4o mini, Gemini Flash, Claude Haiku) sans changer le code :
+L’API est appelée via GitHub Models (models.inference.ai.azure.com, authentification par `GITHUB_TOKEN`), qui donne accès à plusieurs modèles de vision (Llama-3.2-11B-Vision, Phi-3.5-vision, gpt-4o-mini) sans changer le code. OpenRouter avait été envisagé mais n’est appelé dans aucun code :
 
-* Pas de dépendance à un seul fournisseur
+* Pas de dépendance à un seul modèle
 
-* Basculement immédiat si un provider augmente ses prix ou tombe en panne
+* Basculement immédiat entre modèles si l’un est indisponible
 
 * Possibilité de comparer la qualité des diagnostics entre modèles
+
+Note : l’endpoint GitHub Models est hébergé sur Azure US (hors UE), ce qui impose un encadrement RGPD pour l’envoi des photos (voir section 8).
 
 ## **6.4 Catégories d’analyse**
 
@@ -366,7 +368,7 @@ Le miroir Shineworld est un cadre sur mesure integrant un ecran tactile. Le fabr
 
 | Caractéristique | Détail |
 | :---- | :---- |
-| **Ordinateur** | Raspberry Pi 5 (8 Go RAM) — ARM64. Alternative Beelink SER5 a valider (PO-01) |
+| **Ordinateur** | Raspberry Pi 5 (4 Go RAM retenu) — ARM64. Alternative Beelink SER5 a valider (PO-01) |
 | **OS** | Debian 12 Bookworm (Raspberry Pi OS Lite 64-bit) |
 | **Connexion ecran** | Micro-HDMI (Pi) → adaptateur → HDMI 2.0 (miroir) |
 | **Connexion tactile** | USB-A (Pi) ← USB (miroir) — retour touch HID |
@@ -436,8 +438,8 @@ Les photos envoyées à l’API LLM nécessitent un DPA avec le fournisseur d’
 | Risque | Impact | Mitigation |
 | :---- | :---- | :---- |
 | Protocole WiFi du microscope Jiusion | Modéré | Scanner le réseau WiFi du microscope et vérifier l’accès au flux MJPEG |
-| Qualité du diagnostic IA (LLM) | Modéré | Comparer GPT-4o mini / Gemini Flash / Claude Haiku sur un jeu de test |
-| DPA avec le fournisseur API IA | Modéré | Vérifier les DPA chez OpenAI / Google / Anthropic |
+| Qualité du diagnostic IA (LLM) | Modéré | Comparer Llama-3.2-11B-Vision / Phi-3.5-vision / gpt-4o-mini (GitHub Models) sur un jeu de test |
+| DPA avec le fournisseur API IA | Modéré | Vérifier le DPA GitHub / Microsoft Azure (GitHub Models, endpoint US) |
 | Qualification HDS requise | Modéré | Consulter un juriste. Démarrer sur hébergeur EU standard |
 | Perte de connexion en soin | Faible | Flux vidéo local non impacté. Photos stockées et envoyées après reconnexion |
 
@@ -461,7 +463,7 @@ Les photos envoyées à l’API LLM nécessitent un DPA avec le fournisseur d’
 
 2. Back-office web : fiches clients, contrôle miroir, gestion produits, export Shopify
 
-3. Intégration API IA via OpenRouter : diagnostic \+ commentaire \+ recommandations
+3. Intégration API IA via GitHub Models (Azure US) : diagnostic \+ commentaire \+ recommandations
 
 4. Génération du rapport PDF
 
@@ -554,13 +556,13 @@ Interface web mode clair, desktop et tablette. Ergonomie orientée efficacité.
 
 # **12\. Communication et marketing**
 
-Le Smart Mirror est un produit marketing autant qu’un outil technique. Il crée une expérience mémorable et constitue un argument de différenciation fort pour la franchise. Aucun concurrent n’existe sur ce marché.
+Le Smart Mirror est un produit marketing autant qu’un outil technique. Il crée une expérience mémorable et constitue un argument de différenciation fort pour la franchise. Des concurrents existent sur l’analyse capillaire (K-Scan, BECON, FotoFinder, Aram Huvis/ARAMO) et les smart mirrors beauté (CareOS, HiMirror) ; la différenciation de DreamTech repose sur l’intégration verticale (miroir + microscope + CRM + IA + Shopify) dans un parcours boutique unique.
 
 ## **12.1 Positionnement**
 
 *« Votre cuir chevelu, analysé par IA. Votre soin, révélé par K Beauty Cosmetics. »*
 
-| Innovation | Aucun concurrent identifié — first-mover advantage. |
+| Innovation | Intégration verticale unique (miroir + microscope + CRM + IA) face aux acteurs existants (K-Scan, BECON, FotoFinder, ARAMO, CareOS, HiMirror). |
 | :---- | :---- |
 | **Premium** | Le miroir élève le Bubble Hair Spa au niveau haut de gamme. |
 | **Scientifique** | L’IA apporte une crédibilité technique : diagnostic mesuré et documenté. |
@@ -640,7 +642,7 @@ Le Smart Mirror est commercialisé auprès d’autres instituts. K Beauty se pos
 
 ### **Arguments de vente**
 
-* Aucun concurrent — first-mover advantage
+* Différenciation par intégration verticale (miroir + microscope + CRM + IA) face aux concurrents existants (K-Scan, BECON, FotoFinder, ARAMO, CareOS, HiMirror)
 
 * ROI mesurable : augmentation du panier moyen via les recommandations produits
 
@@ -674,6 +676,6 @@ Le Smart Mirror est commercialisé auprès d’autres instituts. K Beauty se pos
 | **MJPEG** | Motion JPEG — format de flux vidéo transmis image par image |
 | **QR Code** | Code-barres 2D scannable par smartphone |
 | **Klaviyo** | Plateforme de marketing automation utilisée via Shopify |
-| **OpenRouter** | Agrégateur d’API IA — appeler différents modèles LLM via une seule interface |
+| **GitHub Models** | Service d’inférence IA (Azure US, authentification GITHUB_TOKEN) donnant accès à plusieurs modèles LLM de vision via une seule interface |
 | **DPA** | Data Processing Agreement — contrat de traitement des données avec un fournisseur tiers |
 

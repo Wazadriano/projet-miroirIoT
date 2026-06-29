@@ -13,12 +13,12 @@ Ce depot distingue strictement ce qui est REALISE (verifiable dans le code) de c
 | Backend | Mock Express (`mock-api/server.js`), API metier :8100 | Laravel 13 / PHP 8.4 + Sanctum :8000 |
 | Base de donnees | PostgreSQL 15-alpine (docker-compose) | PostgreSQL 16 |
 | Cache / files | Fichier JSON poll 30s (`sync.service.ts`) | Redis 7 |
-| IA | Mockee, scores `Math.random` (`server.js:514-545`), service :3001 | OpenRouter (LLM vision reel) |
+| IA | Mockee, scores `Math.random` (`server.js:518-549`), service :3001 | GitHub Models / Azure US (service IA reel `crm/ia-service` :3002, cote serveur ; OpenRouter jamais appele) |
 | Microscope | WiFi/TCP 192.168.34.1:8080 (JHCMD) -> ffmpeg H.264->MJPEG :9100 | inchange |
 | Chiffrement (device) | Photos cuir chevelu (`.jpg.enc`), file de sync et tokens CHIFFRES au repos AES-256-GCM via cryptoVault (`crypto-vault.service.ts`) | Backend mock + pgcrypto + object storage chiffres ; CI audit deps bloquante |
-| Tests | 42 tests unitaires Vitest + 136 e2e Playwright (178 cas) | Couverture etendue, CI bloquante |
+| Tests | 60 tests unitaires Vitest (5 services, dont crm-sync = 18) + 136 e2e Playwright (196 cas) | Couverture etendue, CI bloquante |
 
-Toute mention de Laravel, Redis, OpenRouter ou PostgreSQL 16 ci-dessous releve de la CIBLE roadmap, jamais de l'etat realise.
+Toute mention de Laravel, Redis ou PostgreSQL 16 ci-dessous releve de la CIBLE roadmap, jamais de l'etat realise. L'IA reelle (GitHub Models / Azure US) existe deja cote serveur (`crm/ia-service` :3002) mais n'est pas branchee par defaut sur le device ; OpenRouter n'est jamais appele dans le code.
 
 ---
 
@@ -58,7 +58,7 @@ Toute mention de Laravel, Redis, OpenRouter ou PostgreSQL 16 ci-dessous releve d
 +---------------------+
 ```
 
-CIBLE roadmap (non implementee) : backend Laravel 13 / PHP 8.4 + Sanctum (:8000), PostgreSQL 16, Redis 7 (:6379), IA reelle via OpenRouter.
+CIBLE roadmap (non implementee) : backend Laravel 13 / PHP 8.4 + Sanctum (:8000), PostgreSQL 16, Redis 7 (:6379). L'IA reelle (GitHub Models / Azure US) est deja codee cote serveur (`crm/ia-service` :3002) mais n'est pas branchee par defaut sur le device ; OpenRouter n'est jamais appele.
 
 ---
 
@@ -77,8 +77,8 @@ REALISE (MVP) sauf mention CIBLE explicite.
 | Microscope        | WiFi/TCP 192.168.34.1:8080 (JHCMD) -> ffmpeg H.264->MJPEG :9100 |
 | PDF               | pdfkit (server-side, synchrone)                               |
 | Orchestration     | Docker Compose                                                 |
-| Testing           | Vitest (42 unit) + Playwright (136 e2e) = 178 cas             |
-| **CIBLE roadmap** | Laravel 13 / PHP 8.4 / Sanctum, PostgreSQL 16, Redis 7, OpenRouter (LLM vision), n8n -- non implementes |
+| Testing           | Vitest (60 unit, 5 services) + Playwright (136 e2e) = 196 cas |
+| **CIBLE roadmap** | Laravel 13 / PHP 8.4 / Sanctum, PostgreSQL 16, Redis 7, n8n -- non implementes. IA reelle = GitHub Models (Azure US) via `crm/ia-service` (cote serveur, OpenRouter jamais appele) |
 
 ---
 
@@ -189,7 +189,7 @@ cd smart-mirror/mirror-app
 npx playwright test
 ```
 
-42 unit tests (Vitest) + 136 e2e cases (Playwright) = 178 cases, covering API client, config, sync and crypto-vault services, navigation, store logic, and Electron E2E flows. The new `crypto-vault.service.test.ts` (7 tests) asserts that the JPEG written to disk does not start with FF D8 and that the store never holds the token in clear. Note: 4 of 9 main services are covered in unit tests; `crm-sync.service.ts` is not yet tested.
+60 unit tests (Vitest) + 136 e2e cases (Playwright) = 196 cases, covering API client (14), config (14), crm-sync (18), crypto-vault (7) and sync (7) services, navigation, store logic, and Electron E2E flows. The `crypto-vault.service.test.ts` (7 tests) asserts that the JPEG written to disk does not start with FF D8 and that the store never holds the token in clear. Note: 5 of 9 main services are covered in unit tests; the services without unit tests are media-cache, microscope, updater and wifi (`crm-sync.service.ts` is covered with 18 tests).
 
 ---
 
