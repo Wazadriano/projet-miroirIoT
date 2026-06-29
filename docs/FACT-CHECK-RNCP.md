@@ -3,7 +3,7 @@
 
 # RAPPORT FACT-CHECK — Soutenance Smart Mirror KBEAUTY (RNCP 37046)
 
-Methode: autorite primaire = depot (verifie directement sur fichiers cles). Faits externes = sources des verificateurs (CVE, doc RPi, tarifs). Protocole Zero Trust applique aux verificateurs eux-memes: j'ai re-confirme en code les 8 points les plus load-bearing (package.json, docker-compose.yml, vitest.config.ts, index.ts:51, sync.service.ts:61, api-client.service.ts:159, start.sh:20, absence de CI/playwright/eslint config). Tous concordent. Aucune contradiction inter-verificateurs majeure detectee, sauf une (RAM, traitee en section 1).
+Methode: autorite primaire = depot (verifie directement sur fichiers cles). Faits externes = sources des verificateurs (CVE, doc RPi, tarifs). Protocole Zero Trust applique aux verificateurs eux-memes: j'ai re-confirme en code les 8 points les plus load-bearing (package.json, docker-compose.yml, vitest.config.ts, index.ts:51, sync.service.ts:61, api-client.service.ts:159, start.sh:20, presence de CI (`ci.yml`), `playwright.config` et ESLint flat config). Tous concordent. Aucune contradiction inter-verificateurs majeure detectee, sauf une (RAM, traitee en section 1).
 
 ---
 
@@ -57,7 +57,7 @@ toutes les heures pendant **48h**, en incluant les pics (sync medias, capture ba
 | # | Claim | Source | Verdict | Niveau / Conf. | Correction a appliquer |
 |---|---|---|---|---|---|
 | 1 | "H.264 decode materiel disponible sur Pi 5 (VideoCore VII)" | `smart_mirror_specs_techniques.md:67` | **REFUTE** (factuellement inverse) | L2 / 88% | Le Pi 5 a SUPPRIME le decodeur H.264 hardware. Seul HEVC/H.265 est hardware. Remplacer par: "HEVC 4K60 hardware; H.264/VP9/AV1 en logiciel CPU; aucun encodeur video hardware". |
-| 2 | "Flux 100% local / les photos ne sortent pas" + "Cloud datacenter europeen" | `CDC_Fonctionnel §8.2 l.412`; code `api-client.service.ts:159` | **REFUTE** | L1 / 90% | Les snapshots JPEG partent vers proxy IA -> OpenRouter (US) et vers le CRM. Ecrire: "live local; snapshots envoyes hors UE". Erreur de droit majeure (voir #4). |
+| 2 | "Flux 100% local / les photos ne sortent pas" + "Cloud datacenter europeen" | `CDC_Fonctionnel §8.2 l.412`; code `api-client.service.ts:159` | **REFUTE** | L1 / 90% | Les snapshots JPEG partent vers proxy IA -> OpenRouter (US) et vers le CRM. Ecrire: "live local; snapshots envoyes hors UE". Erreur de droit majeure (voir #3). |
 | 3 | "Transfert US: un DPA suffit" | `CDC_Technique §15.3 l.892` | **REFUTE** | L1/L2 / 92% | DPA (art.28) ≠ base de transfert (Chap. V). Exiger DPA + DPF/SCC + TIA (Schrems II). Le consentement art.49 est INVALIDE pour transfert systematique. Si donnees de sante: consentement explicite art.9(2)(a) en plus. |
 | 4 | "Photos chiffrees localement" | `sync.service.ts` `savePhotoLocally` (verifie) | **CONFIRME (mise a jour 2026-06-25)** | L1 / 97% | Le constat du 2026-06-15 (`writeFileSync` d'un JPEG en clair) est RESOLU : `savePhotoLocally` ecrit desormais un `.jpg.enc` chiffre AES-256-GCM via cryptoVault (`crypto-vault.service.ts`), la file de sync est chiffree, et `crm-sync.service.ts` `pushPhotoCrm` dechiffre avant envoi. Reste a securiser : le backend mock (PDF, secrets, device_token). |
 | 5 | "Aucun concurrent / first-mover advantage" | `CDC_DreamTech.md:47,557,563,643` | **REFUTE** | L1 / 95% | Concurrents directs confirmes: L'Oreal/Kerastase K-Scan, BECON (coreen, Samsung), FotoFinder, Aram Huvis. Remplacer "aucun concurrent" par "differenciation par integration verticale". Ajouter une section analyse concurrentielle (absente). |
@@ -106,8 +106,8 @@ Points positifs structurants a mettre en avant: architecture Scaleway garde la p
 | Claim non-verifiable | Artefact a produire pour le valider |
 |---|---|
 | Footprint RAM reel (4 Go suffisent) | `free -m` + `VmRSS` capture toutes les heures sur 48h en kiosk 24/7. |
-| Couverture de tests (% reel) | Ajouter `@vitest/coverage-v8` + bloc coverage + `vitest run --coverage`. Tant qu'absent, tout % = HYPOTHESIS. |
-| "2 CVE hautes" (Electron + fast-uri) | Re-executer `npm audit` la veille de la soutenance (les CVE evoluent: peut etre 0 ou 5). SBOM CycloneDX. |
+| Couverture de tests (% reel) | Le bloc coverage existe deja (`vitest.config.ts`, section `coverage` provider v8). Reste a executer `vitest run --coverage` avec seuils et publier le rapport. Tant que le % n'est pas mesure, tout % = HYPOTHESIS. |
+| Volume de CVE (28 au dernier audit 2026-06-25 : 2 crit. Vitest, 16 hautes, 8 mod., 2 basses ; quasi toutes devDependencies sauf Electron runtime) | Re-executer `npm audit` la veille de la soutenance (les CVE evoluent). Detail classe : docs/SECURITE-CVE-ET-LANCEMENT.md + SBOM CycloneDX. |
 | Atteignabilite reelle des CVE (CVE-2026-34769, CVE-2026-6321) | PoC d'exploitation contre le binaire + SBOM. Actuellement: presentes mais non atteignables dans le flux (version vulnerable confirmee, vecteur non declenche). |
 | Transfert US = donnees de sante | Avis DPO/juriste (PO-04 bloquant prod), DPA OpenRouter + cartographie sous-traitants. |
 | Prix ecran Shineworld (~800 EUR) | Devis ferme Shineworld (PO-09) — c'est la VRAIE incertitude du TCO, pas l'IA. |
@@ -124,7 +124,7 @@ Points positifs structurants a mettre en avant: architecture Scaleway garde la p
 
 2. **Reecrire le claim "flux 100% local" et le transfert RGPD** (`CDC_Fonctionnel §8.2 l.412`, `CDC_Technique §15.3 l.892`): "live microscope local; snapshots JPEG envoyes hors UE (OpenRouter US) + CRM. Conformite Chap. V requise: DPA art.28 + DPF/SCC art.46 + TIA Schrems II; consentement art.9(2)(a) si donnees de sante. Le consentement art.49 ne couvre PAS un transfert systematique." Recommander la parade gagnante: analyse CV on-device (ne sortir que des scores anonymises).
 
-3. **Supprimer la stack obsolete** Bun/Supabase/Budibase/Vercel des sections 9-10 de `smart_mirror_specs_techniques.md` (ou la marquer OBSOLETE en en-tete). Aligner sur Laravel/PostgreSQL 15/Docker/Scaleway.
+3. **Supprimer la stack obsolete** Bun/Supabase/Budibase/Vercel des sections 9-10 de `smart_mirror_specs_techniques.md` (ou la marquer OBSOLETE en en-tete). Aligner sur la stack reelle : backend mock Express + PostgreSQL 15/Docker/Scaleway (Laravel = CIBLE ROADMAP).
 
 4. **Corriger le README** (FAIT, mise a jour 2026-06-25): backend realise = mock Express + PostgreSQL 15 ; Laravel 13 / PHP 8.4, PostgreSQL 16, Redis 7 sont des CIBLES ROADMAP explicitement etiquetees (aucun composer.json/artisan dans le depot) ; port IA = 3001 ; microscope = WiFi/TCP JHCMD (Ninyoon 4K ; USB/UVC = vestiges morts) ; retablir le fallback email (TC-06 critique).
 
@@ -136,7 +136,7 @@ Points positifs structurants a mettre en avant: architecture Scaleway garde la p
 
 8. **Remplacer les chiffres de tests** par les vrais (mise a jour 2026-06-25): "178 cas: 42 unitaires (Vitest, dont `crypto-vault.service.test.ts` = 7 tests) + 136 E2E (Playwright, 4 specs); 4/9 services couverts en unitaire". Signaler `crm-sync.service.ts` (372 LOC, 0 test) comme trou critique.
 
-9. **Produire ou retirer les artefacts manquants**: creer `playwright.config.ts`, `eslint.config.js` (flat ESLint 9), script + tooling coverage, workflow CI `.github/workflows`. Sinon retirer ces claims du dossier (ils sont actuellement faux).
+9. **Verifier les artefacts qualite (FAIT, mise a jour 2026-06-25)**: `playwright.config.ts`, ESLint flat config (`eslint.config.mjs`) et le workflow CI `.github/workflows/ci.yml` sont PRESENTS, et `vitest.config.ts` contient une section coverage (provider v8). Reste a produire: le rapport `vitest run --coverage` avec seuil, et l'audit deps CI bloquant (`ci.yml` `continue-on-error` a basculer).
 
 10. **Trancher la decision RAM avec mesure**: capturer `free -m`/`VmRSS` sur 48h, decider si Docker PostgreSQL tourne on-device, puis valider 4 Go par ecrit. Corriger la contrainte non sourcee "<6 Go sur 8" (`DOSSIER:232`). Supprimer les deps mortes `react-tsparticles`/`tsparticles-slim`.
 
@@ -209,12 +209,12 @@ Points positifs structurants a mettre en avant: architecture Scaleway garde la p
 **Synthese executive pour le jury:** les 3 erreurs les plus dangereuses sont (a) le **transfert RGPD hors UE presente comme "100% local / DPA suffit"** (erreur de droit + contredite par le code `api-client.service.ts:159`), (b) le **claim codec H.264 hardware inverse** (verifiable en 30s par un jury technique), et (c) le **"aucun concurrent"** (refutable en une recherche). Les claims securite de 2026-06-15 (photos en clair, sandbox off, CSP absente, tokens en clair) sont desormais RESOLUS dans le code (mise a jour 2026-06-25 : chiffrement AES-256-GCM via cryptoVault des photos/file de sync/tokens, sandbox actif, CSP en prod) et se presentent comme des forces ; le residu a securiser est cote backend mock et exposition `config:getAll`. Le claim RAM prioritaire est defendable (4 Go suffisent, ~115 EUR economises) mais uniquement comme decision d'ingenierie conditionnee a une mesure 48h, jamais comme fait. Bonne nouvelle: les forces (thermique, microscope, calcul -28%, fondations Electron, anticipation HDS Scaleway) sont solides et verifiees.
 
 Fichiers cles (chemins absolus, verifies directement):
-- `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\mirror-app\src\main\index.ts:51` (`sandbox: false`)
+- `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\mirror-app\src\main\index.ts:51` (`sandbox: true`, ACTIF — corrige depuis 2026-06-15)
 - `...\smart-mirror\mirror-app\src\main\services\sync.service.ts` `savePhotoLocally` (photo chiffree `.jpg.enc`, mise a jour 2026-06-25) ; `...\crypto-vault.service.ts` (coffre AES-256-GCM) ; `...\config.service.ts` (tokens chiffres)
 - `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\mirror-app\src\main\services\api-client.service.ts:159` (snapshot sort vers IA)
-- `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\mirror-app\package.json` (tsparticles non importe, framer absent, eslint 9 sans config, playwright sans config, pas de coverage)
+- `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\mirror-app\package.json` (tsparticles non importe, framer absent ; ESLint flat config `eslint.config.mjs` et `playwright.config.ts` PRESENTS, section coverage presente dans `vitest.config.ts`)
 - `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\docker-compose.yml:3,25` (postgres:15, port 3001, pas de Redis)
-- `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\mirror-app\vitest.config.ts` (pas de section coverage)
+- `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\mirror-app\vitest.config.ts` (section coverage presente : provider v8, reporters text/html/lcov)
 - `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart-mirror\start.sh:20` (Docker on-device)
 - `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\smart_mirror_specs_techniques.md:67` (codec inverse), `:351` (stack obsolete)
 - `C:\Users\adria\Documents\Projets\PROJET\projet-miroirIoT\CDC_DreamTech.md:47,557,563,643` (aucun concurrent)

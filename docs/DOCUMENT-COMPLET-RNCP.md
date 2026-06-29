@@ -105,7 +105,7 @@ Aujourd'hui, les praticiens de KBEAUTY réalisent leurs diagnostics capillaires 
 | **Politique** | Souveraineté numérique européenne, pression sur l'hébergement des données en UE. | Plaide pour un hébergement UE (Scaleway) et, à terme, une analyse on-device. |
 | **Économique** | Marché smart mirror mondial : **~2,5 Md$ (2025) → 5,3 Md$ (2033), CAGR 7 %** ; miroirs interactifs **CAGR 13,2 %**. Pouvoir d'achat beauté premium résilient. | Marché porteur ; modèle duplicable (franchise) économiquement viable. |
 | **Social** | **58 %** des consommateurs recherchent des expériences personnalisées (2026) ; engouement K-beauty ; sensibilité accrue à la vie privée. | Le diagnostic personnalisé est un argument fort, mais le consentement doit être irréprochable. |
-| **Technologique** | Maturité de l'IA vision ; microscopes USB/WiFi abordables ; Raspberry Pi 5 performant ; dépendance aux fournisseurs d'IA cloud. | Faisabilité technique réelle à coût maîtrisé ; risque de dépendance fournisseur (OpenRouter). |
+| **Technologique** | Maturité de l'IA vision ; microscopes WiFi abordables ; Raspberry Pi 5 performant ; dépendance aux fournisseurs d'IA cloud. | Faisabilité technique réelle à coût maîtrisé ; risque de dépendance fournisseur (OpenRouter). |
 | **Environnemental** | Consommation maîtrisée (Pi 5 : **5,7–6,8 W**), microSD vs SSD, parc de 6 miroirs. Kiosk 24/7 = poste backlight écran dominant. | Faible empreinte unitaire ; argument d'éco-conception (matériel sobre, durée de vie). |
 | **Légal** | **RGPD** (consentement, minimisation, rétention ; art. 9 « données de santé » par précaution ; transfert hors UE art. 44-46, Schrems II) ; **MDR évité** (finalité cosmétique) ; **RED art. 3.3** (cybersécurité radio, depuis 01/08/2025) ; **CRA** (signalement vuln. 11/09/2026, SBOM 11/12/2027). | C'est le facteur structurant : voir Partie 6 / sécurité. La conformité est une **barrière à l'entrée** si bien tenue. |
 
@@ -243,7 +243,7 @@ Priorité **Unit > Intégration > E2E**. État réel : **178 cas** (42 unitaires
 | Device / UI | **Electron 33** + **React 19** + **TypeScript 5.7** + **Zustand 5** (electron-vite, electron-builder arm64+x64) |
 | Backend (mock local) | **Node 20 + Express + PostgreSQL 15** |
 | CRM distant | **Laravel / Sanctum** (api-kbeauty.a3n.fr) |
-| IA | Proxy **port 3001** → **OpenRouter** (cloud) |
+| IA | Proxy **port 3001** — analyse **mockée** (`server.js`, scores `Math.random`) ; **OpenRouter** (cloud) = cible roadmap, non branché |
 | Microscope | Proxy + flux **MJPEG** (`http://localhost:9100/stream.mjpg`) |
 
 > **Corrections à intégrer dans les docs sources** (le `README` actuel est faux) : c'est **PostgreSQL 15** (pas 16), **pas de Redis**, **port IA 3001** (pas 3002). La stack « Bun/Supabase/Budibase/Vercel » de `smart_mirror_specs_techniques.md` est **obsolète**.
@@ -278,7 +278,7 @@ sequenceDiagram
   participant P as Praticien
   participant M as App miroir (Electron)
   participant Px as Proxy microscope
-  participant IA as Proxy IA → OpenRouter
+  participant IA as Proxy IA (mock ; cible OpenRouter)
   participant L as Backend local
   participant CRM as CRM distant
   P->>M: Démarre séance (après consentement)
@@ -302,7 +302,7 @@ graph TB
   end
   Mic[Microscope WiFi/TCP 192.168.34.1:8080 JHCMD] --- Pr
   Ecran[Écran tactile 32] --- E
-  IA --- OR[OpenRouter cloud US]
+  IA -.->|cible roadmap, non actif| OR[OpenRouter cloud US]
   D --- CRM[CRM Laravel distant via Internet]
 ```
 
@@ -323,13 +323,13 @@ graph TB
 | Audit deps CI non bloquant (`ci.yml` `continue-on-error`) | **À corriger** | Rendre bloquant après `npm audit fix` |
 | pgcrypto sur colonnes sensibles | **À faire (cible)** | Aligné sur la bascule Laravel/PostgreSQL 16 |
 
-**Audit & veille :** 2 CVE (Electron + fast-uri) à re-vérifier par `npm audit` la veille de l'oral ; **SBOM CycloneDX** et **scan SemGrep** intégrés à la CI (exigences CRA).
+**Audit & veille :** `npm audit` (2026-06-25) remonte **28 CVE** (2 critiques, 16 hautes, 8 modérées, 2 basses), quasi toutes en *devDependencies* (build/test/dev) ; seul **Electron** (2 CVE) est runtime embarqué — détail classé dans `docs/SECURITE-CVE-ET-LANCEMENT.md`. À revérifier par `npm audit` la veille de l'oral (les CVE évoluent) ; **SBOM CycloneDX** et **scan SemGrep** intégrés à la CI (exigences CRA).
 
 ## 5.5 Tests, CI/CD, versioning
 
 - **Tests** : 178 cas (Vitest + Playwright). Ajout de `crypto-vault.service.test.ts` (7 tests anti-régression chiffrement), `playwright.config.ts`, config de **couverture** Vitest, et **flat config ESLint 9** (lint réparé).
 - **CI/CD** : `.github/workflows/ci.yml` — typecheck + lint + tests/coverage + build + **npm audit** + **SBOM** + **Semgrep**.
-- **Versioning** : Git, migrations Laravel versionnées. *(Note d'honnêteté : l'historique a été réécrit pour purger des secrets — voir Partie 8 ; les dates de commit ne reflètent donc plus le développement réel.)*
+- **Versioning** : Git ; le schéma du device est en **SQL brut** (`init.sql`), tandis que les **migrations Laravel versionnées relèvent du CRM distant** (Laravel reste la cible roadmap pour le backend du device). *(Note d'honnêteté : l'historique a été réécrit pour purger des secrets — voir Compléments transverses, section B ; les dates de commit ne reflètent donc plus le développement réel.)*
 
 ---
 
