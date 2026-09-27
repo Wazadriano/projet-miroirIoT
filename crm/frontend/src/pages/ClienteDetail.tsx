@@ -242,10 +242,10 @@ export default function ClienteDetail() {
         )}
       </div>
 
-      {/* Section 3: Diagnostic evolution chart — full width */}
+      {/* Section 3: Analysis evolution chart — full width */}
       {chartData.length > 1 && (
         <div className="card w-full mb-6">
-          <h3 className="font-semibold mb-4">Évolution diagnostics</h3>
+          <h3 className="font-semibold mb-4">Évolution des analyses</h3>
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" />

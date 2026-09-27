@@ -53,7 +53,7 @@ export function ComparisonScreen(): JSX.Element {
         </div>
       </div>
 
-      {/* Diagnostic results */}
+      {/* Analysis results */}
       {latestAvant?.diagnostic && (
         <div className="glass-card-subtle" style={{ width: '100%', maxWidth: '88vw', zIndex: 1 }}>
           <p className="body-sm" style={{ lineHeight: 1.6 }}>

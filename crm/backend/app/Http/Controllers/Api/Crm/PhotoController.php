@@ -11,7 +11,7 @@ class PhotoController extends Controller
 {
     /**
      * PATCH /photos/{photo}/diagnostic
-     * Permet au praticien d'ajuster le diagnostic IA depuis le CRM.
+     * Permet au praticien d'ajuster l'analyse IA depuis le CRM.
      */
     public function updateDiagnostic(Request $request, Photo $photo): JsonResponse
     {

@@ -328,11 +328,11 @@ api.post('/api/seances/:id/report', async (req, res) => {
       .text(`Email : ${seance.email || 'Non renseigne'}`);
     doc.moveDown(1);
 
-    // Diagnostic IA
+    // Analyse IA
     const diagPhoto = photos.find(p => p.diagnostic_ia);
     if (diagPhoto && diagPhoto.diagnostic_ia) {
       const diag = typeof diagPhoto.diagnostic_ia === 'string' ? JSON.parse(diagPhoto.diagnostic_ia) : diagPhoto.diagnostic_ia;
-      doc.fontSize(12).font('Helvetica-Bold').text('Diagnostic IA');
+      doc.fontSize(12).font('Helvetica-Bold').text('Analyse du cuir chevelu');
       doc.moveDown(0.3);
       if (diag.score_global) {
         doc.fontSize(11).font('Helvetica').text(`Score global : ${diag.score_global}/100`);

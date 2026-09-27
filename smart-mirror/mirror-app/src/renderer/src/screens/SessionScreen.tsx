@@ -126,7 +126,7 @@ export function SessionScreen(): JSX.Element {
 
   return (
     <div className="screen-padded" style={{ justifyContent: 'flex-start', paddingBottom: '1vh' }}>
-      <Header subtitle="Diagnostic en cours" />
+      <Header subtitle="Analyse en cours" />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
 
       <SideNav
@@ -192,12 +192,12 @@ export function SessionScreen(): JSX.Element {
         </button>
       </div>
 
-      {/* Diagnostic text */}
+      {/* Analysis text */}
       {(analyzing || lastDiagnostic) && (
         <div className="glass-card-subtle" style={{
           width: '100%', maxWidth: '88vw', marginTop: '1.5vh', zIndex: 1, padding: '3vw'
         }}>
-          <p className="title-md" style={{ marginBottom: '1vh' }}>Diagnostic :</p>
+          <p className="title-md" style={{ marginBottom: '1vh' }}>Analyse :</p>
           {analyzing ? (
             <p className="body-sm" style={{ opacity: 0.6 }}>Analyse en cours...</p>
           ) : lastDiagnostic && (

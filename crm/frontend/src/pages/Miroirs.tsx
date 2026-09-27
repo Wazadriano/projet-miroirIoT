@@ -258,7 +258,7 @@ function ConfigMiroirModal({ open, onClose }: { open: boolean; onClose: () => vo
           style={{ backgroundColor: form.couleur_fond, fontFamily: form.typographie }}>
           {form.logo_url && <img src={form.logo_url} alt="Logo" className="max-h-12 mb-4" />}
           <h2 className="text-xl font-bold mb-1" style={{ color: form.couleur_primaire }}>Bienvenue</h2>
-          <p className="text-xs opacity-60" style={{ color: form.couleur_primaire }}>Découvrez votre diagnostic beauté</p>
+          <p className="text-xs opacity-60" style={{ color: form.couleur_primaire }}>Découvrez votre analyse beauté</p>
           <button className="mt-4 px-4 py-1.5 rounded-full text-white text-xs font-medium" style={{ backgroundColor: form.couleur_primaire }}>
             Commencer
           </button>

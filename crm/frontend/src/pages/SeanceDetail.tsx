@@ -111,10 +111,10 @@ export default function SeanceDetail() {
         </div>
       </div>
 
-      {/* Diagnostic IA */}
+      {/* Analyse IA */}
       {seance.photos && seance.photos.some((p: Photo) => p.diagnostic_ia) && (
         <div className="card mb-6">
-          <h3 className="font-semibold mb-4">Diagnostic IA</h3>
+          <h3 className="font-semibold mb-4">Synthèse de l'analyse</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {seance.photos.filter((p: Photo) => p.diagnostic_ia).map((p: Photo) => (
               <div key={p.id} className="bg-gray-50 rounded-lg p-3">

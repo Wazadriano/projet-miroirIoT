@@ -151,7 +151,7 @@ test.describe('4. Recherche', () => {
 test.describe('5. Consent', () => {
   test('5.01 Consent or Session reached', async () => {
     const consent = await page.locator('text=Consentement').isVisible({ timeout: 2000 }).catch(() => false)
-    const session = await page.locator('text=Diagnostic en cours').isVisible({ timeout: 2000 }).catch(() => false)
+    const session = await page.locator('text=Analyse en cours').isVisible({ timeout: 2000 }).catch(() => false)
     expect(consent || session).toBe(true)
     await ss('05-consent-or-session')
   })
@@ -178,10 +178,10 @@ test.describe('5. Consent', () => {
   })
 })
 
-// ==================== 6. SESSION (DIAGNOSTIC) ====================
+// ==================== 6. SESSION (ANALYSE) ====================
 
 test.describe('6. Session', () => {
-  test('6.01 Diagnostic screen', async () => {
+  test('6.01 Analyse screen', async () => {
     const live = await page.locator('text=Live').isVisible({ timeout: 5000 }).catch(() => false)
     if (!live) bug('Session screen not reached')
     await ss('06-session')

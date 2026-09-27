@@ -54,7 +54,7 @@ Le projet est découpé en trois services indépendants orchestrés par Docker C
 
 > _Ajoutez vos captures d'écran dans `docs/screenshots/` et remplacez les chemins ci-dessous._
 
-|                  Dashboard                   |              Fiche cliente               |         Séance & diagnostic IA         |
+|                  Dashboard                   |              Fiche cliente               |         Séance & analyse IA         |
 | :------------------------------------------: | :--------------------------------------: | :------------------------------------: |
 | ![Dashboard](docs/screenshots/dashboard.png) | ![Cliente](docs/screenshots/cliente.png) | ![Séance](docs/screenshots/seance.png) |
 

@@ -412,7 +412,7 @@ Manually trigger the n8n automation webhook for a session. Requires `role: geran
 
 ### PATCH `/api/photos/{id}/diagnostic`
 
-Update the AI diagnostic result for a photo.
+Update the AI analysis result for a photo.
 
 **Body**
 

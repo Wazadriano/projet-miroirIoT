@@ -235,7 +235,7 @@ export function registerIpcHandlers(services: Services): void {
     const result = await apiClient.analyzePhoto(data.imageBase64)
     const latence = Date.now() - start
 
-    // Update diagnostic in local backend (non-critical if it fails)
+    // Update analysis in local backend (non-critical if it fails)
     apiClient.updatePhotoDiagnostic(data.photoId, {
       diagnostic_ia: result,
       modele_ia: result.modele,

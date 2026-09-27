@@ -322,12 +322,12 @@ test.describe('5. Consentement RGPD', () => {
   })
 })
 
-test.describe('6. Session / Diagnostic', () => {
-  test('6.1 - Diagnostic screen reached', async () => {
+test.describe('6. Session / Analyse', () => {
+  test('6.1 - Analyse screen reached', async () => {
     const live = page.locator('text=Live')
     const visible = await live.isVisible({ timeout: 5000 }).catch(() => false)
     if (!visible) {
-      reportBug('critique', 'Session', 'Screen', 'Diagnostic screen not reached after consent', 'Live badge + microscope stream', '')
+      reportBug('critique', 'Session', 'Screen', 'Analyse screen not reached after consent', 'Live badge + microscope stream', '')
     }
     await ss('06-session')
   })

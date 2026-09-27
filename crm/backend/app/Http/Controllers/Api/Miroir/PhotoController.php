@@ -51,7 +51,7 @@ class PhotoController extends Controller
 
     /**
      * PATCH /miroir/photos/{photo}
-     * Mise à jour du diagnostic IA (envoyé par le miroir après analyse).
+     * Mise à jour de l'analyse IA (envoyé par le miroir après analyse).
      */
     public function update(Request $request, Photo $photo): JsonResponse
     {

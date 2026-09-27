@@ -189,7 +189,7 @@ test('VM-09 - Consent screen', async () => {
   await screenshot('vm-09b-after-consent')
 })
 
-test('VM-10 - Session/Diagnostic screen', async () => {
+test('VM-10 - Session/Analyse screen', async () => {
   const liveLabel = page.locator('text=Live')
   if (await liveLabel.isVisible({ timeout: 3000 }).catch(() => false)) {
     await screenshot('vm-10-session')

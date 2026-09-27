@@ -213,7 +213,7 @@ class DatabaseSeeder extends Seeder
                 $consentement = Consentement::create([
                     'boutique_id'       => $cliente->boutique_id,
                     'cliente_id'        => $cliente->id,
-                    'texte_consent'     => 'J\'accepte le traitement de mes données personnelles et la prise de photos à des fins de diagnostic cutané.',
+                    'texte_consent'     => 'J\'accepte le traitement de mes données personnelles et la prise de photos à des fins d\'analyse du cuir chevelu.',
                     'date_consentement' => $dateDebut,
                 ]);
 
@@ -224,7 +224,7 @@ class DatabaseSeeder extends Seeder
                     'consentement_id' => $consentement->id,
                     'date_debut'      => $dateDebut,
                     'date_fin'        => $dateFin,
-                    'note_seance'     => $s === 0 ? 'Première visite — diagnostic initial' : null,
+                    'note_seance'     => $s === 0 ? 'Première visite — analyse initiale' : null,
                     'email_envoye'    => rand(0, 1) === 1,
                 ]);
 
@@ -262,7 +262,7 @@ class DatabaseSeeder extends Seeder
             $consent = Consentement::create([
                 'boutique_id'       => $c->boutique_id,
                 'cliente_id'        => $c->id,
-                'texte_consent'     => 'J\'accepte le traitement de mes données personnelles et la prise de photos à des fins de diagnostic cutané.',
+                'texte_consent'     => 'J\'accepte le traitement de mes données personnelles et la prise de photos à des fins d\'analyse du cuir chevelu.',
                 'date_consentement' => $debut,
             ]);
 
