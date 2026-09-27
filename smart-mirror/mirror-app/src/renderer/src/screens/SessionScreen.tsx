@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, type JSX } from 'react'
 import { useSessionStore } from '../stores/session.store'
 import { Header } from '../components/Header'
 import { SideNav } from '../components/SideNav'

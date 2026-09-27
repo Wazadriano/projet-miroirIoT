@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useSessionStore } from '../stores/session.store'
 import productSkin1004 from '../assets/product-skin1004-3885bd.png'
 import productCosrx from '../assets/product-cosrx-254d84.png'

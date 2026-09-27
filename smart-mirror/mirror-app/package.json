@@ -11,7 +11,7 @@
     "package:arm64": "electron-vite build && electron-builder --config electron-builder.yml --linux --arm64",
     "package:x64": "electron-vite build && electron-builder --config electron-builder.yml --linux --x64",
     "lint": "eslint src/",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc -p tsconfig.node.json --noEmit && tsc -p tsconfig.web.json --noEmit",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest"

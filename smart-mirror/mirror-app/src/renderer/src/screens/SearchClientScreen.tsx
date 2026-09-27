@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type JSX } from 'react'
 import { useSessionStore } from '../stores/session.store'
 import { useDebounce } from '../hooks/useDebounce'
 import { Header } from '../components/Header'
@@ -135,8 +135,8 @@ export function SearchClientScreen(): JSX.Element {
             </div>
             <span className="title-sm">{cliente.prenom} {cliente.nom}</span>
             <span className="body-sm" style={{ opacity: 0.6 }}>
-              {(cliente as Record<string, unknown>).created_at
-                ? new Date(String((cliente as Record<string, unknown>).created_at)).toLocaleDateString('fr-FR')
+              {cliente.created_at
+                ? new Date(cliente.created_at).toLocaleDateString('fr-FR')
                 : ''}
             </span>
           </button>

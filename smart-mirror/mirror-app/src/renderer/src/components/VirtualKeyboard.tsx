@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, type JSX } from 'react'
 import Keyboard from 'react-simple-keyboard'
 import 'react-simple-keyboard/build/css/index.css'
 
@@ -45,7 +45,7 @@ export function VirtualKeyboard({ visible, minimized, onInput, onClose, onToggle
 
   if (!visible) return null
 
-  const layouts = layout === 'numeric'
+  const layouts: Record<string, string[]> = layout === 'numeric'
     ? { default: ['1 2 3', '4 5 6', '7 8 9', '/ 0 {bksp}', '{enter}'] }
     : {
         default: [

@@ -159,7 +159,7 @@ export class ConfigService {
   }
 
   getMacAddress(): string {
-    const stored = this.store.get('device.macAddress')
+    const stored = this.store.get('device.macAddress') as string | undefined
     if (stored) return stored
     // Auto-detect from first non-internal interface
     const ifaces = networkInterfaces()

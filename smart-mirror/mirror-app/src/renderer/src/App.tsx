@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, type JSX } from 'react'
 import { useSessionStore } from './stores/session.store'
 import { StatusBar } from './components/StatusBar'
 import { AnimatedBackground } from './components/AnimatedBackground'
@@ -107,7 +107,10 @@ export default function App(): JSX.Element {
     init()
 
     window.mirrorApi.onMicroscopeStatus((status) => {
-      setMicroscope(status.connected, status.device as MicroscopeDevice | null)
+      if (!status.connected) { setMicroscope(false, null); return }
+      window.mirrorApi.getMicroscopeDevice()
+        .then((device) => setMicroscope(true, device))
+        .catch(() => setMicroscope(true, null))
     })
 
     window.mirrorApi.onWifiStatusChanged((status) => {

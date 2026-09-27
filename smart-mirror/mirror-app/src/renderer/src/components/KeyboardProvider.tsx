@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode, type JSX } from 'react'
 import { VirtualKeyboard } from './VirtualKeyboard'
 
 interface KeyboardContextType {

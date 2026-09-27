@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type JSX } from 'react'
 import { useSessionStore } from '../stores/session.store'
 import { SideNav } from '../components/SideNav'
 

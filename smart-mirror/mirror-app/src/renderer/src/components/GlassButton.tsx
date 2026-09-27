@@ -1,4 +1,4 @@
-import { type CSSProperties, type ReactNode } from 'react'
+import { type CSSProperties, type ReactNode, type JSX } from 'react'
 
 interface GlassButtonProps {
   children: ReactNode

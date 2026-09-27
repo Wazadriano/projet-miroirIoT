@@ -17,6 +17,17 @@ export interface SyncReport {
   errors: string[]
 }
 
+// Reponse de /miroir/auth : le CRM renvoie le bearer et la configuration du miroir,
+// soit a plat, soit enveloppes dans `data`.
+type CrmAuthResponse = {
+  token?: string
+  miroir?: { nom?: string }
+  config?: Record<string, unknown>
+  produits?: unknown[]
+  medias?: unknown[]
+  data?: { token?: string; miroir?: { nom?: string }; config?: Record<string, unknown> }
+}
+
 export class CrmSyncService {
   private online = false
   private lastSyncTime: string | null = null
@@ -86,11 +97,11 @@ export class CrmSyncService {
 
   // Mappe la config CRM (couleurs/typo/volume/fond anime) vers le display config
   // du device, et memorise catalogue + playlist renvoyes par l'auth.
-  private applyCrmAuthPayload(result: Record<string, unknown>): void {
-    const config = (result.config ?? result.data?.['config']) as Record<string, unknown> | undefined
+  private applyCrmAuthPayload(result: CrmAuthResponse): void {
+    const config = result.config ?? result.data?.config
     this.crmConfig = config ?? null
-    this.crmProduits = (result.produits as unknown[]) ?? []
-    this.crmMedias = (result.medias as unknown[]) ?? []
+    this.crmProduits = result.produits ?? []
+    this.crmMedias = result.medias ?? []
     if (config) {
       const display: Record<string, unknown> = {}
       if (typeof config.fond_anime === 'boolean') display.animatedBgEnabled = config.fond_anime
@@ -117,7 +128,7 @@ export class CrmSyncService {
         signal: AbortSignal.timeout(10000)
       })
       if (!response.ok) return false
-      const result = await response.json()
+      const result = (await response.json()) as CrmAuthResponse
       this.crmBearerToken = result.token || result.data?.token || ''
       if (this.crmBearerToken) {
         this.config.setCrmBearerToken(this.crmBearerToken)
@@ -180,7 +191,7 @@ export class CrmSyncService {
       { headers: this.crmHeaders, signal: AbortSignal.timeout(10000) }
     )
     if (!response.ok) return []
-    const result = await response.json()
+    const result = (await response.json()) as unknown[] | { data?: unknown[] }
     // CRM may return array directly or wrapped in {data: [...]}
     return Array.isArray(result) ? result : (result.data || [])
   }
@@ -322,7 +333,7 @@ export class CrmSyncService {
 
     const uploadName = basename(localPath).replace(/\.enc$/, '')
     const formData = new FormData()
-    formData.append('image', new Blob([fileBuffer], { type: 'image/jpeg' }), uploadName)
+    formData.append('image', new Blob([new Uint8Array(fileBuffer)], { type: 'image/jpeg' }), uploadName)
     formData.append('seance_id', photo.seance_id as string)
     formData.append('phase', photo.phase as string)
     formData.append('zone', 'cuir_chevelu')
@@ -362,7 +373,7 @@ export class CrmSyncService {
         signal: AbortSignal.timeout(10000)
       })
       if (!response.ok) return null
-      const result = await response.json()
+      const result = (await response.json()) as { data: { rapport_url: string; qr_svg: string; ready: boolean } }
       return result.data
     } catch {
       return null

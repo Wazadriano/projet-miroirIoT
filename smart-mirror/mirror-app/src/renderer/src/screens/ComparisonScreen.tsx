@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { useSessionStore } from '../stores/session.store'
 import { Header } from '../components/Header'
 import { SideNav } from '../components/SideNav'

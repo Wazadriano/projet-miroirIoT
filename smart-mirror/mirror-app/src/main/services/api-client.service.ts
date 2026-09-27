@@ -5,6 +5,15 @@ interface ApiResponse<T> {
   error?: string
 }
 
+export interface AnalysisPayload {
+  categories: Array<{ nom: string; score: number; niveau: string }>
+  score_global: number
+  commentaire: string
+  produits_recommandes: string[]
+  modele: string
+  confiance: number
+}
+
 export class ApiClientService {
   constructor(private config: ConfigService) {}
 
@@ -30,11 +39,11 @@ export class ApiClientService {
     })
 
     if (!response.ok) {
-      const body = await response.json().catch(() => ({}))
+      const body = (await response.json().catch(() => ({}))) as { error?: string; message?: string }
       throw new Error(body.error || body.message || `HTTP ${response.status}`)
     }
 
-    return response.json()
+    return (await response.json()) as ApiResponse<T>
   }
 
   // --- Auth ---
@@ -147,14 +156,7 @@ export class ApiClientService {
 
   // --- IA Analysis ---
 
-  async analyzePhoto(imageBase64: string): Promise<{
-    categories: Array<{ nom: string; score: number; niveau: string }>
-    score_global: number
-    commentaire: string
-    produits_recommandes: string[]
-    modele: string
-    confiance: number
-  }> {
+  async analyzePhoto(imageBase64: string): Promise<AnalysisPayload> {
     const token = this.config.getDeviceToken()
     const response = await fetch(`${this.iaUrl}/api/analyze`, {
       method: 'POST',
@@ -169,7 +171,7 @@ export class ApiClientService {
       throw new Error(`IA analysis failed: HTTP ${response.status}`)
     }
 
-    const result = await response.json()
+    const result = (await response.json()) as { data: AnalysisPayload }
     return result.data
   }
 

@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useSessionStore } from '../stores/session.store'
 
 export function StatusBar(): JSX.Element {
