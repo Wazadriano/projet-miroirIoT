@@ -15,7 +15,7 @@ const pool = new Pool({
   port: parseInt(process.env.DB_PORT || '5432'),
   database: process.env.DB_NAME || 'smartmirror',
   user: process.env.DB_USER || 'smartmirror',
-  password: process.env.DB_PASSWORD || 'smartmirror_dev'
+  password: process.env.DB_PASSWORD
 });
 
 // --- Mock Laravel API (port 8000) ---
@@ -508,11 +508,18 @@ api.delete('/api/sync/cleanup', async (_req, res) => {
 // Health check
 api.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'mock-laravel-api' }));
 
+// Les serveurs n ecoutent que sur la boucle locale par defaut. MOCK_API_HOST et
+// MOCK_IA_HOST (ex. 0.0.0.0) permettent de les exposer a un conteneur ou a une VM.
 const apiPort = parseInt(process.env.MOCK_API_PORT || '8000');
+const apiHost = process.env.MOCK_API_HOST || '127.0.0.1';
 // On ne demarre les serveurs que lorsque ce fichier est lance directement.
 // Importe depuis un test, on exporte `api`/`pool` sans binder de port ni de DB.
 if (require.main === module) {
-  api.listen(apiPort, () => console.log(`Mock Laravel API on :${apiPort}`));
+  if (!process.env.DB_PASSWORD) {
+    console.error('DB_PASSWORD is required (see smart-mirror/.env.example)');
+    process.exit(1);
+  }
+  api.listen(apiPort, apiHost, () => console.log(`Mock Laravel API on ${apiHost}:${apiPort}`));
 }
 
 
@@ -558,8 +565,9 @@ ia.post('/api/analyze', (req, res) => {
 ia.get('/api/health', (req, res) => res.json({ status: 'ok', service: 'mock-ia-proxy' }));
 
 const iaPort = parseInt(process.env.MOCK_IA_PORT || '3001');
+const iaHost = process.env.MOCK_IA_HOST || '127.0.0.1';
 if (require.main === module) {
-  ia.listen(iaPort, () => console.log(`Mock IA Proxy on :${iaPort}`));
+  ia.listen(iaPort, iaHost, () => console.log(`Mock IA Proxy on ${iaHost}:${iaPort}`));
 }
 
 // Export pour les tests d integration : permet d injecter un faux `pool` et de

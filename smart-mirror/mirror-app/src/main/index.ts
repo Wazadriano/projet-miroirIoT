@@ -1,9 +1,10 @@
 import { app, BrowserWindow, shell, session } from 'electron'
 
-// Enable CDP remote debugging for Playwright testing
+// Enable CDP remote debugging for Playwright testing (local machine only ;
+// reach a VM through an SSH tunnel, see e2e/vm-qa.spec.ts)
 if (process.env.REMOTE_DEBUG === '1') {
   app.commandLine.appendSwitch('remote-debugging-port', '9222')
-  app.commandLine.appendSwitch('remote-debugging-address', '0.0.0.0')
+  app.commandLine.appendSwitch('remote-debugging-address', '127.0.0.1')
 }
 
 // Disable GPU in VM (no hardware acceleration)

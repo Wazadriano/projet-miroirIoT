@@ -7,6 +7,7 @@ Usage: sudo python3 button-listener.py [interface] [http_port]
 Default: sudo python3 button-listener.py wlp0s20f3 9101
 """
 
+import os
 import socket
 import struct
 import sys
@@ -16,6 +17,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 IFACE = sys.argv[1] if len(sys.argv) > 1 else 'wlp0s20f3'
 HTTP_PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 9101
+LISTEN_HOST = os.environ.get('LISTEN_HOST', '127.0.0.1')
 DEBOUNCE_MS = 300
 FDWN = b'FDWN'
 
@@ -99,7 +101,7 @@ if __name__ == '__main__':
     t = threading.Thread(target=capture_loop, daemon=True)
     t.start()
 
-    server = HTTPServer(('0.0.0.0', HTTP_PORT), ButtonHandler)
-    print(f'[button] HTTP on http://0.0.0.0:{HTTP_PORT}/events (SSE)', flush=True)
-    print(f'[button] Status: http://0.0.0.0:{HTTP_PORT}/status', flush=True)
+    server = HTTPServer((LISTEN_HOST, HTTP_PORT), ButtonHandler)
+    print(f'[button] HTTP on http://{LISTEN_HOST}:{HTTP_PORT}/events (SSE)', flush=True)
+    print(f'[button] Status: http://{LISTEN_HOST}:{HTTP_PORT}/status', flush=True)
     server.serve_forever()

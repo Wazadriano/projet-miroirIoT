@@ -8,6 +8,8 @@ Type=simple
 User=mirror
 Environment=MICROSCOPE_IP=192.168.34.1
 Environment=LISTEN_PORT=9100
+# Le flux n'est servi qu'a l'application locale.
+Environment=LISTEN_HOST=127.0.0.1
 WorkingDirectory=/opt/smart-mirror
 ExecStart=/usr/bin/node /opt/smart-mirror/microscope-proxy/proxy.js ${MICROSCOPE_IP} ${LISTEN_PORT}
 Restart=always

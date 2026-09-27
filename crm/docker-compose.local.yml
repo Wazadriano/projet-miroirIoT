@@ -6,6 +6,7 @@
 # Usage : depuis crm/, lancer
 #   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
 # (le script ./run-local.sh fait tout : reseau, build, migrate, seed, provisioning device)
+# Tous les ports sont publies sur la boucle locale uniquement.
 
 services:
   frontend:
@@ -15,7 +16,7 @@ services:
       VITE_REVERB_PORT: "8080"
       VITE_REVERB_SCHEME: http
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
 
   backend:
     environment:
@@ -26,19 +27,19 @@ services:
   nginx-api:
     # L'API Laravel, point d'entree du device (CRM_BASE_URL=http://localhost:8000/api).
     ports:
-      - "8000:80"
+      - "127.0.0.1:8000:80"
 
   reverb:
     # WebSockets temps reel (statut miroir en ligne) pour le dashboard CRM.
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
 
   ia-service:
     ports:
-      - "3002:3002"
+      - "127.0.0.1:3002:3002"
 
   postgres:
     # Decale le port hote pour ne pas entrer en conflit avec le mock-api du device
     # (smart-mirror/docker-compose.yml publie deja 5432).
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"

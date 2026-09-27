@@ -8,6 +8,7 @@ Usage: python3 stream.py [microscope_ip] [listen_port]
   Open http://localhost:9000/stream.mjpg in browser
 """
 
+import os
 import socket
 import subprocess
 import sys
@@ -18,6 +19,7 @@ from socketserver import ThreadingMixIn
 MICROSCOPE_IP = sys.argv[1] if len(sys.argv) > 1 else "192.168.34.1"
 MICROSCOPE_PORT = 8080
 LISTEN_PORT = int(sys.argv[2]) if len(sys.argv) > 2 else 9000
+LISTEN_HOST = os.environ.get("LISTEN_HOST", "127.0.0.1")
 
 latest_frame = b""
 frame_lock = threading.Lock()
@@ -156,7 +158,7 @@ if __name__ == "__main__":
     reader = threading.Thread(target=microscope_reader, daemon=True)
     reader.start()
 
-    server = ThreadedHTTPServer(("0.0.0.0", LISTEN_PORT), StreamHandler)
+    server = ThreadedHTTPServer((LISTEN_HOST, LISTEN_PORT), StreamHandler)
     print(f"[proxy] Stream: http://localhost:{LISTEN_PORT}/stream.mjpg")
     print(f"[proxy] Viewer: http://localhost:{LISTEN_PORT}/")
     print(f"[proxy] Snapshot: http://localhost:{LISTEN_PORT}/snapshot.jpg")

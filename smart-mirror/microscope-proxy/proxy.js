@@ -6,6 +6,7 @@
  *
  * Usage: node proxy.js [microscope_ip] [listen_port]
  * Default: node proxy.js 192.168.34.1 9100
+ * The HTTP server binds to 127.0.0.1; set LISTEN_HOST (e.g. 0.0.0.0) to expose it.
  */
 
 const net = require('net')
@@ -16,6 +17,7 @@ const { spawn } = require('child_process')
 const MICROSCOPE_IP = process.argv[2] || '192.168.34.1'
 const MICROSCOPE_PORT = 8080
 const LISTEN_PORT = parseInt(process.argv[3] || '9100')
+const LISTEN_HOST = process.env.LISTEN_HOST || '127.0.0.1'
 const BUTTON_PORT = 20001
 const RECONNECT_DELAY = 3000
 const BUTTON_MAGIC = Buffer.from('FDWN')
@@ -205,9 +207,9 @@ function startButtonListener() {
 
 startButtonListener()
 
-server.listen(LISTEN_PORT, '0.0.0.0', () => {
-  console.log(`[proxy] MJPEG stream: http://0.0.0.0:${LISTEN_PORT}/stream.mjpg`)
-  console.log(`[proxy] Snapshot:     http://0.0.0.0:${LISTEN_PORT}/snapshot.jpg`)
-  console.log(`[proxy] Button SSE:   http://0.0.0.0:${LISTEN_PORT}/button-events`)
+server.listen(LISTEN_PORT, LISTEN_HOST, () => {
+  console.log(`[proxy] MJPEG stream: http://${LISTEN_HOST}:${LISTEN_PORT}/stream.mjpg`)
+  console.log(`[proxy] Snapshot:     http://${LISTEN_HOST}:${LISTEN_PORT}/snapshot.jpg`)
+  console.log(`[proxy] Button SSE:   http://${LISTEN_HOST}:${LISTEN_PORT}/button-events`)
   connectMicroscope()
 })

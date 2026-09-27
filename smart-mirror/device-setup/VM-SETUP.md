@@ -86,9 +86,22 @@ Le microscope Ninyoon 4K est connecte en **WiFi/TCP** (`192.168.34.1:8080`, hand
 3. Le proxy (`proxy.js`) etablit le handshake JHCMD, transcode le flux H.264 en MJPEG via ffmpeg et le sert sur `localhost:9100`.
 4. L'app detecte automatiquement le microscope via `MicroscopeService`.
 
-## 6. Acces aux services Docker du host
+## 6. Acces aux services du host
 
-Les services Docker tournent sur le host :
+Par defaut, les services du host (PostgreSQL, API mock, IA mock, Adminer, relais
+microscope) n'ecoutent que sur `127.0.0.1` et ne sont donc pas visibles depuis la VM.
+Pour ce scenario, elargir explicitement l'ecoute sur le host :
+
+```bash
+# Services Docker (smart-mirror/.env) : publie 5432, 8100, 3001 et 8080 sur toutes les interfaces
+BIND_ADDRESS=0.0.0.0
+
+# API mock lancee hors Docker (port 8000 par defaut)
+MOCK_API_HOST=0.0.0.0 MOCK_IA_HOST=0.0.0.0 DB_PASSWORD=... node mock-api/src/server.js
+
+# Relais microscope
+LISTEN_HOST=0.0.0.0 node microscope-proxy/proxy.js
+```
 
 | Service | URL depuis la VM |
 |---------|-----------------|
@@ -96,7 +109,8 @@ Les services Docker tournent sur le host :
 | Mock IA Proxy | http://10.0.2.2:3001 |
 | Adminer (DB) | http://10.0.2.2:8080 |
 
-En mode bridged, remplacer `10.0.2.2` par l'IP LAN du host.
+En mode bridged, remplacer `10.0.2.2` par l'IP LAN du host. Revenir a `127.0.0.1`
+des que la VM n'est plus utilisee.
 
 ## 7. Troubleshooting
 

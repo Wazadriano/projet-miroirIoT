@@ -101,13 +101,15 @@ git clone <repo-url> projet-miroirIoT
 cd projet-miroirIoT/smart-mirror
 ```
 
-### 2. Start CRM backend (PostgreSQL + mock API)
+### 2. Start the local services (PostgreSQL + mock API)
 
 ```bash
-docker-compose up -d
+cp .env.example .env
+# Set POSTGRES_PASSWORD (required, no default): openssl rand -base64 24
+docker compose up -d
 ```
 
-This starts PostgreSQL 15 on :5432, the mock API (business endpoints) on :8100, and the IA mock on :3001.
+This starts PostgreSQL 15 on :5432, the mock API (business endpoints) on :8100, the IA mock on :3001 and Adminer on :8080. All ports are published on 127.0.0.1 only; set `BIND_ADDRESS=0.0.0.0` in `.env` to reach them from a VM or another host.
 
 ### 3. Start the Mirror App
 
@@ -126,7 +128,7 @@ cd microscope-proxy
 node proxy.js
 ```
 
-The proxy connects to the WiFi microscope over TCP (192.168.34.1:8080, JHCMD handshake), transcodes the H.264 stream to MJPEG via ffmpeg, and serves it at http://localhost:9100.
+The proxy connects to the WiFi microscope over TCP (192.168.34.1:8080, JHCMD handshake), transcodes the H.264 stream to MJPEG via ffmpeg, and serves it at http://127.0.0.1:9100 (local machine only; `LISTEN_HOST=0.0.0.0` widens the binding).
 
 ---
 
