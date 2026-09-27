@@ -27,19 +27,20 @@ class SeanceController extends Controller
             'consentement_id' => 'nullable|uuid|exists:consentements,id',
         ]);
 
-        // If no consentement_id provided, auto-find the client's active consent.
+        // The consent must belong to the client and to the mirror's boutique.
+        // Without consentement_id, the client's latest active consent is used.
+        $consentements = Consentement::where('cliente_id', $data['cliente_id'])
+            ->where('boutique_id', $miroir->boutique_id)
+            ->whereNull('date_revocation');
+
         if (empty($data['consentement_id'])) {
-            $consentement = Consentement::where('cliente_id', $data['cliente_id'])
-                ->where('boutique_id', $miroir->boutique_id)
-                ->whereNull('date_revocation')
-                ->latest('date_consentement')
-                ->first();
+            $consentement = $consentements->latest('date_consentement')->first();
         } else {
-            $consentement = Consentement::find($data['consentement_id']);
+            $consentement = $consentements->whereKey($data['consentement_id'])->first();
         }
 
-        if (!$consentement || $consentement->date_revocation) {
-            return response()->json(['message' => 'Aucun consentement valide. Le client doit signer le formulaire de consentement.'], 422);
+        if (!$consentement) {
+            return response()->json(['message' => 'Aucun consentement valide pour cette cliente dans cette boutique. Le client doit signer le formulaire de consentement.'], 422);
         }
 
         $seance = Seance::create([

@@ -160,20 +160,27 @@ api.post('/api/consentements', async (req, res) => {
   }
 });
 
-// Seances: create (requires consentement_id)
+// Seances: create (requires a valid consent that belongs to the client and the boutique)
 api.post('/api/seances', async (req, res) => {
   const { boutique_id, miroir_id, cliente_id, consentement_id } = req.body;
   if (!consentement_id) {
     return res.status(422).json({ error: 'consentement_id required - RGPD consent mandatory' });
   }
+  if (!boutique_id || !miroir_id || !cliente_id) {
+    return res.status(422).json({ error: 'boutique_id, miroir_id, cliente_id required' });
+  }
 
   try {
     const consent = await pool.query(
-      'SELECT id FROM consentements WHERE id = $1 AND date_revocation IS NULL',
+      'SELECT id, cliente_id, boutique_id FROM consentements WHERE id = $1 AND date_revocation IS NULL',
       [consentement_id]
     );
     if (consent.rows.length === 0) {
       return res.status(422).json({ error: 'Invalid or revoked consent' });
+    }
+    const row = consent.rows[0];
+    if (row.cliente_id !== cliente_id || row.boutique_id !== boutique_id) {
+      return res.status(422).json({ error: 'Consent does not belong to this client and boutique' });
     }
 
     const result = await pool.query(

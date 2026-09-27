@@ -73,6 +73,27 @@ test('REFUS : aucune seance sans consentement_id (RGPD obligatoire)', async () =
   assert.equal(queryCalls.length, 0);
 });
 
+test('REFUS : consentement valide mais rattache a une autre cliente ou boutique', async () => {
+  // Le consentement existe et n est pas revoque, mais appartient a une autre cliente.
+  queryQueue.push({ rows: [{ id: 'cons-1', cliente_id: 'c-autre', boutique_id: 'b1' }] });
+
+  const res = await postSeance(VALID_BODY);
+
+  assert.equal(res.status, 422);
+  const json = await res.json();
+  assert.match(json.error, /does not belong to this client and boutique/);
+  // Aucune insertion : seule la verification du consentement a ete executee.
+  assert.equal(queryCalls.length, 1);
+  assert.match(queryCalls[0].sql, /FROM consentements/);
+
+  // Meme refus quand la cliente correspond mais pas la boutique.
+  queryQueue.push({ rows: [{ id: 'cons-1', cliente_id: 'c1', boutique_id: 'b-autre' }] });
+  const res2 = await postSeance(VALID_BODY);
+  assert.equal(res2.status, 422);
+  assert.match((await res2.json()).error, /does not belong to this client and boutique/);
+  assert.equal(queryCalls.length, 2);
+});
+
 test('REFUS : consentement_id fourni mais introuvable ou revoque', async () => {
   // 1er query (verification du consentement) renvoie 0 ligne => revoque/inexistant.
   queryQueue.push({ rows: [] });
@@ -97,8 +118,8 @@ test('AUTORISE : consentement horodate non revoque => seance creee (201)', async
     consentement_id: 'cons-1',
     date_debut: '2026-06-25T10:00:00.000Z'
   };
-  // 1) verification consentement : 1 ligne (valide, non revoque)
-  queryQueue.push({ rows: [{ id: 'cons-1' }] });
+  // 1) verification consentement : 1 ligne (valide, non revoque, bonne cliente et boutique)
+  queryQueue.push({ rows: [{ id: 'cons-1', cliente_id: 'c1', boutique_id: 'b1' }] });
   // 2) insertion de la seance
   queryQueue.push({ rows: [createdSeance] });
 
@@ -111,7 +132,7 @@ test('AUTORISE : consentement horodate non revoque => seance creee (201)', async
 
   // Le verrou a bien verifie le consentement AVANT d inserer la seance.
   assert.equal(queryCalls.length, 2);
-  assert.match(queryCalls[0].sql, /SELECT id FROM consentements/);
+  assert.match(queryCalls[0].sql, /SELECT id, cliente_id, boutique_id FROM consentements/);
   assert.deepEqual(queryCalls[0].params, ['cons-1']);
   assert.match(queryCalls[1].sql, /INSERT INTO seances/);
 });
