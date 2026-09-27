@@ -1,19 +1,15 @@
 # ARCHITECTURE - MVP REALISE vs CIBLE ROADMAP
 
-## Source de verite de la stack technique (DreamTech Smart Mirror)
+## Source de verite de la stack technique (Smart Mirror K-Beauty)
 
 > Document strategique d'architecture : il distingue ce qui est REALISE dans le depot
 > de ce qui est CIBLE en roadmap, et justifie chaque choix futur par un point de douleur
 > observe dans le code actuel.
 >
-> Base factuelle : ce document s'appuie sur `docs/GROUND-TRUTH-CODE.md`, l'audit du code
-> qui fait autorite (preuves `fichier:ligne`, niveaux de confiance). En cas de divergence
-> entre une affirmation de stack et le code, `docs/GROUND-TRUTH-CODE.md` tranche.
+> Base factuelle : le code du depot. En cas de divergence entre une affirmation de stack
+> et le code, le code tranche.
 > Pour la dimension souverainete de l'IA, voir `docs/SOUVERAINETE-IA-3-VERSIONS.md`.
 >
-> Candidat : Adriano (B3, preparation au titre RNCP 37046)
-> Titre vise : RNCP 37046 - Chef de projet en solutions logicielles pour l'internet des objets (IoT) (niveau 6)
-> Blocs principalement servis : BC02 (conception d'architecture), BC05 (maintenir et faire evoluer)
 > Statut : le backend du DEVICE est un mock Express ; aucune reecriture Laravel du device n'est codee a ce stade
 > (Laravel 13 est en revanche deja en place sur le CRM separe `crm/backend`, et sert de cible pour le device).
 
@@ -29,7 +25,7 @@ Chaque brique de la stack est classee dans l'un des trois etats suivants, sans a
 | **EN COURS** | Chantier actif, partiellement implemente | Reference `fichier:ligne` de l'existant + ecart restant |
 | **CIBLE** | Decision d'architecture documentee, non encore codee | Etiquette explicite `[CIBLE ROADMAP - non implemente]` + horizon |
 
-Principe d'honnetete : une CIBLE n'est JAMAIS presentee comme realisee. Un jury qui lit le code ne doit trouver aucune affirmation invalidee par une lecture du depot.
+Principe d'honnetete : une CIBLE n'est JAMAIS presentee comme realisee. Aucune affirmation ne doit etre invalidee par une lecture du depot.
 
 ---
 
@@ -52,7 +48,7 @@ Le tableau ci-dessous est la reference canonique. Chaque ligne REALISE porte une
 | **Chiffrement** | Sur le device : photos cuir chevelu (`.jpg.enc`), file de synchronisation et tokens (device.token, crmToken, crmBearerToken) CHIFFRES AU REPOS en AES-256-GCM via cryptoVault, format `[version 1o || IV 12o || authTag 16o || ciphertext]` (`crypto-vault.service.ts`, ecriture `.jpg.enc` dans `sync.service.ts` `savePhotoLocally`, dechiffrement avant push CRM dans `crm-sync.service.ts` `pushPhotoCrm`, secrets dans `config.service.ts`) ; cle maitre par priorite env -> systemd-creds (TPM) -> keyfile -> fallback dev, THROW explicite en prod sans cle | Backend mock encore a securiser (PDF de seance servi sans protection, secrets en dur, device_token non hache) | `[CIBLE ROADMAP - non implemente]` pgcrypto sur colonnes sensibles, object storage chiffre, chiffrement de volume hebergeur, hebergement UE/EEE |
 | **Tests** | 196 cas au total : 60 unitaires Vitest sur 5 services (api-client 14, config 14, crm-sync 18, crypto-vault 7, sync 7) + 136 e2e Playwright (4 fichiers : 14+65+42+15) ; `crm-sync.service.test.ts` couvre la synchronisation CRM (18 cas), `crypto-vault.service.test.ts` (7 cas) prouve que le JPEG ecrit sur disque ne commence pas par `FF D8` et que le store ne contient pas le token en clair | Renforcement BC04 : couverture des 4 services non testes (media-cache, microscope, updater, wifi), tests d'integration backend | `[CIBLE ROADMAP - non implemente]` seuils de couverture imposes, scan image conteneur, durcissement des gates CI (horizon : vague BC04) |
 | **Securite plateforme / CI** | sandbox actif (`index.ts:52`), CSP en production (`index.ts:121-144`), CI GitHub Actions (`ci.yml`), ESLint flat config, `playwright.config` ; gates CI BLOQUANTS = `npm audit` CRITICAL/prod (`ci.yml:41-42`) + gitleaks (`secrets-scan`, `:64-74`) ; NON bloquants (continue-on-error) = `npm audit` high/dev (`:47-49`), SBOM CycloneDX (`:51-53`), Semgrep (`:76-85`) | Faire passer en bloquants le SBOM, Semgrep et l'audit high apres remediation des findings | `[CIBLE ROADMAP - non implemente]` protection de branche, DAST, scan conteneur (horizon : durcissement BC04) |
-| **Packaging / Build** | electron-builder, cibles Linux uniquement = deb + AppImage, chacun pour arm64 ET x64 (`electron-builder.yml`, scripts `package:arm64`/`package:x64`) ; appId `com.dreamtech.smartmirror`, publish `provider: generic` via `UPDATE_SERVER_URL` ; aucune cible Windows ni macOS | - | Inchange (deploiement Linux embarque) |
+| **Packaging / Build** | electron-builder, cibles Linux uniquement = deb + AppImage, chacun pour arm64 ET x64 (`electron-builder.yml`, scripts `package:arm64`/`package:x64`) ; appId `com.ohadja.smartmirror`, publish `provider: generic` via `UPDATE_SERVER_URL` ; aucune cible Windows ni macOS | - | Inchange (deploiement Linux embarque) |
 | **Consentement RGPD** | Verrouille a deux niveaux : schema (`init.sql:59` FK `consentement_id NOT NULL`) ET serveur (`server.js:166-177` refuse HTTP 422 si consentement absent, introuvable ou revoque) | Verrouillage additionnel par test d'integration backend | Inchange (regle deja en place) |
 
 ---
@@ -166,35 +162,9 @@ adminer                     ->   adminer
 
 ---
 
-## 5. Discours "MVP vs cible" pour le jury
+## 5. Faits verifies (rappel de coherence)
 
-### 5.1 Phrase-cadre
-
-> "Le MVP demontre la chaine de bout en bout avec un backend mock Express / PostgreSQL 15 fonctionnel et teste ; la cible Laravel 13 / PostgreSQL 16 / Redis 7 est documentee en roadmap, et je justifie chaque choix par un point de douleur observe dans le MVP."
-
-### 5.2 Argumentaire "pourquoi ne pas avoir code Laravel sur le device maintenant"
-
-- **Maitrise du contrat d'abord** : le mock fige le contrat d'API, ce qui permet une bascule endpoint par endpoint sans renegocier l'interface avec le frontend.
-- **Priorisation P0** : la securite et le chiffrement des photos de cuir chevelu (donnee potentiellement sensible) passent AVANT une reecriture backend. Reecrire le backend sans avoir chiffre les donnees serait une mauvaise priorisation.
-- **Eviter le big-bang** : une reecriture totale en une fois est un risque d'architecte ; le strangler-fig est une decision assumee et tracable, derisquee par le fait que Laravel 13 tourne deja sur le CRM separe.
-- **Rattachement aux blocs** : ce raisonnement nourrit BC02 (choix d'architecture cible justifies) et BC05 (strategie d'evolution maitrisee).
-
-### 5.3 Reponses aux questions du jury (extrait)
-
-| Question du jury | Reponse |
-|------------------|---------|
-| "Votre IA fonctionne reellement ?" | "Sur le device, le chemin par defaut est mocke (`server.js:518-549`, scores `Math.random`) : il valide le flux et le contrat d'API. Un service IA reel existe par ailleurs cote serveur (`crm/ia-service`, port 3002) qui appelle GitHub Models. La cible est de brancher une analyse vision souveraine (cloud UE Mistral ou NPU local), avec encadrement RGPD." |
-| "Le microscope est-il en USB ?" | "Non, en WiFi/TCP (`192.168.34.1:8080`, protocole JHCMD). Le flux source H.264 est transcode par ffmpeg en MJPEG sur `localhost:9100`, affiche dans une balise `<img>`. Les references UVC/V4L2 dans le depot sont des vestiges non utilises par le pipeline." |
-| "Avez-vous des queues Redis ?" | "Pas encore. La file actuelle est un fichier JSON chiffre poll a 30s (`sync.service.ts`). Je sais exactement quels 8 jobs y migreront et pourquoi : chacun a un point de douleur synchrone ou fragile dans le code." |
-| "Les photos sont-elles chiffrees ?" | "Oui, au repos sur le device : `sync.service.ts` `savePhotoLocally` ecrit un `.jpg.enc` chiffre AES-256-GCM via cryptoVault (`crypto-vault.service.ts`), la file de sync et les secrets de config sont chiffres aussi, et `crm-sync.service.ts` dechiffre avant le push CRM. La cle maitre vient de systemd-creds (TPM) en prod, avec THROW explicite si absente. Reste a faire : securiser le backend mock et introduire pgcrypto en base." |
-| "Combien de tests ?" | "196 cas au total : 60 unitaires Vitest sur 5 services (api-client 14, config 14, crm-sync 18, crypto-vault 7, sync 7) et 136 e2e Playwright sur 4 fichiers. Le service de synchronisation CRM est couvert par 18 cas, et `crypto-vault.service.test.ts` prouve notamment que le JPEG sur disque ne commence pas par `FF D8` et que le store ne contient pas le token en clair. Le renforcement BC04 vise les 4 services main non encore testes (media-cache, microscope, updater, wifi)." |
-| "Tournez-vous Laravel sur le miroir ?" | "Non, le backend du device est un mock Express + PostgreSQL 15 (`server.js`, `docker-compose`). Laravel 13/PHP 8.4 est deja en place sur le CRM separe (`crm/backend`) et constitue la cible pour le device ; j'ai fige le contrat pour basculer en strangler-fig." |
-
----
-
-## 6. Faits verifies (rappel de coherence)
-
-Cette section recapitule les invariants que toute autre documentation doit respecter. Ils sont alignes sur `docs/GROUND-TRUTH-CODE.md`.
+Cette section recapitule les invariants que toute autre documentation doit respecter. Ils sont alignes sur le code du depot.
 
 - BACKEND DEVICE REALISE = mock Express (Node.js) `smart-mirror/mock-api/src/server.js` (API metier mock "Laravel" port 8100, IA mock port 3001) + PostgreSQL 15-alpine, SQL brut via `pg` ; zero ORM, zero Laravel/Sanctum/Redis sur le device. Laravel 13 = CRM separe (`crm/backend`) et cible roadmap du device.
 - STOCKAGE LOCAL DEVICE = electron-store (config) + fichier JSON chiffre `sync-queue.json` + fichiers `.jpg.enc` ; AUCUN SQLite cote device.
@@ -213,4 +183,4 @@ Cette section recapitule les invariants que toute autre documentation doit respe
 
 ---
 
-*Fin du document. Document strategique d'architecture MVP vs cible. Base factuelle : `docs/GROUND-TRUTH-CODE.md` (BC02 conception d'architecture, BC05 strategie d'evolution).*
+*Fin du document. Document strategique d'architecture MVP vs cible.*

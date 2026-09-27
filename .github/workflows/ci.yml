@@ -66,8 +66,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Bloquant : aucun secret dans l'arbre courant. --no-git evite de buter sur le
-      # token CRM historiquement leake puis revoque (cf. smart-mirror/.env.example).
+      # Bloquant : aucun secret dans l'arbre courant (--no-git analyse les fichiers,
+      # pas l'historique).
       - name: gitleaks (working tree)
         run: |
           docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect \

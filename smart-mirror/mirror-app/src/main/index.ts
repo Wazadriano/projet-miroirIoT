@@ -113,7 +113,7 @@ process.on('uncaughtException', (err) => {
 })
 
 app.whenReady().then(async () => {
-  electronApp.setAppUserModelId('com.dreamtech.smartmirror')
+  electronApp.setAppUserModelId('com.ohadja.smartmirror')
 
   // Content-Security-Policy (kiosk de production). Le mode dev est ignore pour
   // preserver le HMR de Vite. ATTENTION: a tester sur le device (VM/Pi) avant la

@@ -1,6 +1,6 @@
-# DreamTech - Smart Mirror K-Beauty
+# Smart Mirror K-Beauty
 
-DreamTech Smart Mirror is a connected mirror solution designed for K-Beauty hair salons, providing scalp and hair diagnostics. The system combines a kiosk touchscreen application with a WiFi microscope (TCP 192.168.34.1:8080, JHCMD protocol, transcoded to MJPEG), a CRM backend, and an analysis service to deliver scalp capture, before/after comparisons, and downloadable PDF reports -- all while ensuring strict RGPD compliance and offline-first resilience.
+Smart Mirror K-Beauty is a connected mirror solution designed for K-Beauty hair salons, providing scalp and hair analysis. The system combines a kiosk touchscreen application with a WiFi microscope (TCP 192.168.34.1:8080, JHCMD protocol, transcoded to MJPEG), a CRM backend, and an analysis service to deliver scalp capture, before/after comparisons, and downloadable PDF reports -- all while ensuring strict RGPD compliance and offline-first resilience.
 
 ---
 
@@ -97,8 +97,8 @@ REALISE (MVP) sauf mention CIBLE explicite.
 ### 1. Clone and install
 
 ```bash
-git clone <repo-url> dreamtech
-cd dreamtech/smart-mirror
+git clone <repo-url> projet-miroirIoT
+cd projet-miroirIoT/smart-mirror
 ```
 
 ### 2. Start CRM backend (PostgreSQL + mock API)
@@ -133,7 +133,7 @@ The proxy connects to the WiFi microscope over TCP (192.168.34.1:8080, JHCMD han
 ## Project Structure
 
 ```
-dreamtech/
+projet-miroirIoT/
   smart-mirror/
     mirror-app/                 # Electron + React kiosk application
       src/
@@ -155,7 +155,7 @@ dreamtech/
       vm/                       # QEMU/KVM test VM setup
     docker-compose.yml          # PostgreSQL + mock-api + adminer
   docs/                         # Project documentation
-  figma-exports/                # UI design exports
+  archive/figma-exports/        # Raw Figma design exports
 ```
 
 ---
@@ -201,4 +201,4 @@ Proprietary -- All rights reserved.
 
 ## Team
 
-**DreamTech**
+**OHADJA**

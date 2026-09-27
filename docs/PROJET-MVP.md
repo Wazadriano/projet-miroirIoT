@@ -1,10 +1,10 @@
-# DreamTech Smart Mirror K-Beauty -- Document Projet MVP
+# Smart Mirror K-Beauty -- Document Projet MVP
 
 ---
 
 ## 1. Vision Produit
 
-DreamTech Smart Mirror est un miroir connecte destine aux salons de coiffure et instituts K-Beauty. Il permet aux praticiens de realiser des diagnostics capillaires assistes par intelligence artificielle, directement depuis un dispositif kiosque installe en salon.
+Le Smart Mirror K-Beauty est un miroir connecte destine aux salons de coiffure et instituts K-Beauty. Il permet aux praticiens de realiser des diagnostics capillaires assistes par intelligence artificielle, directement depuis un dispositif kiosque installe en salon.
 
 Le produit repond a trois besoins identifie chez les professionnels :
 

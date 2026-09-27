@@ -1,4 +1,4 @@
-appId: com.dreamtech.smartmirror
+appId: com.ohadja.smartmirror
 productName: SmartMirror
 directories:
   buildResources: resources
@@ -20,7 +20,7 @@ linux:
         - arm64
         - x64
   category: Utility
-  maintainer: DreamTech
+  maintainer: OHADJA
   desktop:
     Name: SmartMirror
     Comment: Smart Mirror - Analyse capillaire IA

@@ -1,4 +1,4 @@
-# Design System - Figma DreamTech
+# Design System - Figma OHADJA
 
 ## Composants Figma
 

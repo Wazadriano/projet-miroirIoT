@@ -1,8 +1,8 @@
 # Souveraineté de l'IA - 3 versions du Smart Mirror
 
-> Document de préparation soutenance RNCP 37046. Fact-check daté du 2026-06-29, niveaux de confiance indiqués.
+> Note d'architecture datée du 2026-06-29 ; niveaux de confiance indiqués.
 > Sujet : la chaîne d'analyse capillaire et sa souveraineté (où part la donnée, dépendance internet, RGPD).
-> Note de cohérence : l'état RÉEL du code est tranché par `docs/GROUND-TRUTH-CODE.md` (audit du code). Côté device, le proxy IA par défaut (port 3001) est un MOCK (`Math.random`). Le seul appel IA réel se trouve côté serveur CRM (`crm/ia-service`, port 3002) et envoie la photo à **GitHub Models (Azure, US)** : OpenRouter n'est appelé dans aucun code (mentionné seulement dans la doc). Ce document-ci porte sur les OPTIONS d'architecture et leur souveraineté.
+> Note de cohérence : côté device, le proxy IA par défaut (port 3001) est un MOCK (`Math.random`). Le seul appel IA réel se trouve côté serveur CRM (`crm/ia-service`, port 3002) et envoie la photo à **GitHub Models (Azure, US)** : OpenRouter n'est appelé dans aucun code (mentionné seulement dans la doc). Ce document-ci porte sur les OPTIONS d'architecture et leur souveraineté.
 
 ---
 
@@ -18,7 +18,7 @@ Prétendre la souveraineté avec cette configuration serait faux. D'où une stra
 
 ---
 
-## 2. Tableau des 3 versions (vue jury)
+## 2. Tableau des 3 versions
 
 | Critère | V1 actuelle - GitHub Models (Azure US) | V2 cloud souverain - Mistral EU | V3 premium - NPU local offline |
 |---|---|---|---|
@@ -48,7 +48,7 @@ Prétendre la souveraineté avec cette configuration serait faux. D'où une stra
   - Mistral Medium 3.5 : ~1,50 $ / 7,50 $ par M tokens (in/out).
   - Mistral Large 3 : ~0,50 $ / 1,50 $. Ministral 3 (8B) : ~0,15 $ / 0,15 $.
   - Une image est facturée en tokens (selon résolution). Une analyse capillaire (1 image + prompt + réponse courte) sur un petit modèle Ministral = de l'ordre de **fractions de centime à ~1 ct EUR** (ordre de grandeur).
-- **Nuances honnêtes à dire au jury** :
+- **Nuances** :
   1. Ce n'est **pas** "100% local" : l'image quitte quand même le miroir. Souveraineté n'est pas confidentialité totale.
   2. La souveraineté UE dépend de la **configuration** (endpoint EU + ZDR activé + DPA signé), pas automatique.
   3. Vérifier le **Trust Center / liste des sous-traitants** Mistral (aucun sous-traitant hors UE non encadré par des SCC).
@@ -80,7 +80,7 @@ Prétendre la souveraineté avec cette configuration serait faux. D'où une stra
 - **Voie A (recommandée) - Classification CNN dédiée sur Hailo-8** : entrainer/compiler un modèle de classification (ex. "cuir chevelu sec / gras / pellicules / normal") via le Hailo Dataflow Compiler. Rapide (temps réel), faible conso, 100% offline, souverain, ~70-110 EUR. Sortie = **labels + scores** ; le texte cosmétique est généré côté app par règles/templates. C'est la version 100% locale défendable aujourd'hui.
 - **Voie B (prospective, V3+) - VLM génératif local** : Hailo-10H (~130 EUR) avec un petit VLM, ou VLM CPU (latence dégradée). Sortie en langage naturel mais qualité < cloud et maturité récente.
 
-**Phrase clé jury** : "En local sur Pi 5, le réaliste et fiable aujourd'hui, c'est de la classification d'images dédiée (Hailo-8), pas un VLM génératif. Le diagnostic en langage naturel 100% local devient envisageable seulement avec le tout récent Hailo-10H (AI HAT+ 2, jan 2026) ou un petit VLM CPU à latence dégradée."
+**Synthèse** : "En local sur Pi 5, le réaliste et fiable aujourd'hui, c'est de la classification d'images dédiée (Hailo-8), pas un VLM génératif. L'analyse en langage naturel 100% local devient envisageable seulement avec le tout récent Hailo-10H (AI HAT+ 2, jan 2026) ou un petit VLM CPU à latence dégradée."
 
 ---
 
@@ -90,18 +90,7 @@ Une image de cuir chevelu **à finalité cosmétique** n'est en principe **pas u
 
 ---
 
-## 6. Questions pièges du jury + réponses honnêtes
-
-1. **"Mistral c'est souverain, mais l'image quitte quand même le miroir ?"**
-   -> Oui. Souveraineté n'est pas confidentialité totale. Atouts réels : éditeur français/UE, hébergement UE par défaut, ZDR + DPA + endpoint EU suppriment le transfert hors UE et la rétention. La seule version "rien ne sort" est la V3 locale. C'est pourquoi je propose 3 niveaux selon le besoin.
-2. **"Votre NPU Hailo fait-il vraiment tourner l'IA générative en local ?"**
-   -> Distinction nette : Hailo-8/8L non (vision classique, limite SRAM). Ma V3 réaliste = classification dédiée entrainée sur des classes capillaires. Le VLM génératif 100% local n'est possible qu'avec le Hailo-10H / AI HAT+ 2 (jan 2026) ou un petit VLM CPU lent : je le positionne en évolution.
-3. **"Est-ce de la donnée de santé (art. 9) ?"**
-   -> Tant que la finalité reste cosmétique sans diagnostic médical, non. Le risque serait de basculer en revendiquant du diagnostic de pathologie. D'où le cadrage strict + minimisation (traitement local quand possible).
-
----
-
-## 7. Sources (consultées 2026-06-29)
+## 6. Sources (consultées 2026-06-29)
 
 - Mistral modèles : docs.mistral.ai/models/overview ; mistral.ai/news/pixtral-large
 - Mistral données/EU/ZDR : help.mistral.ai (hébergement UE) ; legal.mistral.ai/terms/data-processing-addendum
@@ -110,10 +99,3 @@ Une image de cuir chevelu **à finalité cosmétique** n'est en principe **pas u
 - AI HAT+ 2 / Hailo-10H (15 jan 2026) : raspberrypi.com/news (AI HAT+ 2) ; cnx-software.com (2026-01-15)
 - Hailo-8 vs LLM (limite mémoire) : community.hailo.ai ; hailo.ai/products (Hailo-10H)
 - VLM local Pi 5 (perf) : learnopencv.com/vlm-on-edge-devices ; raspberry.tips (Ollama Pi 5)
-
-## 8. À revérifier soi-même avant la soutenance
-
-1. Prix exacts Mistral (page JS) et prix EUR TTC des HAT chez un revendeur FR.
-2. ZDR : disponibilité contractuelle réelle sur le plan choisi + liste sous-traitants au Trust Center.
-3. Consommation Hailo-8 en W (datasheet Hailo officielle).
-4. Qualification RGPD art. 9 : à faire valider (question juridique, pas un fait technique).

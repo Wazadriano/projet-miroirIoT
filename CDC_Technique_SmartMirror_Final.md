@@ -10,7 +10,7 @@ K Beauty Cosmetics — Bubble Hair Spa
 | :---- | :---- |
 | Projet | Smart Mirror — Miroir connecté d'analyse capillaire |
 | Client | K Beauty Cosmetics / Bubble Hair Spa (Nice, Lyon, Cannes) |
-| Équipe | DreamTech |
+| Équipe | OHADJA |
 | Version | 4.0 — retours reviewer intégrés |
 | Date | Mars 2026 |
 | Statut | En cours de validation |
@@ -551,7 +551,7 @@ L'appel IA peut prendre jusqu'à 5 secondes et bloquer un worker PHP. Laravel é
 | :---- | :---- |
 | Modèle par défaut | Google Gemini Flash 1.5 (via OpenRouter) |
 | Modèle fallback 1 | OpenAI GPT-4o mini (si Gemini indisponible) |
-| Modèle fallback 2 | Anthropic Claude 3.5 Haiku (si GPT-4o mini indisponible) |
+| Modèle fallback 2 | Modèle vision alternatif d'un autre fournisseur (si GPT-4o mini indisponible) |
 | Timeout | 30 secondes par appel |
 | Retries | 2 tentatives automatiques avant erreur |
 | Objectif latence totale | Photo capturée → résultat affiché sur miroir \< 5 secondes |
@@ -857,7 +857,7 @@ Le workflow n8n de fallback email nécessite un service SMTP configuré. Deux op
 
 ## **14.3 Coûts de développement**
 
-ℹ  Les coûts de développement (temps équipe DreamTech) sont à valoriser séparément dans le devis commercial. Ce tableau couvre uniquement les coûts d'infrastructure et de matériel.
+ℹ  Les coûts de développement (temps équipe OHADJA) sont à valoriser séparément dans le devis commercial. Ce tableau couvre uniquement les coûts d'infrastructure et de matériel.
 
 # **15\. Positionnement RGPD — Données cosmétiques vs données de santé**
 
@@ -932,4 +932,4 @@ PO-05 (qualification HDS) est tranché : positionnement cosmétique retenu (voir
 | PO-08 | Nom de domaine \+ SSL production | Infrastructure réseau | Nadia | Sprint 2 |
 | PO-09 | Modèle tarifaire B2B (package miroir, abonnement) | Stratégie commerciale | PM \+ client | Pré-lancement |
 
-CDC Technique Smart Mirror  •  Version 5.0  •  Mars 2026  •  DreamTech — Confidentiel
+CDC Technique Smart Mirror  •  Version 5.0  •  Mars 2026  •  OHADJA — Confidentiel

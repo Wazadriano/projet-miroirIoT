@@ -1,6 +1,6 @@
 # Runbook - Chiffrement des donnees sensibles (Smart Mirror)
 
-> Pièce de maintenance et de conformité (RNCP 37046, BC04/BC05). Décrit ce qui est
+> Procédure de maintenance et de conformité. Décrit ce qui est
 > chiffré, la gestion de la clé maître, la rotation, la rétention RGPD et la migration.
 > Source de vérité du code : `smart-mirror/mirror-app/src/main/services/crypto-vault.service.ts`.
 

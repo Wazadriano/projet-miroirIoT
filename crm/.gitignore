@@ -40,10 +40,3 @@ postgres_data/
 # Logs
 *.log
 
-# BYAN/BMAD internal agent framework
-_byan/
-_byan-output/
-.github/agents/
-
-# Codex
-.codex/

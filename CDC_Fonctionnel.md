@@ -9,13 +9,13 @@ Analyse capillaire assistée par intelligence artificielle
 
 K Beauty Cosmetics — Bubble Hair Spa
 
-**DreamTech**
+**OHADJA**
 
 | Version | 2.0 |
 | :---- | :---- |
 | **Date** | Mars 2026 |
 | **Client** | K Beauty Cosmetics |
-| **Équipe** | DreamTech |
+| **Équipe** | OHADJA |
 | **Statut** | En attente de validation |
 
 # **Sommaire**
@@ -506,7 +506,7 @@ Fond sombre premium, accents lumineux discrets, lisibles sur écran miroir en al
 
 * Logo K Beauty Cosmetics en haut du miroir — version blanche sur fond sombre
 
-* Logo DreamTech uniquement dans le back-office et les documents techniques
+* Logo OHADJA uniquement dans le back-office et les documents techniques
 
 * L’interface miroir est 100% K Beauty — signature discrète « Powered by Smart Mirror » en pied d’écran
 
@@ -556,7 +556,7 @@ Interface web mode clair, desktop et tablette. Ergonomie orientée efficacité.
 
 # **12\. Communication et marketing**
 
-Le Smart Mirror est un produit marketing autant qu’un outil technique. Il crée une expérience mémorable et constitue un argument de différenciation fort pour la franchise. Des concurrents existent sur l’analyse capillaire (K-Scan, BECON, FotoFinder, Aram Huvis/ARAMO) et les smart mirrors beauté (CareOS, HiMirror) ; la différenciation de DreamTech repose sur l’intégration verticale (miroir + microscope + CRM + IA + Shopify) dans un parcours boutique unique.
+Le Smart Mirror est un produit marketing autant qu’un outil technique. Il crée une expérience mémorable et constitue un argument de différenciation fort pour la franchise. Des concurrents existent sur l’analyse capillaire (K-Scan, BECON, FotoFinder, Aram Huvis/ARAMO) et les smart mirrors beauté (CareOS, HiMirror) ; la différenciation de OHADJA repose sur l’intégration verticale (miroir + microscope + CRM + IA + Shopify) dans un parcours boutique unique.
 
 ## **12.1 Positionnement**
 
@@ -632,7 +632,7 @@ Le Smart Mirror est un produit marketing autant qu’un outil technique. Il cré
 
 ## **12.4 Commercialisation B2B**
 
-Le Smart Mirror est commercialisé auprès d’autres instituts. K Beauty se positionne en premier opérateur. DreamTech assure le développement et le déploiement.
+Le Smart Mirror est commercialisé auprès d’autres instituts. K Beauty se positionne en premier opérateur. OHADJA assure le développement et le déploiement.
 
 | Package de base | Miroir Shineworld (\~800€) \+ boitier Pi 5 (\~165€) \+ microscope (\~45€) \+ dongle WiFi (\~15€) \+ adaptateur HDMI (\~10€) \+ installation \+ formation |
 | :---- | :---- |
