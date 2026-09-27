@@ -12,6 +12,10 @@ Environment=NODE_ENV=production
 Environment=FORCE_KIOSK=1
 Environment=API_BASE_URL=http://__HOST_IP__:8000/api
 Environment=IA_PROXY_URL=http://__HOST_IP__:3001
+# Cle maitre de chiffrement (AES-256-GCM) fournie par systemd : le fichier
+# /etc/credstore/smart-mirror-master-key (root, 0600) est expose au service dans
+# $CREDENTIALS_DIRECTORY/smart-mirror-master-key, lisible par lui seul.
+LoadCredential=smart-mirror-master-key:/etc/credstore/smart-mirror-master-key
 WorkingDirectory=/opt/smart-mirror
 ExecStart=/opt/smart-mirror/SmartMirror.AppImage --kiosk --no-sandbox --disable-gpu --disable-infobars --disable-notifications --hide-crash-restore-bubble
 Restart=always

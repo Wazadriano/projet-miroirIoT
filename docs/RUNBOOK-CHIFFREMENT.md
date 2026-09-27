@@ -24,8 +24,10 @@ et lu tel quel, ce qui permet une migration sans perte.
 
 1. `SMART_MIRROR_MASTER_KEY` (base64 de 32 octets) - override explicite (tests, CI, dépannage).
 2. `CREDENTIALS_DIRECTORY/smart-mirror-master-key` - **production Pi**, via systemd
-   `LoadCredentialEncrypted` (secret lié au TPM2 / à l'installation, jamais en clair sur la
-   partition data). **Méthode recommandée en production.**
+   `LoadCredential=` dans `smart-mirror.service` (fichier root `0600` dans `/etc/credstore/`,
+   exposé au seul processus du service). **Méthode utilisée en production.** La variante
+   `LoadCredentialEncrypted=` (secret lié au TPM2 / à l'installation) est un durcissement
+   possible sur un Pi équipé d'un TPM.
 3. `MASTER_KEY_FILE` - keyfile administré, fichier root `0600` hors du répertoire applicatif.
 4. Fallback développement uniquement : clé locale générée dans `~/.smart-mirror/dev-master.key`
    (avertissement explicite). **Inatteignable en production** : si `NODE_ENV=production` (ou
@@ -38,14 +40,29 @@ et lu tel quel, ce qui permet une migration sans perte.
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-### Provisionner sur le Pi (systemd-creds, recommandé)
+### Provisionner sur le Pi (LoadCredential, procédure de déploiement)
+
+`device-setup/scripts/setup-device.sh` crée le fichier de clé s'il n'existe pas. À la main :
 
 ```bash
-# Chiffre la clé pour ce hôte (liée TPM si disponible)
-systemd-creds encrypt --name=smart-mirror-master-key cle.b64 /etc/credstore.encrypted/smart-mirror-master-key
-# Dans l'unité systemd du service :
-#   LoadCredentialEncrypted=smart-mirror-master-key
-# L'app lit alors $CREDENTIALS_DIRECTORY/smart-mirror-master-key
+sudo mkdir -p /etc/credstore && sudo chmod 700 /etc/credstore
+sudo sh -c 'umask 077 && head -c 32 /dev/urandom | base64 > /etc/credstore/smart-mirror-master-key'
+sudo chmod 600 /etc/credstore/smart-mirror-master-key
+# L'unité device-setup/systemd/smart-mirror.service contient :
+#   LoadCredential=smart-mirror-master-key:/etc/credstore/smart-mirror-master-key
+# systemd expose le fichier dans $CREDENTIALS_DIRECTORY/smart-mirror-master-key,
+# que crypto-vault.service.ts lit en priorité 2.
+sudo systemctl restart smart-mirror
+```
+
+Sauvegarder ce fichier hors du miroir : sans lui, les photos chiffrées et la file de
+synchronisation deviennent illisibles.
+
+Variante durcie (TPM2) :
+
+```bash
+systemd-creds encrypt --name=smart-mirror-master-key /etc/credstore/smart-mirror-master-key /etc/credstore.encrypted/smart-mirror-master-key
+# puis dans l'unité : LoadCredentialEncrypted=smart-mirror-master-key
 ```
 
 ## 3. Rotation de clé

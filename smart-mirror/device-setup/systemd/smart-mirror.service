@@ -9,6 +9,10 @@ User=mirror
 Environment=DISPLAY=:0
 Environment=XAUTHORITY=/home/mirror/.Xauthority
 Environment=NODE_ENV=production
+# Cle maitre de chiffrement (AES-256-GCM) fournie par systemd : le fichier
+# /etc/credstore/smart-mirror-master-key (root, 0600) est expose au service dans
+# $CREDENTIALS_DIRECTORY/smart-mirror-master-key, lisible par lui seul.
+LoadCredential=smart-mirror-master-key:/etc/credstore/smart-mirror-master-key
 WorkingDirectory=/opt/smart-mirror
 ExecStart=/opt/smart-mirror/SmartMirror.AppImage --kiosk --no-sandbox --disable-infobars --disable-notifications --hide-crash-restore-bubble
 Restart=always

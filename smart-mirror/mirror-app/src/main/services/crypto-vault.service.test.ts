@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest'
+import { mkdtempSync, writeFileSync, rmSync } from 'fs'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import { CryptoVault, cryptoVault } from './crypto-vault.service'
 
 describe('CryptoVault', () => {
@@ -41,6 +44,49 @@ describe('CryptoVault', () => {
     const enc = cryptoVault.encryptBuffer(Buffer.from('x'))
     enc[0] = 0x99
     expect(() => cryptoVault.decryptBuffer(enc)).toThrow(/version/)
+  })
+
+  it('lit la cle maitre depuis le repertoire de credentials systemd en production', () => {
+    const savedKey = process.env.SMART_MIRROR_MASTER_KEY
+    const credDir = mkdtempSync(join(tmpdir(), 'smart-mirror-creds-'))
+    const key = Buffer.alloc(32, 9)
+    writeFileSync(join(credDir, 'smart-mirror-master-key'), key.toString('base64') + '\n', { mode: 0o600 })
+    delete process.env.SMART_MIRROR_MASTER_KEY
+    process.env.SMART_MIRROR_PROD = '1'
+    process.env.CREDENTIALS_DIRECTORY = credDir
+    try {
+      const fromCredentials = new CryptoVault()
+      expect(fromCredentials.isEnabled()).toBe(true)
+      const enc = fromCredentials.encryptString('photo-cuir-chevelu')
+
+      // La meme cle passee explicitement dechiffre : la cle lue vient bien du fichier de credentials.
+      process.env.SMART_MIRROR_MASTER_KEY = key.toString('base64')
+      const fromEnv = new CryptoVault()
+      expect(fromEnv.decryptString(enc)).toBe('photo-cuir-chevelu')
+    } finally {
+      process.env.SMART_MIRROR_MASTER_KEY = savedKey
+      delete process.env.SMART_MIRROR_PROD
+      delete process.env.CREDENTIALS_DIRECTORY
+      rmSync(credDir, { recursive: true, force: true })
+    }
+  })
+
+  it('rejette un fichier de credentials qui ne contient pas 32 octets', () => {
+    const savedKey = process.env.SMART_MIRROR_MASTER_KEY
+    const credDir = mkdtempSync(join(tmpdir(), 'smart-mirror-creds-'))
+    writeFileSync(join(credDir, 'smart-mirror-master-key'), 'trop-court', { mode: 0o600 })
+    delete process.env.SMART_MIRROR_MASTER_KEY
+    process.env.SMART_MIRROR_PROD = '1'
+    process.env.CREDENTIALS_DIRECTORY = credDir
+    try {
+      const vault = new CryptoVault()
+      expect(() => vault.encryptString('x')).toThrow(/32 octets/)
+    } finally {
+      process.env.SMART_MIRROR_MASTER_KEY = savedKey
+      delete process.env.SMART_MIRROR_PROD
+      delete process.env.CREDENTIALS_DIRECTORY
+      rmSync(credDir, { recursive: true, force: true })
+    }
   })
 
   it('refuse de fonctionner en production sans cle maitre', () => {

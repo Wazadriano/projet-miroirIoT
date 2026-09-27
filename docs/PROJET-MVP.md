@@ -226,7 +226,7 @@ Chaque miroir physique est identifie par son adresse MAC. Lors du provisioning, 
 
 - Un docker-compose avec PostgreSQL 15-alpine, mock-api (Express :8100), mock-ia (Express :3001) et adminer.
 - Un miroir en developpement, un tenant de test.
-- 196 cas de test : 60 unitaires Vitest (5 services : api-client 14, config 14, crm-sync 18, crypto-vault 7, sync 7) + 136 e2e Playwright (4 fichiers) ; 5/9 services main couverts ; `crm-sync.service.ts` est couvert par 18 tests (services sans test : media-cache, microscope, updater, wifi).
+- 198 cas de test : 62 unitaires Vitest (5 services : api-client 14, config 14, crm-sync 18, crypto-vault 9, sync 7) + 136 e2e Playwright (4 fichiers) ; 5/9 services main couverts ; `crm-sync.service.ts` est couvert par 18 tests (services sans test : media-cache, microscope, updater, wifi).
 
 ### 8.2 Post-MVP
 

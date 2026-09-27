@@ -73,6 +73,10 @@ sudo chmod +x /opt/smart-mirror/SmartMirror.AppImage
 sudo systemctl start smart-mirror
 ```
 
+Le service tourne avec `NODE_ENV=production` : la cle de chiffrement lui est fournie par
+`LoadCredential=` depuis `/etc/credstore/smart-mirror-master-key`, cree par `setup-vm.sh`
+(voir `docs/RUNBOOK-CHIFFREMENT.md`).
+
 ## 5. Microscope WiFi/TCP (JHCMD)
 
 Le microscope Ninyoon 4K est connecte en **WiFi/TCP** (`192.168.34.1:8080`, handshake protocole JHCMD), pas en USB. Les anciennes references USB/UVC/V4L2 sont des vestiges morts.

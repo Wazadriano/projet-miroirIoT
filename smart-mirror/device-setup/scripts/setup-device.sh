@@ -95,6 +95,19 @@ chown "$MIRROR_USER:$MIRROR_USER" /home/$MIRROR_USER/.xinitrc
 
 # 7. Install systemd service and udev rules
 echo "[7/8] Installing systemd service and udev rules..."
+# Master encryption key for the application vault (AES-256-GCM). Generated once,
+# stored outside the application directory, readable by root only and handed to
+# the service through systemd LoadCredential=.
+KEY_FILE="/etc/credstore/smart-mirror-master-key"
+if [ ! -s "$KEY_FILE" ]; then
+    mkdir -p /etc/credstore
+    chmod 700 /etc/credstore
+    (umask 077 && head -c 32 /dev/urandom | base64 > "$KEY_FILE")
+    chmod 600 "$KEY_FILE"
+    echo "Master key created at $KEY_FILE (back it up: losing it makes encrypted data unreadable)."
+else
+    echo "Master key already present at $KEY_FILE."
+fi
 cp "$SCRIPT_DIR/../systemd/smart-mirror.service" /etc/systemd/system/
 cp "$SCRIPT_DIR/../udev/99-microscope.rules" /etc/udev/rules.d/
 systemctl daemon-reload
