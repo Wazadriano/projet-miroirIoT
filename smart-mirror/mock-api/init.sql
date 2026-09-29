@@ -160,7 +160,14 @@ INSERT INTO config_miroir (miroir_id) VALUES
 INSERT INTO clientes (boutique_id, prenom, nom, email, date_de_naissance, sexe, synced_to_crm) VALUES
     ('a1b2c3d4-0001-4000-8000-000000000001', 'Marie', 'Dupont', 'marie@test.fr', '1992-03-15', 'F', TRUE),
     ('a1b2c3d4-0001-4000-8000-000000000001', 'Sophie', 'Martin', 'sophie@test.fr', '1998-07-22', 'F', TRUE),
-    ('a1b2c3d4-0002-4000-8000-000000000002', 'Julie', 'Bernard', 'julie@test.fr', '1984-11-08', 'F', TRUE);
+    ('a1b2c3d4-0002-4000-8000-000000000002', 'Julie', 'Bernard', 'julie@test.fr', '1984-11-08', 'F', TRUE),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'Camille', 'Laurent', 'camille.laurent@test.fr', '1990-05-02', 'F', TRUE),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'Inès', 'Moreau', 'ines.moreau@test.fr', '1995-09-18', 'F', TRUE),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'Léa', 'Petit', 'lea.petit@test.fr', '1988-01-27', 'F', TRUE),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'Nadia', 'Rousseau', 'nadia.rousseau@test.fr', '1979-12-03', 'F', TRUE),
+    ('a1b2c3d4-0001-4000-8000-000000000001', 'Thomas', 'Garnier', 'thomas.garnier@test.fr', '1993-06-30', 'M', TRUE),
+    ('a1b2c3d4-0002-4000-8000-000000000002', 'Chloé', 'Fontaine', 'chloe.fontaine@test.fr', '1997-02-14', 'F', TRUE),
+    ('a1b2c3d4-0003-4000-8000-000000000003', 'Sarah', 'Lemoine', 'sarah.lemoine@test.fr', '1986-08-09', 'F', TRUE);
 
 -- Seed: produits de test
 INSERT INTO produits (boutique_id, nom, description, prix, tags) VALUES

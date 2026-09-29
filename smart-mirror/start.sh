@@ -25,10 +25,16 @@ if command -v docker &> /dev/null && docker info &> /dev/null; then
   done
 fi
 
-# Start microscope proxy with sudo (needs tcpdump for button), app runs as normal user
+# Start microscope proxy with sudo (needs tcpdump for button), app runs as normal user.
+# With MICROSCOPE_SIMULE=1 (demo without hardware), the simulator serves synthetic frames instead.
 if ! curl -s http://localhost:9100/ > /dev/null 2>&1; then
-  echo "[Smart Mirror] Starting microscope proxy on 127.0.0.1:9100..."
-  sudo -n node "$(pwd)/microscope-proxy/proxy.js" > /tmp/microscope-proxy.log 2>&1 &
+  if [ "${MICROSCOPE_SIMULE:-0}" = "1" ]; then
+    echo "[Smart Mirror] Starting microscope simulator on 127.0.0.1:9100 (no hardware)..."
+    node "$(pwd)/microscope-proxy/simulateur.js" > /tmp/microscope-proxy.log 2>&1 &
+  else
+    echo "[Smart Mirror] Starting microscope proxy on 127.0.0.1:9100..."
+    sudo -n node "$(pwd)/microscope-proxy/proxy.js" > /tmp/microscope-proxy.log 2>&1 &
+  fi
   sleep 1
 fi
 
