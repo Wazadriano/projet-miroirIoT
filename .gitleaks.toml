@@ -1,0 +1,11 @@
+# Configuration gitleaks : règles par défaut, avec une exclusion.
+# Les exports Figma sous archive/figma-exports/ contiennent des clés de composants
+# (identifiants de conception, non secrets) que la règle generic-api-key signale à tort.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Exports Figma : clés de composants, pas des secrets"
+paths = [
+  '''archive/figma-exports/.*''',
+]
