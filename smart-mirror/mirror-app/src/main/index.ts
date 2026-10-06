@@ -100,6 +100,13 @@ function createWindow(): void {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 
+  // Borne tactile : aucun pointeur à l'écran. Hors kiosque (développement, démonstration), il reste visible.
+  if (isKiosk) {
+    mainWindow.webContents.on('did-finish-load', () => {
+      mainWindow?.webContents.insertCSS('* { cursor: none !important; }')
+    })
+  }
+
   // Inject no-gpu class for VM performance
   if (process.env.ELECTRON_DISABLE_GPU === '1') {
     mainWindow.webContents.on('did-finish-load', () => {
